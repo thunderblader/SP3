@@ -29,8 +29,7 @@ void Scene01::Init()
 	m_objectCount = 0;
 	m_ballCount = 0;
 
-	CSoundEngine::GetInstance()->Init();
-	CSoundEngine::GetInstance()->AddSound("Jump", "Image//Mario-jump-sound.mp3");
+
 
 	m_ghost = new GameObject(GameObject::GO_BALL);
 }
