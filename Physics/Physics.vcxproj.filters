@@ -18,6 +18,9 @@
     <Filter Include="Terrain">
       <UniqueIdentifier>{64dced7a-2c7e-41a5-b517-dfe83c4052ea}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Controller">
+      <UniqueIdentifier>{a041c02a-3abb-4ffb-b2b3-f1de84111f83}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -61,6 +64,15 @@
     </ClCompile>
     <ClCompile Include="Source\Terrain\LoadHmap.cpp">
       <Filter>Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Controller\Controller.cpp">
+      <Filter>Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Camera Control.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -114,6 +126,12 @@
     </ClInclude>
     <ClInclude Include="Source\Terrain\LoadHmap.h">
       <Filter>Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Controller\Controller.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Player.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
