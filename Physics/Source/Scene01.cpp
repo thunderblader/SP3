@@ -1,6 +1,7 @@
 #include "Scene01.h"
 #include "GL\glew.h"
 #include "Application.h"
+#include "SoundEngine.h"
 #include <sstream>
 
 Scene01::Scene01()
@@ -27,6 +28,8 @@ void Scene01::Init()
 	//Exercise 1: initialize m_objectCount
 	m_objectCount = 0;
 	m_ballCount = 0;
+
+
 
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
@@ -167,6 +170,7 @@ void Scene01::Update(double dt)
 	{
 		/*if (m_player->pos.x - m_player->scale.x * 0.5f > 0.f)
 			m_player->pos.x -= 50.f * (float)dt;*/
+		CSoundEngine::GetInstance()->PlayASound("Jump");
 	}
 	else if (Application::IsKeyPressed('D') || Application::IsKeyPressed(VK_RIGHT))
 	{

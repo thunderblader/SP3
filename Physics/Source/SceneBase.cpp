@@ -6,6 +6,7 @@
 #include "Application.h"
 #include "Utility.h"
 #include "LoadTGA.h"
+#include "SoundEngine.h"
 #include <sstream>
 
 SceneBase::SceneBase()
@@ -112,6 +113,9 @@ void SceneBase::Init()
 	meshList[GEO_TEXT]->material.kAmbient.Set(1, 0, 0);
 
 	meshList[GEO_PU] = MeshBuilder::GenerateSphere("pu", Color(1.f, 0.f, 0.f), 10, 10, 1.f);
+
+	CSoundEngine::GetInstance()->Init();
+	CSoundEngine::GetInstance()->AddSound("Jump", "Image//Mario-jump-sound.mp3");
 
 	bLightEnabled = false;
 }
