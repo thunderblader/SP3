@@ -62,6 +62,9 @@
     <ClCompile Include="Source\Terrain\LoadHmap.cpp">
       <Filter>Terrain</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Camera Control.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
