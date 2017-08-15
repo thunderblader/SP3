@@ -27,10 +27,10 @@ void Scene01::Camera_Control(double dt)
 
 	if (free_look == true)
 	{
-		camera.position.x = test->pos.x - 30;
-		camera.target.x = test->pos.x - 30;
-		camera.position.y = test->pos.y - 45;
-		camera.target.y = test->pos.y - 45;
+		//camera.position.x = test->pos.x - 30;
+		//camera.target.x = test->pos.x - 30;
+		//camera.position.y = test->pos.y - 45;
+		//camera.target.y = test->pos.y - 45;
 
 		if (Application::IsKeyPressed('A') || Application::IsKeyPressed(VK_LEFT))
 		{

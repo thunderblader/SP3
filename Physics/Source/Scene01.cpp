@@ -34,24 +34,24 @@ void Scene01::Init()
 
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
-	{
-		GameObject *go = FetchGO();
-		go->type = GameObject::GO_BALL;
-		go->active = true;
-		go->dir.Set(0, 1, 0);
-		go->pos = Vector3(25, 25, 0);
-		go->vel.Set(0, 0, 0);
-		go->scale.Set(2, 2, 2);
-		go->mass = 1;
-	}
-	test = FetchGO();
-	test->type = GameObject::GO_BALL;
-	test->active = true;
-	test->dir.Set(0, 1, 0);
-	test->pos = Vector3(20, 25, 0);
-	test->vel.Set(0, 0, 0);
-	test->scale.Set(2, 2, 2);
-	test->mass = 1;
+	//{
+	//	GameObject *go = FetchGO();
+	//	go->type = GameObject::GO_BALL;
+	//	go->active = true;
+	//	go->dir.Set(0, 1, 0);
+	//	go->pos = Vector3(25, 25, 0);
+	//	go->vel.Set(0, 0, 0);
+	//	go->scale.Set(2, 2, 2);
+	//	go->mass = 1;
+	//}
+	//test = FetchGO();
+	//test->type = GameObject::GO_BALL;
+	//test->active = true;
+	//test->dir.Set(0, 1, 0);
+	//test->pos = Vector3(20, 25, 0);
+	//test->vel.Set(0, 0, 0);
+	//test->scale.Set(2, 2, 2);
+	//test->mass = 1;
 }
 
 GameObject* Scene01::FetchGO()
@@ -218,6 +218,7 @@ void Scene01::Update(double dt)
 		int h = Application::GetWindowHeight();
 		go->vel.Set(m_ghost->pos.x - (float)(x / w * m_worldWidth), m_ghost->pos.y - (float)(m_worldHeight - (y / h * m_worldHeight)), 0.f);
 		go->scale.Set(Math::Clamp(go->vel.Length(), 2.f, 10.f), Math::Clamp(go->vel.Length(), 2.f, 10.f), 0.f);
+		go->mass = go->scale.x;
 	}
 	static bool bRButtonState = false;
 	if (!bRButtonState && Application::IsMousePressed(1))
@@ -229,7 +230,7 @@ void Scene01::Update(double dt)
 		Application::GetCursorPos(&x, &y);
 		int w = Application::GetWindowWidth();
 		int h = Application::GetWindowHeight();
-
+		
 		m_ghost->pos.Set((float)(x / w * m_worldWidth), (float)(m_worldHeight - (y / h * m_worldHeight)), 0.f);
 		//m_ghost->pos.Set((float)(x / w * m_worldWidth), m_worldHeight * 0.5f, 0.f);
 	}
@@ -242,7 +243,7 @@ void Scene01::Update(double dt)
 		GameObject *go = FetchGO();
 		go->pos = m_ghost->pos;
 		go->scale.Set(1.5f, 1.5f, 1.5f);
-		go->mass = 1.5f * 1.5f * 1.5f;
+		go->mass = go->scale.x;
 
 		double x, y;
 		Application::GetCursorPos(&x, &y);
@@ -261,11 +262,18 @@ void Scene01::Update(double dt)
 			//Exercise 7: handle out of bound game objects
 			if (go->type == GameObject::GO_BALL)
 			{
-				go->vel = go->vel + Vector3(0,-9.8,0) *dt;
+				go->vel.x = go->vel.x - go->vel.x * 2 * dt;
+				if (go->vel.Length() < 3)
+					go->vel.IsZero();
+				go->vel.y = go->vel.y -9.8*go->mass *dt;
 				go->pos += go->vel * (float)dt * m_speed;
-				if (go->pos.y <= (m_worldHeight * ReadHeightMap(m_heightMap, go->pos.x / m_worldWidth,0)))
+				if (go->pos.y <= (m_worldHeight * ReadHeightMap(m_heightMap, go->pos.x / m_worldWidth,0))+go->scale.x)
 				{
-					go->vel = -go->vel;
+					go->pos.y = (m_worldHeight * ReadHeightMap(m_heightMap, go->pos.x / m_worldWidth, 0)) + go->scale.x;
+					float theta = atan2((m_worldHeight * ReadHeightMap(m_heightMap, (go->pos.x - 1) / m_worldWidth, 0)) - (m_worldHeight * ReadHeightMap(m_heightMap, (go->pos.x + 1) / m_worldWidth, 0)), -2);
+					Vector3 tempnormal = Vector3(1,theta/ 3.14159,0).Normalize();
+					go->vel = go->vel - (2*go->vel.Dot(tempnormal) * tempnormal);
+					go->vel.x = go->vel.x - go->vel.x * 10 * dt;
 				}
 				/*if ((go->pos.x < 0 + go->scale.x && go->vel.x < 0) || (go->pos.x > m_worldWidth - go->scale.x && go->vel.x > 0))
 				{
@@ -285,22 +293,22 @@ void Scene01::Update(double dt)
 					--m_objectCount;
 					continue;
 				}*/
-				if (go->pos.x + go->scale.x > m_worldWidth && go->vel.x > 0)
-				{
-					go->vel.x = -go->vel.x;
-				}
-				else if (go->pos.x - go->scale.x < 0 && go->vel.x < 0)
-				{
-					go->vel.x = -go->vel.x;
-				}
-				else if (go->pos.y + go->scale.y > m_worldHeight && go->vel.y > 0)
-				{
-					go->vel.y = -go->vel.y;
-				}
-				else if (go->pos.y - go->scale.y < 0 && go->vel.y < 0)
-				{
-					go->vel.y = -go->vel.y;
-				}
+				//if (go->pos.x + go->scale.x > m_worldWidth && go->vel.x > 0)
+				//{
+				//	go->vel.x = -go->vel.x;
+				//}
+				//else if (go->pos.x - go->scale.x < 0 && go->vel.x < 0)
+				//{
+				//	go->vel.x = -go->vel.x;
+				//}
+				//else if (go->pos.y + go->scale.y > m_worldHeight && go->vel.y > 0)
+				//{
+				//	//go->vel.y = -go->vel.y;
+				//}
+				//else if (go->pos.y - go->scale.y < 0 && go->vel.y < 0)
+				//{
+				//	go->vel.y = -go->vel.y;
+				//}
 			}
 
 			//Exercise 8a: handle collision between GO_BALL and GO_BALL using velocity swap
