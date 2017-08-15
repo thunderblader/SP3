@@ -1,6 +1,7 @@
 #ifndef MESH_BUILDER_H
 #define MESH_BUILDER_H
 
+#include <vector>
 #include "Mesh.h"
 #include "Vertex.h"
 
@@ -21,6 +22,7 @@ public:
 	static Mesh* GenerateCone(const std::string &meshName, Color color, unsigned numSlice, float radius, float height);
 	static Mesh* GenerateOBJ(const std::string &meshName, const std::string &file_path);
 	static Mesh* GenerateText(const std::string &meshName, unsigned row, unsigned col);
+	static Mesh* GenerateTerrain(const std::string &meshName, const std::string &file_path, std::vector<unsigned char> &heightMap);
 };
 
 #endif

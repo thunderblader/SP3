@@ -114,6 +114,8 @@ void SceneBase::Init()
 
 	meshList[GEO_PU] = MeshBuilder::GenerateSphere("pu", Color(1.f, 0.f, 0.f), 10, 10, 1.f);
 
+	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmap.raw", m_heightMap);
+	meshList[GEO_TERRAIN]->textureID = LoadTGA("Image//terrain.tga");
 	CSoundEngine::GetInstance()->Init();
 	CSoundEngine::GetInstance()->AddSound("Jump", "Image//Mario-jump-sound.mp3");
 

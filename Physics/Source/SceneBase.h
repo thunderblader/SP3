@@ -49,6 +49,7 @@ public:
 		GEO_CUBE,
 		GEO_QUAD,
 		GEO_PU,
+		GEO_TERRAIN,
 		NUM_GEOMETRY,
 	};
 public:
@@ -83,6 +84,8 @@ protected:
 	bool bLightEnabled;
 
 	float fps;
+
+	std::vector<unsigned char> m_heightMap;
 };
 
 #endif

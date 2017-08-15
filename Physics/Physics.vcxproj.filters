@@ -15,6 +15,9 @@
     <Filter Include="Sound">
       <UniqueIdentifier>{939ae9d6-0552-48f5-b1bd-dd355c56d222}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Terrain">
+      <UniqueIdentifier>{64dced7a-2c7e-41a5-b517-dfe83c4052ea}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -55,6 +58,9 @@
     </ClCompile>
     <ClCompile Include="Source\SoundEngine.cpp">
       <Filter>Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Terrain\LoadHmap.cpp">
+      <Filter>Terrain</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -105,6 +111,9 @@
     </ClInclude>
     <ClInclude Include="Source\SoundEngine.h">
       <Filter>Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Terrain\LoadHmap.h">
+      <Filter>Terrain</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

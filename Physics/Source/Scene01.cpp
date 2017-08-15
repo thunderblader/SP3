@@ -401,6 +401,14 @@ void Scene01::Render()
 		}
 	}
 
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(m_worldWidth * 0.5, 0, 0);
+		modelStack.Scale(m_worldWidth, m_worldHeight, 1); // values varies.
+		RenderMesh(meshList[GEO_TERRAIN], false);
+		modelStack.PopMatrix();
+	}
+
 	//On screen text
 
 	std::ostringstream ss;

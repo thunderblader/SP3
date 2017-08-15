@@ -4,6 +4,7 @@
 #include "Vertex.h"
 #include "MyMath.h"
 #include "LoadOBJ.h"
+#include "Terrain\LoadHmap.h"
 /******************************************************************************/
 /*!
 \brief
@@ -446,6 +447,121 @@ Mesh* MeshBuilder::GenerateText(const std::string &meshName, unsigned numRow, un
 
 	mesh->indexSize = index_buffer_data.size();
 	mesh->mode = Mesh::DRAW_TRIANGLES;
+
+	return mesh;
+}
+
+Mesh* MeshBuilder::GenerateTerrain(const std::string &meshName, const std::string &file_path, std::vector<unsigned char> &heightMap)
+{
+	if (!LoadHeightMap(file_path.c_str(), heightMap))
+		return NULL;
+
+	const float SCALE_FACTOR = 256.0f;
+
+	Vertex v;
+	std::vector<Vertex> vertex_buffer_data;
+	std::vector<GLuint> index_buffer_data;
+
+	unsigned terrainSize = (unsigned)sqrt((double)heightMap.size());
+
+	for (unsigned z = 0; z < terrainSize; ++z)
+	{
+		for (unsigned x = 0; x < terrainSize; ++x)
+		{
+			float scaledHeight = (float)heightMap[z * terrainSize + x] / SCALE_FACTOR;
+
+			v.pos.Set(static_cast<float>(x) / terrainSize - 0.5f, scaledHeight, static_cast<float>(z) / terrainSize - 0.5f);
+			v.color.Set(scaledHeight, scaledHeight, scaledHeight);
+			Vector3 v1, v2, v3, v4;
+			if (z + 1 < terrainSize)
+			{
+				scaledHeight = (float)heightMap[(z + 1) * terrainSize + x] / SCALE_FACTOR;
+				v1 = Vector3(static_cast<float>(x) / terrainSize - 0.5f, scaledHeight, static_cast<float>(z + 1) / terrainSize - 0.5f);
+			}
+			else
+			{
+				scaledHeight = (float)heightMap[z * terrainSize + x] / SCALE_FACTOR;
+				v1 = Vector3(static_cast<float>(x) / terrainSize - 0.5f, scaledHeight, static_cast<float>(z) / terrainSize - 0.5f);
+			}
+			if (x + 1 < terrainSize)
+			{
+				scaledHeight = (float)heightMap[z * terrainSize + (x + 1)] / SCALE_FACTOR;
+				v2 = Vector3(static_cast<float>(x + 1) / terrainSize - 0.5f, scaledHeight, static_cast<float>(z) / terrainSize - 0.5f);
+			}
+			else
+			{
+				scaledHeight = (float)heightMap[z * terrainSize + x] / SCALE_FACTOR;
+				v2 = Vector3(static_cast<float>(x) / terrainSize - 0.5f, scaledHeight, static_cast<float>(z) / terrainSize - 0.5f);
+			}
+			if (z != 0)
+			{
+				scaledHeight = (float)heightMap[(z - 1) * terrainSize + x] / SCALE_FACTOR;
+				v3 = Vector3(static_cast<float>(x) / terrainSize - 0.5f, scaledHeight, static_cast<float>(z - 1) / terrainSize - 0.5f);
+			}
+			else
+			{
+				scaledHeight = (float)heightMap[z * terrainSize + x] / SCALE_FACTOR;
+				v3 = Vector3(static_cast<float>(x) / terrainSize - 0.5f, scaledHeight, static_cast<float>(z) / terrainSize - 0.5f);
+			}
+			if (x != 0)
+			{
+				scaledHeight = (float)heightMap[z * terrainSize + (x - 1)] / SCALE_FACTOR;
+				v4 = Vector3(static_cast<float>(x - 1) / terrainSize - 0.5f, scaledHeight, static_cast<float>(z) / terrainSize - 0.5f);
+			}
+			else
+			{
+				scaledHeight = (float)heightMap[z * terrainSize + x] / SCALE_FACTOR;
+				v4 = Vector3(static_cast<float>(x) / terrainSize - 0.5f, scaledHeight, static_cast<float>(z) / terrainSize - 0.5f);
+			}
+
+			v.texCoord.Set((float)x / terrainSize * 8, 1.f - (float)z / terrainSize * 8);
+
+			if (z == 0 || x == 0 || z == terrainSize - 1 || x == terrainSize - 1)
+			{
+				v.normal.Set(0.f, 1.f, 0.f);
+			}
+			else
+			{
+				Vector3 off(1.f, 0.f, 1.f);
+				float hL = ReadHeightMap(heightMap, v.pos.x - off.x, v.pos.z);
+				float hR = ReadHeightMap(heightMap, v.pos.x + off.x, v.pos.z);
+				float hD = ReadHeightMap(heightMap, v.pos.x, v.pos.z - off.z);
+				float hU = ReadHeightMap(heightMap, v.pos.x, v.pos.z + off.z);
+				v.normal.Set(hL - hR, 1.f, hD - hU);
+			}
+
+			v.normal.Normalize();
+
+			v.texCoord.Set((float)x / terrainSize * 8, 1.0f - (float)z / terrainSize * 8);
+
+			vertex_buffer_data.push_back(v);
+		}
+	}
+
+	for (unsigned z = 0; z < terrainSize - 1; ++z)
+	{
+		for (unsigned x = 0; x < terrainSize - 1; ++x)
+		{
+			index_buffer_data.push_back(terrainSize * z + x + 0);
+			index_buffer_data.push_back(terrainSize * (z + 1) + x + 0);
+			index_buffer_data.push_back(terrainSize * z + x + 1);
+
+			index_buffer_data.push_back(terrainSize * (z + 1) + x + 1);
+			index_buffer_data.push_back(terrainSize * z + x + 1);
+			index_buffer_data.push_back(terrainSize * (z + 1) + x + 0);
+		}
+	}
+
+	Mesh *mesh = new Mesh(meshName);
+
+	mesh->mode = Mesh::DRAW_TRIANGLES;
+
+	glBindBuffer(GL_ARRAY_BUFFER, mesh->vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, vertex_buffer_data.size() * sizeof(Vertex), &vertex_buffer_data[0], GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->indexBuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_buffer_data.size() * sizeof(GLuint), &index_buffer_data[0], GL_STATIC_DRAW);
+
+	mesh->indexSize = index_buffer_data.size();
 
 	return mesh;
 }
