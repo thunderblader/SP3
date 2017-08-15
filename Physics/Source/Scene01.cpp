@@ -2,6 +2,7 @@
 #include "GL\glew.h"
 #include "Application.h"
 #include "SoundEngine.h"
+#include "Terrain\LoadHmap.h"
 #include <sstream>
 
 Scene01::Scene01()
@@ -260,8 +261,12 @@ void Scene01::Update(double dt)
 			//Exercise 7: handle out of bound game objects
 			if (go->type == GameObject::GO_BALL)
 			{
+				go->vel = go->vel + Vector3(0,-9.8,0) *dt;
 				go->pos += go->vel * (float)dt * m_speed;
-
+				if (go->pos.y <= (m_worldHeight * ReadHeightMap(m_heightMap, go->pos.x / m_worldWidth,0)))
+				{
+					go->vel = -go->vel;
+				}
 				/*if ((go->pos.x < 0 + go->scale.x && go->vel.x < 0) || (go->pos.x > m_worldWidth - go->scale.x && go->vel.x > 0))
 				{
 					go->vel.x = -go->vel.x;
@@ -416,8 +421,8 @@ void Scene01::Render()
 
 	{
 		modelStack.PushMatrix();
-		modelStack.Translate(m_worldWidth * 0.5, 0, 0);
-		modelStack.Scale(m_worldWidth, m_worldHeight, 1); // values varies.
+		//modelStack.Translate(m_worldWidth * 0.5, 0, 3);
+		modelStack.Scale(m_worldWidth, m_worldHeight, 3); // values varies.
 		RenderMesh(meshList[GEO_TERRAIN], false);
 		modelStack.PopMatrix();
 	}
