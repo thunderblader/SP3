@@ -12,6 +12,9 @@
     <Filter Include="Scenes">
       <UniqueIdentifier>{74ea9c7a-696b-4a16-b18b-446d2d4e007b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sound">
+      <UniqueIdentifier>{939ae9d6-0552-48f5-b1bd-dd355c56d222}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -49,6 +52,9 @@
     </ClCompile>
     <ClCompile Include="Source\Scene01.cpp">
       <Filter>Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SoundEngine.cpp">
+      <Filter>Sound</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -96,6 +102,9 @@
     </ClInclude>
     <ClInclude Include="Source\Scene01.h">
       <Filter>Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SoundEngine.h">
+      <Filter>Sound</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
