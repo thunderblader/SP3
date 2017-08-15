@@ -7,6 +7,8 @@
 #include <vector>
 #include "SceneBase.h"
 
+using namespace std;
+
 class Scene01 : public SceneBase
 {
 public:
@@ -25,6 +27,9 @@ public:
 	bool CheckCollision(GameObject *go1, GameObject *go2, float dt);
 	void CollisionResponse(GameObject *go1, GameObject *go2);
 	void Camera_Control(double dt);
+	bool Load(const string mapName = "Image//MapDesign.csv");
+	void Process(string content);
+	void Spawn(int value);
 
 protected:
 
@@ -36,6 +41,7 @@ protected:
 	float m_worldHeight;
 	GameObject *m_ghost;
 	GameObject *test;
+	GameObject *spawner;
 	int m_ballCount;
 	int m_objectCount;
 
@@ -46,6 +52,9 @@ protected:
 	float initialKE, finalKE;
 
 	bool free_look;
+
+	int Unit_Height_Space;
+	int Unit_Width_Space;
 };
 
 #endif

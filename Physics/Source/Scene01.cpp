@@ -4,6 +4,7 @@
 #include "SoundEngine.h"
 #include "Terrain\LoadHmap.h"
 #include <sstream>
+#include <fstream>
 
 Scene01::Scene01()
 {
@@ -31,6 +32,12 @@ void Scene01::Init()
 	m_ballCount = 0;
 
 	free_look = false;
+
+	Unit_Height_Space = 0;
+	Unit_Width_Space = 0;
+
+
+	Load();
 
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
@@ -487,5 +494,82 @@ void Scene01::Exit()
 	{
 		delete m_ghost;
 		m_ghost = NULL;
+	}
+}
+
+bool Scene01::Load(const string saveFileName)
+{
+	ifstream myfile(saveFileName.c_str(), ios::in);
+	if (myfile.is_open())
+	{
+		string line;
+		while (getline(myfile, line))
+		{
+			istringstream ss(line);
+			string content = "";
+
+			while (getline(ss, content))
+			{
+				Process(content);
+			}
+		}
+		myfile.close();
+	}
+	else
+	{
+#if(_DEBUG == TRUE)
+		cout << "PlayerInfo: Unable to load " << saveFileName.c_str() << endl;
+#endif
+		myfile.close();
+		return false;
+	}
+	return true;
+}
+
+void Scene01::Process(string content)
+{
+	string processor;
+	int processed_value;
+
+	for (int i = 0; i < content.length(); i++)
+	{
+		if (content.at(i) == ',')
+		{
+			Unit_Width_Space += 5;
+			processed_value = atoi(processor.c_str());
+			Spawn(processed_value);
+			processor = "";
+		}
+		else
+		{
+			processor.push_back(content.at(i));
+		}
+	}
+	Unit_Height_Space += 5;
+	Unit_Width_Space = 0;
+}
+
+void Scene01::Spawn(int value)
+{
+	if (value == 0)
+	{
+		spawner = FetchGO();
+		spawner->type = GameObject::GO_BALL;
+		spawner->active = true;
+		spawner->dir.Set(0, 1, 0);
+		spawner->pos = Vector3(m_worldWidth - Unit_Width_Space, m_worldHeight - Unit_Height_Space, 0);
+		spawner->vel.Set(0, 0, 0);
+		spawner->scale.Set(2, 2, 2);
+		spawner->mass = 1;
+		std::cout << "spawned" << std::endl;
+		std::cout << spawner->pos.x << ", " << spawner->pos.y << endl;
+	}
+	else if (value == 1)
+	{
+
+	}
+	else
+	{
+
 	}
 }
