@@ -29,7 +29,7 @@ void Scene01::Init()
 	m_objectCount = 0;
 	m_ballCount = 0;
 
-
+	free_look = false;
 
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
@@ -43,6 +43,14 @@ void Scene01::Init()
 		go->scale.Set(2, 2, 2);
 		go->mass = 1;
 	}
+	test = FetchGO();
+	test->type = GameObject::GO_BALL;
+	test->active = true;
+	test->dir.Set(0, 1, 0);
+	test->pos = Vector3(20, 25, 0);
+	test->vel.Set(0, 0, 0);
+	test->scale.Set(2, 2, 2);
+	test->mass = 1;
 }
 
 GameObject* Scene01::FetchGO()
@@ -131,8 +139,8 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 	switch (go2->type)
 	{
 	case GameObject::GO_BALL:
-		N = (go2->pos - go1->pos).Normalized();
 		u1 = go1->vel;
+		N = (go2->pos - go1->pos).Normalized();
 		u2 = go2->vel;
 		u1N = u1.Dot(N) * N;
 		u2N = u2.Dot(N) * N;
@@ -156,6 +164,7 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 void Scene01::Update(double dt)
 {
 	SceneBase::Update(dt);
+	Camera_Control(dt);
 
 	if (Application::IsKeyPressed('9'))
 	{
@@ -164,18 +173,6 @@ void Scene01::Update(double dt)
 	if (Application::IsKeyPressed('0'))
 	{
 		m_speed += 0.1f;
-	}
-
-	if (Application::IsKeyPressed('A') || Application::IsKeyPressed(VK_LEFT))
-	{
-		/*if (m_player->pos.x - m_player->scale.x * 0.5f > 0.f)
-			m_player->pos.x -= 50.f * (float)dt;*/
-		CSoundEngine::GetInstance()->PlayASound("Jump");
-	}
-	else if (Application::IsKeyPressed('D') || Application::IsKeyPressed(VK_RIGHT))
-	{
-		/*if (m_player->pos.x + m_player->scale.x * 0.5f < m_worldWidth)
-			m_player->pos.x += 50.f * (float)dt;*/
 	}
 
 	static bool kButtonState = false;
@@ -189,69 +186,69 @@ void Scene01::Update(double dt)
 	}
 
 	//Mouse Section
-	//static bool bLButtonState = false;
-	//if (!bLButtonState && Application::IsMousePressed(0))
-	//{
-	//	bLButtonState = true;
-	//	std::cout << "LBUTTON DOWN" << std::endl;
+	static bool bLButtonState = false;
+	if (!bLButtonState && Application::IsMousePressed(0))
+	{
+		bLButtonState = true;
+		std::cout << "LBUTTON DOWN" << std::endl;
 
-	//	double x, y;
-	//	Application::GetCursorPos(&x, &y);
-	//	int w = Application::GetWindowWidth();
-	//	int h = Application::GetWindowHeight();
+		double x, y;
+		Application::GetCursorPos(&x, &y);
+		int w = Application::GetWindowWidth();
+		int h = Application::GetWindowHeight();
 
-	//	m_ghost->pos.Set((float)(x / w * m_worldWidth), (float)(m_worldHeight - (y / h * m_worldHeight)), 0.f);
-	//	//m_ghost->pos.Set((float)(x / w * m_worldWidth), m_worldHeight * 0.5f, 0.f);
-	//}
-	//else if (bLButtonState && !Application::IsMousePressed(0))
-	//{
-	//	bLButtonState = false;
-	//	std::cout << "LBUTTON UP" << std::endl;
+		m_ghost->pos.Set((float)(x / w * m_worldWidth), (float)(m_worldHeight - (y / h * m_worldHeight)), 0.f);
+		//m_ghost->pos.Set((float)(x / w * m_worldWidth), m_worldHeight * 0.5f, 0.f);
+	}
+	else if (bLButtonState && !Application::IsMousePressed(0))
+	{
+		bLButtonState = false;
+		std::cout << "LBUTTON UP" << std::endl;
 
-	//	//Exercise 6: spawn small GO_BALL
-	//	GameObject *go = FetchGO();
-	//	go->pos = m_ghost->pos;
-	//	go->scale.Set(1.f, 1.f, 1.f);
-	//	go->mass = 1.f;
+		//Exercise 6: spawn small GO_BALL
+		GameObject *go = FetchGO();
+		go->pos = m_ghost->pos;
+		go->scale.Set(1.f, 1.f, 1.f);
+		go->mass = 1.f;
 
-	//	double x, y;
-	//	Application::GetCursorPos(&x, &y);
-	//	int w = Application::GetWindowWidth();
-	//	int h = Application::GetWindowHeight();
-	//	go->vel.Set(m_ghost->pos.x - (float)(x / w * m_worldWidth), m_ghost->pos.y - (float)(m_worldHeight - (y / h * m_worldHeight)), 0.f);
-	//	go->scale.Set(Math::Clamp(go->vel.Length(), 2.f, 10.f), Math::Clamp(go->vel.Length(), 2.f, 10.f), 0.f);
-	//}
-	//static bool bRButtonState = false;
-	//if (!bRButtonState && Application::IsMousePressed(1))
-	//{
-	//	bRButtonState = true;
-	//	std::cout << "RBUTTON DOWN" << std::endl;
+		double x, y;
+		Application::GetCursorPos(&x, &y);
+		int w = Application::GetWindowWidth();
+		int h = Application::GetWindowHeight();
+		go->vel.Set(m_ghost->pos.x - (float)(x / w * m_worldWidth), m_ghost->pos.y - (float)(m_worldHeight - (y / h * m_worldHeight)), 0.f);
+		go->scale.Set(Math::Clamp(go->vel.Length(), 2.f, 10.f), Math::Clamp(go->vel.Length(), 2.f, 10.f), 0.f);
+	}
+	static bool bRButtonState = false;
+	if (!bRButtonState && Application::IsMousePressed(1))
+	{
+		bRButtonState = true;
+		std::cout << "RBUTTON DOWN" << std::endl;
 
-	//	double x, y;
-	//	Application::GetCursorPos(&x, &y);
-	//	int w = Application::GetWindowWidth();
-	//	int h = Application::GetWindowHeight();
+		double x, y;
+		Application::GetCursorPos(&x, &y);
+		int w = Application::GetWindowWidth();
+		int h = Application::GetWindowHeight();
 
-	//	m_ghost->pos.Set((float)(x / w * m_worldWidth), (float)(m_worldHeight - (y / h * m_worldHeight)), 0.f);
-	//	//m_ghost->pos.Set((float)(x / w * m_worldWidth), m_worldHeight * 0.5f, 0.f);
-	//}
-	//else if (bRButtonState && !Application::IsMousePressed(1))
-	//{
-	//	bRButtonState = false;
-	//	std::cout << "RBUTTON UP" << std::endl;
+		m_ghost->pos.Set((float)(x / w * m_worldWidth), (float)(m_worldHeight - (y / h * m_worldHeight)), 0.f);
+		//m_ghost->pos.Set((float)(x / w * m_worldWidth), m_worldHeight * 0.5f, 0.f);
+	}
+	else if (bRButtonState && !Application::IsMousePressed(1))
+	{
+		bRButtonState = false;
+		std::cout << "RBUTTON UP" << std::endl;
 
-	//	//Exercise 10: spawn large GO_BALL
-	//	GameObject *go = FetchGO();
-	//	go->pos = m_ghost->pos;
-	//	go->scale.Set(1.5f, 1.5f, 1.5f);
-	//	go->mass = 1.5f * 1.5f * 1.5f;
+		//Exercise 10: spawn large GO_BALL
+		GameObject *go = FetchGO();
+		go->pos = m_ghost->pos;
+		go->scale.Set(1.5f, 1.5f, 1.5f);
+		go->mass = 1.5f * 1.5f * 1.5f;
 
-	//	double x, y;
-	//	Application::GetCursorPos(&x, &y);
-	//	int w = Application::GetWindowWidth();
-	//	int h = Application::GetWindowHeight();
-	//	go->vel.Set(m_ghost->pos.x - (float)(x / w * m_worldWidth), m_ghost->pos.y - (float)(m_worldHeight - (y / h * m_worldHeight)), 0.f);
-	//}
+		double x, y;
+		Application::GetCursorPos(&x, &y);
+		int w = Application::GetWindowWidth();
+		int h = Application::GetWindowHeight();
+		go->vel.Set(m_ghost->pos.x - (float)(x / w * m_worldWidth), m_ghost->pos.y - (float)(m_worldHeight - (y / h * m_worldHeight)), 0.f);
+	}
 
 	//Physics Simulation Section
 
@@ -265,7 +262,7 @@ void Scene01::Update(double dt)
 			{
 				go->pos += go->vel * (float)dt * m_speed;
 
-				if ((go->pos.x < 0 + go->scale.x && go->vel.x < 0) || (go->pos.x > m_worldWidth - go->scale.x && go->vel.x > 0))
+				/*if ((go->pos.x < 0 + go->scale.x && go->vel.x < 0) || (go->pos.x > m_worldWidth - go->scale.x && go->vel.x > 0))
 				{
 					go->vel.x = -go->vel.x;
 				}
@@ -282,6 +279,22 @@ void Scene01::Update(double dt)
 					go->active = false;
 					--m_objectCount;
 					continue;
+				}*/
+				if (go->pos.x + go->scale.x > m_worldWidth && go->vel.x > 0)
+				{
+					go->vel.x = -go->vel.x;
+				}
+				else if (go->pos.x - go->scale.x < 0 && go->vel.x < 0)
+				{
+					go->vel.x = -go->vel.x;
+				}
+				else if (go->pos.y + go->scale.y > m_worldHeight && go->vel.y > 0)
+				{
+					go->vel.y = -go->vel.y;
+				}
+				else if (go->pos.y - go->scale.y < 0 && go->vel.y < 0)
+				{
+					go->vel.y = -go->vel.y;
 				}
 			}
 

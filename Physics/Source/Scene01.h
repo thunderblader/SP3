@@ -24,6 +24,7 @@ public:
 
 	bool CheckCollision(GameObject *go1, GameObject *go2, float dt);
 	void CollisionResponse(GameObject *go1, GameObject *go2);
+	void Camera_Control(double dt);
 
 protected:
 
@@ -34,6 +35,7 @@ protected:
 	float m_worldWidth;
 	float m_worldHeight;
 	GameObject *m_ghost;
+	GameObject *test;
 	int m_ballCount;
 	int m_objectCount;
 
@@ -42,6 +44,8 @@ protected:
 	Vector3 u1, u2, v1, v2, u1N, u2N;
 	Vector3 initialMomentum, finalMomentum;
 	float initialKE, finalKE;
+
+	bool free_look;
 };
 
 #endif
