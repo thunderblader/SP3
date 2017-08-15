@@ -29,6 +29,17 @@ void Scene01::Init()
 	m_ballCount = 0;
 
 	m_ghost = new GameObject(GameObject::GO_BALL);
+
+	{
+		GameObject *go = FetchGO();
+		go->type = GameObject::GO_BALL;
+		go->active = true;
+		go->dir.Set(0, 1, 0);
+		go->pos = Vector3(25, 25, 0);
+		go->vel.Set(0, 0, 0);
+		go->scale.Set(2, 2, 2);
+		go->mass = 1;
+	}
 }
 
 GameObject* Scene01::FetchGO()
@@ -248,7 +259,7 @@ void Scene01::Update(double dt)
 			//Exercise 7: handle out of bound game objects
 			if (go->type == GameObject::GO_BALL)
 			{
-				go->pos += go->vel.Normalized() * (float)dt * m_speed;
+				go->pos += go->vel * (float)dt * m_speed;
 
 				if ((go->pos.x < 0 + go->scale.x && go->vel.x < 0) || (go->pos.x > m_worldWidth - go->scale.x && go->vel.x > 0))
 				{
@@ -355,6 +366,9 @@ void Scene01::RenderGO(GameObject *go)
 
 void Scene01::Render()
 {
+	m_worldHeight = 100.f;
+	m_worldWidth = m_worldHeight * (float)Application::GetWindowWidth() / Application::GetWindowHeight();
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Projection matrix : Orthographic Projection
