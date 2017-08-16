@@ -9,6 +9,7 @@
 #include "Controller\Controller.h"
 
 #include <vector>
+#include "Load_File.h"
 
 using std::vector;
 using std::string;
@@ -33,7 +34,7 @@ public:
 	void Camera_Control(double dt);
 	bool Load(const string mapName = "Image//Test_Level.csv");
 	void Process(string content);
-	void Spawn(int value);
+	void Spawn(int value,int Width_Space,int Height_Space);
 	bool Load_Data(const string saveFileName = "Image//test.sav");
 	bool Save_Data(const string saveFileName = "Image//test.sav");
 
