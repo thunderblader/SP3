@@ -36,6 +36,11 @@ void Scene01::Init()
 	Unit_Height_Space = 0;
 	Unit_Width_Space = 0;
 
+	Level = 4;
+	Score = 4;
+	Gold = 10000;
+
+
 
 	//Load();
 
@@ -174,13 +179,15 @@ void Scene01::Update(double dt)
 	SceneBase::Update(dt);
 	Camera_Control(dt);
 
+	Load_File file;
+
 	if (Application::IsKeyPressed('L'))
 	{
-		Save_Data();
+		file.Save_Data(Level, Score, Gold);
 	}
 	if (Application::IsKeyPressed('K'))
 	{
-		Load_Data();
+		file.Load_Data();
 	}
 
 	if (Application::IsKeyPressed('9'))
@@ -520,59 +527,7 @@ void Scene01::Exit()
 	}
 }
 
-bool Scene01::Load(const string saveFileName)
-{
-	ifstream myfile(saveFileName.c_str(), ios::in);
-	if (myfile.is_open())
-	{
-		string line;
-		while (getline(myfile, line))
-		{
-			istringstream ss(line);
-			string content = "";
-
-			while (getline(ss, content))
-			{
-				Process(content);
-			}
-		}
-		myfile.close();
-	}
-	else
-	{
-#if(_DEBUG == TRUE)
-		cout << "PlayerInfo: Unable to load " << saveFileName.c_str() << endl;
-#endif
-		myfile.close();
-		return false;
-	}
-	return true;
-}
-
-void Scene01::Process(string content)
-{
-	string processor;
-	int processed_value;
-
-	for (int i = 0; i < content.length(); i++)
-	{
-		if (content.at(i) == ',')
-		{
-			Unit_Width_Space += 5;
-			processed_value = atoi(processor.c_str());
-			Spawn(processed_value);
-			processor = "";
-		}
-		else
-		{
-			processor.push_back(content.at(i));
-		}
-	}
-	Unit_Height_Space += 5;
-	Unit_Width_Space = 0;
-}
-
-void Scene01::Spawn(int value)
+void Scene01::Spawn(int value, int Width_Space, int Height_Space)
 {
 	if (value == 0)
 	{
@@ -594,71 +549,5 @@ void Scene01::Spawn(int value)
 	else
 	{
 
-	}
-}
-bool Scene01::Load_Data(const string saveFileName)
-{
-	ifstream myfile(saveFileName.c_str(), ios::in);
-	if (myfile.is_open())
-	{
-		string line;
-		while (getline(myfile, line))
-		{
-			istringstream ss(line);
-			string data = "";
-			while (getline(ss, data, '='))
-			{
-				string theTag = data;
-				getline(ss, data, '=');
-				if (theTag == "Level")
-				{
-					Level = atoi(data.c_str());
-				}
-				else if (theTag == "Score")
-				{
-					Score = atoi(data.c_str());
-				}
-				else if (theTag == "Gold")
-				{
-					Gold = atoi(data.c_str());
-				}
-			}
-		}
-		cout << "Loaded" << endl;
-		myfile.close();
-	}
-	else
-	{
-#if(_DEBUG == TRUE)
-		cout << "PlayerInfo: Unable to load " << saveFileName.c_str() << endl;
-#endif
-		myfile.close();
-		return false;
-	}
-
-	return true;
-}
-
-bool Scene01::Save_Data(const string saveFileName)
-{
-	ofstream myfile;
-	myfile.open(saveFileName.c_str(), ios::out | ios::ate);
-
-	if (myfile.is_open())
-	{
-		myfile << "Level=" << Level << endl;
-		myfile << "Score=" << Score << endl;
-		myfile << "Gold=" << Gold << endl;
-		cout << "saved" << endl;
-		myfile.close();
-		return true;
-	}
-	else
-	{
-#if(_DEBUG == TRUE)
-		cout << "PlayerInfo: Unable to save " << saveFileName.c_str() << endl;
-#endif
-		myfile.close();
-		return false;
 	}
 }
