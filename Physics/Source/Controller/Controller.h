@@ -22,6 +22,7 @@ public:
 	void SetPlayer(Player* _player);
 
 	void Move_LeftRight(const double dt, const bool dLeft);
+	void Jump(const double dt);
 
 private:
 	char kb_jump;

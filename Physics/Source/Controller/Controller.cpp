@@ -28,6 +28,9 @@ Controller::~Controller()
 
 void Controller::Update(double dt)
 {
+	if (!m_player)
+		return;
+
 	if (KeyboardController::GetInstance()->IsKeyDown(VK_RIGHT))
 	{
 		Move_LeftRight(dt, false);
@@ -38,7 +41,7 @@ void Controller::Update(double dt)
 	}
 	if (KeyboardController::GetInstance()->IsKeyDown(VK_SPACE))
 	{
-		// Jump
+		Jump(dt);
 	}
 }
 
@@ -81,9 +84,10 @@ void Controller::SetPlayer(Player * _player)
 
 void Controller::Move_LeftRight(const double dt, const bool dLeft)
 {
-	if (!m_player)
-		return;
-
-	// Move Player
 	m_player->Move_LeftRight(dt, dLeft);
+}
+
+void Controller::Jump(const double dt)
+{
+	m_player->Jump(dt);
 }

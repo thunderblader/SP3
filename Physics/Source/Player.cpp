@@ -49,6 +49,15 @@ void Player::Move_LeftRight(const double dt, const bool dLeft)
 	playerObj->vel += Vector3(dLeft ? -m_speed : m_speed, 0.f, 0.f) * dt * (1 / playerObj->mass);
 }
 
+void Player::Jump(const double dt)
+{
+	if (!m_heightmap || !playerObj ||
+		playerObj->pos.y > (m_worldHeight * ReadHeightMap(*m_heightmap, playerObj->pos.x / (m_worldWidth * 2), 0)) + playerObj->scale.x)
+		return;
+
+	playerObj->vel += Vector3(0.f, 500.f, 0.f) * dt * (1 / playerObj->mass);
+}
+
 Player::Player()
 	: playerObj(nullptr)
 {
