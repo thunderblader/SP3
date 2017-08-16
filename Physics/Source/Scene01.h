@@ -47,6 +47,8 @@ protected:
 	float m_speed;
 	float m_worldWidth;
 	float m_worldHeight;
+	float m_TerrainWidth;
+	float m_TerrainHeight;
 	GameObject *m_ghost;
 	GameObject *test;
 	GameObject *spawner;

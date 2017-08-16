@@ -32,6 +32,9 @@ void Scene01::Init()
 	m_worldHeight = 100.f;
 	m_worldWidth = m_worldHeight * (float)Application::GetWindowWidth() / Application::GetWindowHeight();
 
+	m_TerrainHeight = 10.f;
+	m_TerrainWidth = 300;
+
 	//Physics code here
 	m_speed = 40.f;
 
@@ -55,8 +58,8 @@ void Scene01::Init()
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
 	m_player = Player::GetInstance();
-	m_player->Init(FetchGO(), GameObject::GO_BLOCK, Vector3(25, 25, 0), Vector3(2, 2, 2), 2.f, 50.f);
-	m_player->SetHeightmap(&m_heightMap, m_worldWidth, m_worldHeight);
+	m_player->Init(FetchGO(), GameObject::GO_BLOCK, Vector3(25, 25, 0), Vector3(5, 2, 1), 2.f, 100.f);
+	m_player->SetHeightmap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
 	m_control = new Controller(m_player);
 
 	//Load();
@@ -285,17 +288,17 @@ void Scene01::Update(double dt)
 					go->vel.IsZero();
 				go->vel.y = go->vel.y -9.8*go->mass*2 *dt;
 				go->pos += go->vel * (float)dt * m_speed;
-				if (go->pos.y <= ((m_worldHeight/2) * ReadHeightMap(m_heightMap, go->pos.x / (m_worldWidth * 2),0))+go->scale.x)
+				if (go->pos.y <= (m_TerrainHeight * ReadHeightMap(m_heightMap, go->pos.x / m_TerrainWidth,0))+go->scale.y)
 				{
-					go->pos.y = ((m_worldHeight / 2) * ReadHeightMap(m_heightMap, go->pos.x / (m_worldWidth * 2), 0)) + go->scale.x;
-					float theta = atan2(((m_worldHeight / 2) * ReadHeightMap(m_heightMap, (go->pos.x - 2) / (m_worldWidth * 2), 0)) - ((m_worldHeight / 2) * ReadHeightMap(m_heightMap, (go->pos.x + 2) / (m_worldWidth * 2), 0)), -2);
+					go->pos.y = (m_TerrainHeight * ReadHeightMap(m_heightMap, go->pos.x / m_TerrainWidth, 0)) + go->scale.y;
+					float theta = atan2((m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x - go->scale.x/2) / m_TerrainWidth, 0)) - (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + go->scale.x/2) / m_TerrainWidth, 0)), -2);
 					Vector3 tempnormal;
 
-					if (theta > 3.14159)
-						tempnormal = Vector3(0, 1, 0).Normalize();
-					else
-						tempnormal = Vector3(1, theta, 0).Normalize();
-					go->dir = tempnormal.Cross(Vector3(0,0,1)).Normalized();
+					//if (theta > 3.14159)
+						//tempnormal = Vector3(0, 1, 0).Normalize();
+					//else
+						tempnormal = Vector3(sin(-theta), cos(-theta), 0).Normalize();
+					go->dir = tempnormal;
 					go->vel = go->vel - (go->vel.Dot(tempnormal) * tempnormal);
 					go->vel.x = go->vel.x - go->vel.x * 5 * dt;
 				}
@@ -402,9 +405,9 @@ void Scene01::RenderGO(GameObject *go)
 	case GameObject::GO_BLOCK:
 		modelStack.PushMatrix();
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
-		modelStack.Rotate(Math::RadianToDegree(atan2(go->dir.y, go->dir.x)) - 90.f, 0.f, 0.f, 1.f);
+		modelStack.Rotate(Math::RadianToDegree(atan2(go->dir.y, go->dir.x))+90, 0.f, 0.f, 1.f);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
-		RenderMesh(meshList[GEO_CUBE], false);
+		RenderMesh(meshList[GEO_CART], false);
 		modelStack.PopMatrix();
 		break;
 
@@ -420,7 +423,7 @@ void Scene01::RenderGO(GameObject *go)
 
 void Scene01::Render()
 {
-	//m_worldHeight = 100.f;
+	m_worldHeight = 100.f;
 	m_worldWidth = m_worldHeight * (float)Application::GetWindowWidth() / Application::GetWindowHeight();
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -454,7 +457,7 @@ void Scene01::Render()
 	{
 		modelStack.PushMatrix();
 		//modelStack.Translate(m_worldWidth * 0.5, 0, 3);
-		modelStack.Scale(m_worldWidth * 2, m_worldHeight/2, 1); // values varies.
+		modelStack.Scale(m_TerrainWidth, m_TerrainHeight, 1); // values varies.
 		RenderMesh(meshList[GEO_TERRAIN], false);
 		modelStack.PopMatrix();
 	}

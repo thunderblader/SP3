@@ -27,6 +27,7 @@ public:
 
 	void Move_LeftRight(const double dt, const bool dLeft);
 	void Jump(const double dt);
+	Vector3 Get_PlayerPos();
 
 private:
 	Player();
@@ -34,7 +35,7 @@ private:
 
 	GameObject* playerObj;
 	vector<unsigned char>* m_heightmap;
-	float m_worldWidth, m_worldHeight;
+	float m_TerrainWidth, m_TerrainHeight;
 
 	float m_speed;
 };

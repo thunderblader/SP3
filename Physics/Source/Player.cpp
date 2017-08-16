@@ -38,14 +38,14 @@ GameObject Player::GetPlayerObj() const
 void Player::SetHeightmap(vector<unsigned char>* _heightmap, float _worldWidth, float _worldHeight)
 {
 	m_heightmap = _heightmap;
-	m_worldWidth = _worldWidth;
-	m_worldHeight = _worldHeight;
+	m_TerrainWidth = _worldWidth;
+	m_TerrainHeight = _worldHeight;
 }
 
 void Player::Move_LeftRight(const double dt, const bool dLeft)
 {
-	if (!m_heightmap || !playerObj ||
-		playerObj->pos.y > (m_worldHeight * ReadHeightMap(*m_heightmap, playerObj->pos.x / (m_worldWidth * 2), 0)) + playerObj->scale.x)
+	if (!m_heightmap || !playerObj || playerObj->vel.Length() > 10 ||
+		playerObj->pos.y > (m_TerrainHeight * ReadHeightMap(*m_heightmap, playerObj->pos.x / m_TerrainWidth, 0)) + playerObj->scale.y)
 		return;
 
 	playerObj->vel += Vector3(dLeft ? -m_speed : m_speed, 0.f, 0.f) * dt * (1 / playerObj->mass);
@@ -54,10 +54,15 @@ void Player::Move_LeftRight(const double dt, const bool dLeft)
 void Player::Jump(const double dt)
 {
 	if (!m_heightmap || !playerObj ||
-		playerObj->pos.y > (m_worldHeight * ReadHeightMap(*m_heightmap, playerObj->pos.x / (m_worldWidth * 2), 0)) + playerObj->scale.x)
+		playerObj->pos.y > (m_TerrainHeight * ReadHeightMap(*m_heightmap, playerObj->pos.x / m_TerrainWidth, 0)) + playerObj->scale.y)
 		return;
 
-	playerObj->vel += Vector3(0.f, 500.f, 0.f) * dt * (1 / playerObj->mass);
+	playerObj->vel += Vector3(0.f, 590.f, 0.f) * dt * (1 / playerObj->mass);
+}
+
+Vector3 Player::Get_PlayerPos()
+{
+	return playerObj->pos;
 }
 
 Player::Player()

@@ -50,6 +50,7 @@ public:
 		GEO_QUAD,
 		GEO_PU,
 		GEO_TERRAIN,
+		GEO_CART,
 		NUM_GEOMETRY,
 	};
 public:
