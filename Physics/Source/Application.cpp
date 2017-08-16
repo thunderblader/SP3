@@ -1,5 +1,6 @@
 
 #include "Application.h"
+#include "KeyboardController.h"
 
 //Include GLEW
 #include <GL/glew.h>
@@ -135,8 +136,10 @@ void Application::Run()
 		glfwSwapBuffers(m_window);
 		//Get and organize events, like keyboard and mouse input, window resizing, etc...
 		glfwPollEvents();
+		UpdateInput();
         m_timer.waitUntil(frameTime);       // Frame rate limiter. Limits each frame to a specified time in ms.   
 
+		PostInputUpdate();
 	} //Check if the ESC key had been pressed or if the window had been closed
 	scene->Exit();
 	delete scene;
@@ -148,4 +151,33 @@ void Application::Exit()
 	glfwDestroyWindow(m_window);
 	//Finalize and clean up GLFW
 	glfwTerminate();
+}
+
+void Application::UpdateInput()
+{
+	// Update Mouse Position
+	//double mouse_currX, mouse_currY;
+	//glfwGetCursorPos(m_window, &mouse_currX, &mouse_currY);
+	//MouseController::GetInstance()->UpdateMousePosition(mouse_currX, mouse_currY);
+
+	// Update Keyboard Input
+	for (int i = 0; i < KeyboardController::MAX_KEYS; ++i)
+		KeyboardController::GetInstance()->UpdateKeyboardStatus(i, IsKeyPressed(i));
+}
+
+void Application::PostInputUpdate()
+{
+	// If mouse is centered, need to update the center position for next frame
+	/*if (MouseController::GetInstance()->GetKeepMouseCentered())
+	{
+		double mouse_currX, mouse_currY;
+		mouse_currX = m_window_width >> 1;
+		mouse_currY = m_window_height >> 1;
+		MouseController::GetInstance()->UpdateMousePosition(mouse_currX, mouse_currY);
+		glfwSetCursorPos(m_window, mouse_currX, mouse_currY);
+	}*/
+
+	// Call input systems to update at end of frame
+	//MouseController::GetInstance()->EndFrameUpdate();
+	KeyboardController::GetInstance()->EndFrameUpdate();
 }

@@ -6,6 +6,7 @@
 #include "GameObject.h"
 #include "SceneBase.h"
 #include "Player.h"
+#include "Controller\Controller.h"
 
 #include <vector>
 
@@ -40,8 +41,8 @@ protected:
 
 	//Physics
 	std::vector<GameObject *> m_goList;
-	Player* m_playert;
-	GameObject* m_player;
+	Player* m_player;
+	Controller* m_control;
 	float m_speed;
 	float m_worldWidth;
 	float m_worldHeight;

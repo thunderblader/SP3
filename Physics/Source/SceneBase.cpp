@@ -6,7 +6,9 @@
 #include "Application.h"
 #include "Utility.h"
 #include "LoadTGA.h"
+#include "KeyboardController.h"
 #include "SoundEngine.h"
+
 #include <sstream>
 
 SceneBase::SceneBase()
@@ -106,16 +108,13 @@ void SceneBase::Init()
 	meshList[GEO_BALL] = MeshBuilder::GenerateSphere("ball", Color(0.f, 0.f, 0.f), 10, 10, 1.f);
 	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("cube", Color(0.f, 0.f, 0.f), 1.f);
 	meshList[GEO_QUAD] = MeshBuilder::GenerateQuad("quad", Color(0.f, 0.f, 0.f), 1.f);
-	/*meshList[GEO_SHIP] = MeshBuilder::GenerateQuad("ship", Color(0.f, 0.f, 0.f), 1.f);
-	meshList[GEO_SHIP]->textureID = LoadTGA("Image//ship.tga");*/
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXT]->textureID = LoadTGA("Image//calibri.tga");
 	meshList[GEO_TEXT]->material.kAmbient.Set(1, 0, 0);
 
-	meshList[GEO_PU] = MeshBuilder::GenerateSphere("pu", Color(1.f, 0.f, 0.f), 10, 10, 1.f);
-
 	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmap.raw", m_heightMap);
 	meshList[GEO_TERRAIN]->textureID = LoadTGA("Image//terrain.tga");
+
 	CSoundEngine::GetInstance()->Init();
 	CSoundEngine::GetInstance()->AddSound("Jump", "Image//Mario-jump-sound.mp3");
 
@@ -125,13 +124,13 @@ void SceneBase::Init()
 void SceneBase::Update(double dt)
 {
 	//Keyboard Section
-	if(Application::IsKeyPressed('1'))
+	if(KeyboardController::GetInstance()->IsKeyPressed('1'))
 		glEnable(GL_CULL_FACE);
-	if(Application::IsKeyPressed('2'))
+	if(KeyboardController::GetInstance()->IsKeyPressed('2'))
 		glDisable(GL_CULL_FACE);
-	if(Application::IsKeyPressed('3'))
+	if(KeyboardController::GetInstance()->IsKeyPressed('3'))
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	if(Application::IsKeyPressed('4'))
+	if(KeyboardController::GetInstance()->IsKeyPressed('4'))
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	
 	fps = (float)(1.f / dt);

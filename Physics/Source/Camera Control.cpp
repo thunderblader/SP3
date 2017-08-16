@@ -1,16 +1,16 @@
 #include "Scene01.h"
-#include "Application.h"
+#include "KeyboardController.h"
 
 void Scene01::Camera_Control(double dt)
 {
-	if (Application::IsKeyPressed('O'))
+	if (KeyboardController::GetInstance()->IsKeyDown('O'))
 	{
 		if (free_look == false)
 		{
 			free_look = true;
 		}
 	}
-	if (Application::IsKeyPressed('P'))
+	if (KeyboardController::GetInstance()->IsKeyDown('P'))
 	{
 		if (free_look == true)
 		{
@@ -32,19 +32,19 @@ void Scene01::Camera_Control(double dt)
 		//camera.position.y = test->pos.y - 45;
 		//camera.target.y = test->pos.y - 45;
 
-		if (Application::IsKeyPressed('A'))
+		if (KeyboardController::GetInstance()->IsKeyDown('A'))
 		{
 			//CSoundEngine::GetInstance()->PlayASound("Jump");
 			camera.position.x -= dt * (float)(50);
 			camera.target.x -= dt * (float)(50);
 
 		}
-		else if (Application::IsKeyPressed('D'))
+		else if (KeyboardController::GetInstance()->IsKeyDown('D'))
 		{
 			camera.position.x += dt * (float)(50);
 			camera.target.x += dt * (float)(50);
 		}
 	}
-	std::cout << camera.position.x << std::endl;
+	//std::cout << camera.position.x << std::endl;
 	//std::cout << free_look << std::endl;
 }

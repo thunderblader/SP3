@@ -1,5 +1,5 @@
 #include "Controller.h"
-#include "../Application.h"
+#include "KeyboardController.h"
 
 #include <iostream>
 #include <fstream>
@@ -11,8 +11,15 @@ using std::getline;
 using std::cout;
 using std::endl;
 
-Controller::Controller() : kb_jump(0)
+Controller::Controller()
+	: m_player(nullptr)
+	, kb_jump(0)
 {
+}
+
+Controller::Controller(Player * _player)
+{
+	m_player = _player;
 }
 
 Controller::~Controller()
@@ -21,7 +28,18 @@ Controller::~Controller()
 
 void Controller::Update(double dt)
 {
-
+	if (KeyboardController::GetInstance()->IsKeyDown(VK_RIGHT))
+	{
+		Move_LeftRight(dt, false);
+	}
+	if (KeyboardController::GetInstance()->IsKeyDown(VK_LEFT))
+	{
+		Move_LeftRight(dt, true);
+	}
+	if (KeyboardController::GetInstance()->IsKeyDown(VK_SPACE))
+	{
+		// Jump
+	}
 }
 
 bool Controller::LoadConfig(const string filePath)
@@ -56,12 +74,16 @@ bool Controller::LoadConfig(const string filePath)
 	}
 }
 
-void Controller::SetPlayer(Player * _m_player)
+void Controller::SetPlayer(Player * _player)
 {
-	m_player = _m_player;
+	m_player = _player;
 }
 
-char Controller::GetJumpKey()
+void Controller::Move_LeftRight(const double dt, const bool dLeft)
 {
-	return kb_jump;
+	if (!m_player)
+		return;
+
+	// Move Player
+	m_player->Move_LeftRight(dt, dLeft);
 }

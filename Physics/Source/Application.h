@@ -15,15 +15,21 @@ public:
 	void Init();
 	void Run();
 	void Exit();
-	static bool IsKeyPressed(unsigned short key);
+
+	void UpdateInput();
+	void PostInputUpdate();
+
 	static bool IsMousePressed(unsigned short key);
 	static void GetCursorPos(double *xpos, double *ypos);
+
 	static int GetWindowWidth();
 	static int GetWindowHeight();
 
 private:
 	Application();
 	~Application();
+
+	static bool IsKeyPressed(unsigned short key);
 
 	//Declare a window object
 	StopWatch m_timer;

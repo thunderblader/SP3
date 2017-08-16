@@ -12,15 +12,16 @@ class Controller
 {
 public:
 	Controller();
+	Controller(Player* _player);
 	~Controller();
 
-	void Update(double dt);
+	void Update(const double dt);
 
 	bool LoadConfig(const string filePath);
 
-	void SetPlayer(Player* _m_player);
+	void SetPlayer(Player* _player);
 
-	char GetJumpKey();
+	void Move_LeftRight(const double dt, const bool dLeft);
 
 private:
 	char kb_jump;

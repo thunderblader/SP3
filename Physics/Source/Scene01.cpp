@@ -1,6 +1,7 @@
 #include "Scene01.h"
 #include "GL\glew.h"
 #include "Application.h"
+#include "KeyboardController.h"
 #include "SoundEngine.h"
 #include "Terrain\LoadHmap.h"
 
@@ -47,9 +48,10 @@ void Scene01::Init()
 
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
-	m_playert = Player::GetInstance();
-	m_playert->Init(FetchGO(), GameObject::GO_BALL, Vector3(25, 25, 0), Vector3(2, 2, 2), 2.f);
-
+	m_player = Player::GetInstance();
+	m_player->Init(FetchGO(), GameObject::GO_BALL, Vector3(25, 25, 0), Vector3(2, 2, 2), 2.f, 50.f);
+	m_player->SetHeightmap(&m_heightMap, m_worldWidth, m_worldHeight);
+	m_control = new Controller(m_player);
 
 	//Load();
 
@@ -176,42 +178,25 @@ void Scene01::Update(double dt)
 	SceneBase::Update(dt);
 	Camera_Control(dt);
 
-	if (Application::IsKeyPressed('L'))
+	if (KeyboardController::GetInstance()->IsKeyPressed('L'))
 	{
 		Save_Data();
 	}
-	if (Application::IsKeyPressed('K'))
+	if (KeyboardController::GetInstance()->IsKeyPressed('K'))
 	{
 		Load_Data();
 	}
 
-	if (Application::IsKeyPressed('9'))
+	/*if (Application::IsKeyPressed('9'))
 	{
 		m_speed = Math::Max(0.f, m_speed - 0.1f);
 	}
 	if (Application::IsKeyPressed('0'))
 	{
 		m_speed += 0.1f;
-	}
+	}*/
 
-	if (Application::IsKeyPressed(VK_RIGHT) && m_player->pos.y <= (m_worldHeight * ReadHeightMap(m_heightMap, m_player->pos.x / (m_worldWidth * 2), 0)) + m_player->scale.x)
-	{
-		m_player->vel += Vector3(50, 0, 0)*dt*(1/ m_player->mass);
-	}
-	if (Application::IsKeyPressed(VK_LEFT) && m_player->pos.y <= (m_worldHeight * ReadHeightMap(m_heightMap, m_player->pos.x / (m_worldWidth * 2), 0)) + m_player->scale.x)
-	{
-		m_player->vel -= Vector3(50, 0, 0)*dt*(1 / m_player->mass);
-	}
-
-	static bool kButtonState = false;
-	if (!kButtonState && Application::IsKeyPressed(VK_SPACE))
-	{
-		kButtonState = true;
-	}
-	else if (kButtonState && !Application::IsKeyPressed(VK_SPACE))
-	{
-		kButtonState = false;
-	}
+	m_control->Update(dt);
 
 	//Mouse Section
 	static bool bLButtonState = false;
