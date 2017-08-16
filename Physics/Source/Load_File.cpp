@@ -1,6 +1,19 @@
 #include "Load_File.h"
 
 
+Scene_Test::Scene_Test()
+{
+}
+
+Scene_Test::~Scene_Test()
+{
+}
+
+void Load_File::Init()
+{
+	Unit_Height_Space = 0;
+	Unit_Width_Space = 0;
+}
 
 bool Load_File::Load(const string saveFileName)
 {
@@ -12,7 +25,7 @@ bool Load_File::Load(const string saveFileName)
 		{
 			istringstream ss(line);
 			string content = "";
-
+			cout << "hi" << endl;
 			while (getline(ss, content))
 			{
 				Process(content);
@@ -35,12 +48,13 @@ void Load_File::Process(string content)
 {
 	string processor;
 	int processed_value;
+	Init();
 
 	for (int i = 0; i < content.length(); i++)
 	{
 		if (content.at(i) == ',')
 		{
-			Scene_Test object;
+			Scene01 object;
 			Unit_Width_Space += 5;
 			processed_value = atoi(processor.c_str());
 			object.Spawn(processed_value, Unit_Width_Space, Unit_Width_Space);
