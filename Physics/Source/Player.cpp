@@ -1,11 +1,17 @@
 #include "Player.h"
 
-void Player::Init(GameObject * _playerObj, Vector3 _pos, Vector3 _scale, float _mass)
+void Player::Init(GameObject * _playerObj
+	, GameObject::GAMEOBJECT_TYPE _type
+	, Vector3 _pos, Vector3 _scale, float _mass)
 {
 	playerObj = _playerObj;
-	position = _pos;
-	scale = _scale;
-	mass = _mass;
+	playerObj->type = _type;
+	playerObj->pos = _pos;
+	playerObj->scale = _scale;
+	playerObj->mass = _mass;
+	playerObj->vel = Vector3(0.f, 0.f, 0.f);
+	playerObj->normal = Vector3(0.f, 1.f, 0.f);
+	playerObj->active = true;
 }
 
 void Player::Update(double dt)
@@ -16,11 +22,13 @@ void Player::Reset()
 {
 }
 
+GameObject Player::GetPlayerObj() const
+{
+	return *playerObj;
+}
+
 Player::Player()
 	: playerObj(nullptr)
-	, position(Vector3(0.f, 0.f, 0.f))
-	, scale(Vector3(1.f, 1.f, 1.f))
-	, mass(1.f)
 {
 }
 

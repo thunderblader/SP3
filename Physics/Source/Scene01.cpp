@@ -3,8 +3,17 @@
 #include "Application.h"
 #include "SoundEngine.h"
 #include "Terrain\LoadHmap.h"
+
 #include <sstream>
 #include <fstream>
+
+using std::ifstream;
+using std::istringstream;
+using std::ofstream;
+using std::ios;
+using std::getline;
+using std::cout;
+using std::endl;
 
 Scene01::Scene01()
 {
@@ -36,20 +45,13 @@ void Scene01::Init()
 	Unit_Height_Space = 0;
 	Unit_Width_Space = 0;
 
-
-	//Load();
-
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
+	m_playert = Player::GetInstance();
+	m_playert->Init(FetchGO(), GameObject::GO_BALL, Vector3(25, 25, 0), Vector3(2, 2, 2), 2.f);
 
-	m_player = FetchGO();
-	m_player->type = GameObject::GO_BALL;
-	m_player->active = true;
-	m_player->dir.Set(0, 1, 0);
-	m_player->pos = Vector3(25, 25, 0);
-	m_player->vel.Set(0, 0, 0);
-	m_player->scale.Set(2, 2, 2);
-	m_player->mass = 2;
+
+	//Load();
 
 	//test = FetchGO();
 	//test->type = GameObject::GO_BALL;
@@ -428,7 +430,7 @@ void Scene01::RenderGO(GameObject *go)
 
 void Scene01::Render()
 {
-	m_worldHeight = 100.f;
+	//m_worldHeight = 100.f;
 	m_worldWidth = m_worldHeight * (float)Application::GetWindowWidth() / Application::GetWindowHeight();
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

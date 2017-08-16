@@ -1,4 +1,6 @@
 #include "Controller.h"
+#include "../Application.h"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -15,6 +17,11 @@ Controller::Controller() : kb_jump(0)
 
 Controller::~Controller()
 {
+}
+
+void Controller::Update(double dt)
+{
+
 }
 
 bool Controller::LoadConfig(const string filePath)
@@ -47,6 +54,11 @@ bool Controller::LoadConfig(const string filePath)
 		file.close();
 		return false;
 	}
+}
+
+void Controller::SetPlayer(Player * _m_player)
+{
+	m_player = _m_player;
 }
 
 char Controller::GetJumpKey()

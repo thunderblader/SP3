@@ -4,10 +4,13 @@
 #define SCENE01_H
 
 #include "GameObject.h"
-#include <vector>
 #include "SceneBase.h"
+#include "Player.h"
 
-using namespace std;
+#include <vector>
+
+using std::vector;
+using std::string;
 
 class Scene01 : public SceneBase
 {
@@ -37,6 +40,7 @@ protected:
 
 	//Physics
 	std::vector<GameObject *> m_goList;
+	Player* m_playert;
 	GameObject* m_player;
 	float m_speed;
 	float m_worldWidth;
