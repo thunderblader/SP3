@@ -1,0 +1,10 @@
+diff a/Physics/Source/Scene01.cpp b/Physics/Source/Scene01.cpp	(rejected hunks)
+@@ -48,6 +48,8 @@
+  	Score = 4;
+  	Gold = 10000;
+  
++ 
++ 
+  	//Load();
+  
+ +>>>>>>> a6da89d01bf6d48447cad18d436ffa580b3a936c

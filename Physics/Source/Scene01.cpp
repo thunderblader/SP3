@@ -186,11 +186,11 @@ void Scene01::Update(double dt)
 
 	if (KeyboardController::GetInstance()->IsKeyPressed('L'))
 	{
-		file.Save_Data(Level, Score, Gold);
+		//file.Save_Data(Level, Score, Gold);
 	}
 	if (KeyboardController::GetInstance()->IsKeyPressed('K'))
 	{
-		file.Load_Data();
+		//file.Load_Data();
 	}
 
 	/*if (Application::IsKeyPressed('9'))
