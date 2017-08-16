@@ -27,9 +27,11 @@ public:
 	bool CheckCollision(GameObject *go1, GameObject *go2, float dt);
 	void CollisionResponse(GameObject *go1, GameObject *go2);
 	void Camera_Control(double dt);
-	bool Load(const string mapName = "Image//MapDesign.csv");
+	bool Load(const string mapName = "Image//Test_Level.csv");
 	void Process(string content);
 	void Spawn(int value);
+	bool Load_Data(const string saveFileName = "Image//test.sav");
+	bool Save_Data(const string saveFileName = "Image//test.sav");
 
 protected:
 
@@ -55,6 +57,9 @@ protected:
 
 	int Unit_Height_Space;
 	int Unit_Width_Space;
+	int Level;
+	int Score;
+	int Gold;
 };
 
 #endif

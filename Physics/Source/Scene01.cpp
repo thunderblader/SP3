@@ -37,7 +37,7 @@ void Scene01::Init()
 	Unit_Width_Space = 0;
 
 
-	Load();
+	//Load();
 
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
@@ -173,6 +173,15 @@ void Scene01::Update(double dt)
 {
 	SceneBase::Update(dt);
 	Camera_Control(dt);
+
+	if (Application::IsKeyPressed('L'))
+	{
+		Save_Data();
+	}
+	if (Application::IsKeyPressed('K'))
+	{
+		Load_Data();
+	}
 
 	if (Application::IsKeyPressed('9'))
 	{
@@ -571,5 +580,71 @@ void Scene01::Spawn(int value)
 	else
 	{
 
+	}
+}
+bool Scene01::Load_Data(const string saveFileName)
+{
+	ifstream myfile(saveFileName.c_str(), ios::in);
+	if (myfile.is_open())
+	{
+		string line;
+		while (getline(myfile, line))
+		{
+			istringstream ss(line);
+			string data = "";
+			while (getline(ss, data, '='))
+			{
+				string theTag = data;
+				getline(ss, data, '=');
+				if (theTag == "Level")
+				{
+					Level = atoi(data.c_str());
+				}
+				else if (theTag == "Score")
+				{
+					Score = atoi(data.c_str());
+				}
+				else if (theTag == "Gold")
+				{
+					Gold = atoi(data.c_str());
+				}
+			}
+		}
+		cout << "Loaded" << endl;
+		myfile.close();
+	}
+	else
+	{
+#if(_DEBUG == TRUE)
+		cout << "PlayerInfo: Unable to load " << saveFileName.c_str() << endl;
+#endif
+		myfile.close();
+		return false;
+	}
+
+	return true;
+}
+
+bool Scene01::Save_Data(const string saveFileName)
+{
+	ofstream myfile;
+	myfile.open(saveFileName.c_str(), ios::out | ios::ate);
+
+	if (myfile.is_open())
+	{
+		myfile << "Level=" << Level << endl;
+		myfile << "Score=" << Score << endl;
+		myfile << "Gold=" << Gold << endl;
+		cout << "saved" << endl;
+		myfile.close();
+		return true;
+	}
+	else
+	{
+#if(_DEBUG == TRUE)
+		cout << "PlayerInfo: Unable to save " << saveFileName.c_str() << endl;
+#endif
+		myfile.close();
+		return false;
 	}
 }
