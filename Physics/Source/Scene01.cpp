@@ -43,7 +43,7 @@ void Scene01::Init()
 
 
 	m_player = FetchGO();
-	m_player->type = GameObject::GO_BALL;
+	m_player->type = GameObject::GO_BLOCK;
 	m_player->active = true;
 	m_player->dir.Set(0, 1, 0);
 	m_player->pos = Vector3(25, 25, 0);
@@ -194,11 +194,13 @@ void Scene01::Update(double dt)
 
 	if (Application::IsKeyPressed(VK_RIGHT) && m_player->pos.y <= (m_worldHeight * ReadHeightMap(m_heightMap, m_player->pos.x / (m_worldWidth * 2), 0)) + m_player->scale.x)
 	{
-		m_player->vel += Vector3(50, 0, 0)*dt*(1/ m_player->mass);
+		//m_player->vel += Vector3(50, 0, 0)*dt*(1/ m_player->mass);
+		m_player->vel += 20*dt;
 	}
 	if (Application::IsKeyPressed(VK_LEFT) && m_player->pos.y <= (m_worldHeight * ReadHeightMap(m_heightMap, m_player->pos.x / (m_worldWidth * 2), 0)) + m_player->scale.x)
 	{
-		m_player->vel -= Vector3(50, 0, 0)*dt*(1 / m_player->mass);
+		//m_player->vel -= Vector3(50, 0, 0)*dt*(1 / m_player->mass);
+		m_player->vel -=  20 * dt;
 	}
 
 	static bool kButtonState = false;
@@ -284,7 +286,7 @@ void Scene01::Update(double dt)
 		if (go->active)
 		{
 			//Exercise 7: handle out of bound game objects
-			if (go->type == GameObject::GO_BALL)
+			if (go->type == GameObject::GO_BALL || go->type == GameObject::GO_BLOCK)
 			{
 				go->vel.x = go->vel.x - go->vel.x * 2 * dt;
 				if (go->vel.Length() < 3)
@@ -294,14 +296,14 @@ void Scene01::Update(double dt)
 				if (go->pos.y <= ((m_worldHeight/2) * ReadHeightMap(m_heightMap, go->pos.x / (m_worldWidth * 2),0))+go->scale.x)
 				{
 					go->pos.y = ((m_worldHeight / 2) * ReadHeightMap(m_heightMap, go->pos.x / (m_worldWidth * 2), 0)) + go->scale.x;
-					float theta = atan2(((m_worldHeight / 2) * ReadHeightMap(m_heightMap, (go->pos.x - 1) / (m_worldWidth * 2), 0)) - ((m_worldHeight / 2) * ReadHeightMap(m_heightMap, (go->pos.x + 1) / (m_worldWidth * 2), 0)), -2);
+					float theta = atan2(((m_worldHeight / 2) * ReadHeightMap(m_heightMap, (go->pos.x - 2) / (m_worldWidth * 2), 0)) - ((m_worldHeight / 2) * ReadHeightMap(m_heightMap, (go->pos.x + 2) / (m_worldWidth * 2), 0)), -2);
 					Vector3 tempnormal;
 
 					if (theta > 3.14159)
 						tempnormal = Vector3(0, 1, 0).Normalize();
 					else
 						tempnormal = Vector3(1, theta, 0).Normalize();
-
+					go->dir = tempnormal.Cross(Vector3(0,0,1)).Normalized();
 					go->vel = go->vel - (go->vel.Dot(tempnormal) * tempnormal);
 					go->vel.x = go->vel.x - go->vel.x * 5 * dt;
 				}
