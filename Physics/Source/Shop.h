@@ -2,15 +2,17 @@
 #define SHOP_H
 
 #include <iostream>
+#include "Load_File.h"
 
 using namespace std;
 
 class Shop
 {
-private:
-
 public:
-	bool Load(const string saveFileName = ".//Sample.csv");
+	//bool Load(const string saveFileName = ".//Sample.csv");
+	void Load_Shop();
+
+
 
 };
 
