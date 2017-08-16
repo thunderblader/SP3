@@ -22,6 +22,8 @@ void Player::Update(double dt)
 {
 	if (!playerObj)
 		return;
+
+	// Player Physics can be done here
 }
 
 void Player::Reset()

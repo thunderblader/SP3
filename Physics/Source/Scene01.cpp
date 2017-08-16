@@ -55,7 +55,7 @@ void Scene01::Init()
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
 	m_player = Player::GetInstance();
-	m_player->Init(FetchGO(), GameObject::GO_BALL, Vector3(25, 25, 0), Vector3(2, 2, 2), 2.f, 50.f);
+	m_player->Init(FetchGO(), GameObject::GO_BLOCK, Vector3(25, 25, 0), Vector3(2, 2, 2), 2.f, 50.f);
 	m_player->SetHeightmap(&m_heightMap, m_worldWidth, m_worldHeight);
 	m_control = new Controller(m_player);
 
@@ -202,6 +202,7 @@ void Scene01::Update(double dt)
 		m_speed += 0.1f;
 	}*/
 
+	m_player->Update(dt);
 	m_control->Update(dt);
 
 	//Mouse Section
@@ -295,7 +296,7 @@ void Scene01::Update(double dt)
 					else
 						tempnormal = Vector3(1, theta, 0).Normalize();
 					go->dir = tempnormal.Cross(Vector3(0,0,1)).Normalized();
-					go->vel = go->vel - (2 * go->vel.Dot(tempnormal) * tempnormal);
+					go->vel = go->vel - (go->vel.Dot(tempnormal) * tempnormal);
 					go->vel.x = go->vel.x - go->vel.x * 5 * dt;
 				}
 				/*if ((go->pos.x < 0 + go->scale.x && go->vel.x < 0) || (go->pos.x > m_worldWidth - go->scale.x && go->vel.x > 0))
