@@ -225,7 +225,7 @@ void Scene01::Update(double dt)
 		int w = Application::GetWindowWidth();
 		int h = Application::GetWindowHeight();
 
-		m_ghost->pos.Set((float)(x / w * m_worldWidth), (float)(m_worldHeight - (y / h * m_worldHeight)), 0.f);
+		m_ghost->pos.Set((float)(x / w * m_worldWidth) + camera.position.x, (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
 		//m_ghost->pos.Set((float)(x / w * m_worldWidth), m_worldHeight * 0.5f, 0.f);
 	}
 	else if (bLButtonState && !Application::IsMousePressed(0))
@@ -243,9 +243,8 @@ void Scene01::Update(double dt)
 		Application::GetCursorPos(&x, &y);
 		int w = Application::GetWindowWidth();
 		int h = Application::GetWindowHeight();
-		go->vel.Set(m_ghost->pos.x - (float)(x / w * m_worldWidth), m_ghost->pos.y - (float)(m_worldHeight - (y / h * m_worldHeight)), 0.f);
+		go->vel.Set(m_ghost->pos.x - (float)(x / w * m_worldWidth) - camera.position.x, m_ghost->pos.y - (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
 		go->scale.Set(Math::Clamp(go->vel.Length(), 2.f, 10.f), Math::Clamp(go->vel.Length(), 2.f, 10.f), 0.f);
-		go->mass = go->scale.x;
 	}
 	static bool bRButtonState = false;
 	if (!bRButtonState && Application::IsMousePressed(1))
@@ -257,8 +256,8 @@ void Scene01::Update(double dt)
 		Application::GetCursorPos(&x, &y);
 		int w = Application::GetWindowWidth();
 		int h = Application::GetWindowHeight();
-		
-		m_ghost->pos.Set((float)(x / w * m_worldWidth), (float)(m_worldHeight - (y / h * m_worldHeight)), 0.f);
+
+		m_ghost->pos.Set((float)(x / w * m_worldWidth) + camera.position.x, (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
 		//m_ghost->pos.Set((float)(x / w * m_worldWidth), m_worldHeight * 0.5f, 0.f);
 	}
 	else if (bRButtonState && !Application::IsMousePressed(1))
@@ -270,14 +269,13 @@ void Scene01::Update(double dt)
 		GameObject *go = FetchGO();
 		go->pos = m_ghost->pos;
 		go->scale.Set(1.5f, 1.5f, 1.5f);
-		go->mass = go->scale.x;
+		go->mass = 1.5f * 1.5f * 1.5f;
 
 		double x, y;
 		Application::GetCursorPos(&x, &y);
 		int w = Application::GetWindowWidth();
 		int h = Application::GetWindowHeight();
-		go->vel.Set(m_ghost->pos.x - (float)(x / w * m_worldWidth), m_ghost->pos.y - (float)(m_worldHeight - (y / h * m_worldHeight)), 0.f);
-		go->vel * 0.5f;
+		go->vel.Set(m_ghost->pos.x - (float)(x / w * m_worldWidth) - camera.position.x, m_ghost->pos.y - (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
 	}
 
 	//Physics Simulation Section
