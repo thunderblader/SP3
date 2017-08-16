@@ -32,14 +32,14 @@ void Scene01::Camera_Control(double dt)
 		//camera.position.y = test->pos.y - 45;
 		//camera.target.y = test->pos.y - 45;
 
-		if (Application::IsKeyPressed('A') || Application::IsKeyPressed(VK_LEFT))
+		if (Application::IsKeyPressed('A'))
 		{
 			//CSoundEngine::GetInstance()->PlayASound("Jump");
 			camera.position.x -= dt * (float)(50);
 			camera.target.x -= dt * (float)(50);
 
 		}
-		else if (Application::IsKeyPressed('D') || Application::IsKeyPressed(VK_RIGHT))
+		else if (Application::IsKeyPressed('D'))
 		{
 			camera.position.x += dt * (float)(50);
 			camera.target.x += dt * (float)(50);

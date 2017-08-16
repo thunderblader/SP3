@@ -41,16 +41,16 @@ void Scene01::Init()
 
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
-	//{
-	//	GameObject *go = FetchGO();
-	//	go->type = GameObject::GO_BALL;
-	//	go->active = true;
-	//	go->dir.Set(0, 1, 0);
-	//	go->pos = Vector3(25, 25, 0);
-	//	go->vel.Set(0, 0, 0);
-	//	go->scale.Set(2, 2, 2);
-	//	go->mass = 1;
-	//}
+
+	m_player = FetchGO();
+	m_player->type = GameObject::GO_BALL;
+	m_player->active = true;
+	m_player->dir.Set(0, 1, 0);
+	m_player->pos = Vector3(25, 25, 0);
+	m_player->vel.Set(0, 0, 0);
+	m_player->scale.Set(2, 2, 2);
+	m_player->mass = 2;
+
 	//test = FetchGO();
 	//test->type = GameObject::GO_BALL;
 	//test->active = true;
@@ -183,6 +183,15 @@ void Scene01::Update(double dt)
 		m_speed += 0.1f;
 	}
 
+	if (Application::IsKeyPressed(VK_RIGHT) && m_player->pos.y <= (m_worldHeight * ReadHeightMap(m_heightMap, m_player->pos.x / (m_worldWidth * 2), 0)) + m_player->scale.x)
+	{
+		m_player->vel += Vector3(50, 0, 0)*dt*(1/ m_player->mass);
+	}
+	if (Application::IsKeyPressed(VK_LEFT) && m_player->pos.y <= (m_worldHeight * ReadHeightMap(m_heightMap, m_player->pos.x / (m_worldWidth * 2), 0)) + m_player->scale.x)
+	{
+		m_player->vel -= Vector3(50, 0, 0)*dt*(1 / m_player->mass);
+	}
+
 	static bool kButtonState = false;
 	if (!kButtonState && Application::IsKeyPressed(VK_SPACE))
 	{
@@ -257,6 +266,7 @@ void Scene01::Update(double dt)
 		int w = Application::GetWindowWidth();
 		int h = Application::GetWindowHeight();
 		go->vel.Set(m_ghost->pos.x - (float)(x / w * m_worldWidth), m_ghost->pos.y - (float)(m_worldHeight - (y / h * m_worldHeight)), 0.f);
+		go->vel * 0.5f;
 	}
 
 	//Physics Simulation Section
@@ -272,15 +282,21 @@ void Scene01::Update(double dt)
 				go->vel.x = go->vel.x - go->vel.x * 2 * dt;
 				if (go->vel.Length() < 3)
 					go->vel.IsZero();
-				go->vel.y = go->vel.y -9.8*go->mass *dt;
+				go->vel.y = go->vel.y -9.8*go->mass*2 *dt;
 				go->pos += go->vel * (float)dt * m_speed;
-				if (go->pos.y <= (m_worldHeight * ReadHeightMap(m_heightMap, go->pos.x / m_worldWidth,0))+go->scale.x)
+				if (go->pos.y <= ((m_worldHeight/2) * ReadHeightMap(m_heightMap, go->pos.x / (m_worldWidth * 2),0))+go->scale.x)
 				{
-					go->pos.y = (m_worldHeight * ReadHeightMap(m_heightMap, go->pos.x / m_worldWidth, 0)) + go->scale.x;
-					float theta = atan2((m_worldHeight * ReadHeightMap(m_heightMap, (go->pos.x - 1) / m_worldWidth, 0)) - (m_worldHeight * ReadHeightMap(m_heightMap, (go->pos.x + 1) / m_worldWidth, 0)), -2);
-					Vector3 tempnormal = Vector3(1,theta/ 3.14159,0).Normalize();
-					go->vel = go->vel - (2*go->vel.Dot(tempnormal) * tempnormal);
-					go->vel.x = go->vel.x - go->vel.x * 10 * dt;
+					go->pos.y = ((m_worldHeight / 2) * ReadHeightMap(m_heightMap, go->pos.x / (m_worldWidth * 2), 0)) + go->scale.x;
+					float theta = atan2(((m_worldHeight / 2) * ReadHeightMap(m_heightMap, (go->pos.x - 1) / (m_worldWidth * 2), 0)) - ((m_worldHeight / 2) * ReadHeightMap(m_heightMap, (go->pos.x + 1) / (m_worldWidth * 2), 0)), -2);
+					Vector3 tempnormal;
+
+					if (theta > 3.14159)
+						tempnormal = Vector3(0, 1, 0).Normalize();
+					else
+						tempnormal = Vector3(1, theta, 0).Normalize();
+
+					go->vel = go->vel - (go->vel.Dot(tempnormal) * tempnormal);
+					go->vel.x = go->vel.x - go->vel.x * 5 * dt;
 				}
 				/*if ((go->pos.x < 0 + go->scale.x && go->vel.x < 0) || (go->pos.x > m_worldWidth - go->scale.x && go->vel.x > 0))
 				{
@@ -437,7 +453,7 @@ void Scene01::Render()
 	{
 		modelStack.PushMatrix();
 		//modelStack.Translate(m_worldWidth * 0.5, 0, 3);
-		modelStack.Scale(m_worldWidth, m_worldHeight, 3); // values varies.
+		modelStack.Scale(m_worldWidth * 2, m_worldHeight/2, 1); // values varies.
 		RenderMesh(meshList[GEO_TERRAIN], false);
 		modelStack.PopMatrix();
 	}
