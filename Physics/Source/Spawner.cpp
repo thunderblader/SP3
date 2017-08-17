@@ -32,6 +32,7 @@ GameObject* Spawner::FetchGO(vector<GameObject *>* Gameobject_List)
 		Gameobject_List->push_back(new GameObject(GameObject::GO_BALL));
 	}
 	Gameobject_List->at(Gameobject_List->size() - 1)->active = true;
+	return Gameobject_List->at(Gameobject_List->size() - 1);
 }
 
 void Spawner::Spawn(int value, int Width_Space, int Height_Space, vector<GameObject *>* Gameobject_List)

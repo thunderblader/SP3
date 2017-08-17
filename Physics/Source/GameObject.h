@@ -12,6 +12,7 @@ struct GameObject
 		GO_CUBE,
 		GO_PLAYER,
 		GO_ENEMY,
+		GO_ENEMY_SNOWYETI,
 		GO_WALL,
 		GO_BLOCK,
 		GO_TOTAL, //must be last

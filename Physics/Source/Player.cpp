@@ -13,8 +13,8 @@ void Player::Init(GameObject * _playerObj
 	playerObj->vel = Vector3(0.f, 0.f, 0.f);
 	playerObj->dir = Vector3(1.f, 0.f, 0.f);
 	playerObj->normal = Vector3(0.f, 1.f, 0.f);
-	playerObj->active = true;
 
+	defaultPos = _pos;
 	m_speed = _spd;
 }
 
@@ -29,6 +29,7 @@ void Player::Update(double dt)
 void Player::Reset()
 {
 	// Resets player values
+	playerObj->pos = defaultPos;
 }
 
 GameObject Player::GetPlayerObj() const
@@ -68,6 +69,7 @@ void Player::Jump(const double dt)
 
 Player::Player()
 	: playerObj(nullptr)
+	, defaultPos(0.f, 0.f, 0.f)
 	, m_heightmap(nullptr)
 	, m_TerrainWidth(0)
 	, m_TerrainHeight(0)
