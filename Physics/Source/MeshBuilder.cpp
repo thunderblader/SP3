@@ -472,47 +472,6 @@ Mesh* MeshBuilder::GenerateTerrain(const std::string &meshName, const std::strin
 
 			v.pos.Set(static_cast<float>(x) / terrainSize - 0.5f, scaledHeight, static_cast<float>(z) / terrainSize - 0.5f);
 			v.color.Set(scaledHeight, scaledHeight, scaledHeight);
-			Vector3 v1, v2, v3, v4;
-			if (z + 1 < terrainSize)
-			{
-				scaledHeight = (float)heightMap[(z + 1) * terrainSize + x] / SCALE_FACTOR;
-				v1 = Vector3(static_cast<float>(x) / terrainSize - 0.5f, scaledHeight, static_cast<float>(z + 1) / terrainSize - 0.5f);
-			}
-			else
-			{
-				scaledHeight = (float)heightMap[z * terrainSize + x] / SCALE_FACTOR;
-				v1 = Vector3(static_cast<float>(x) / terrainSize - 0.5f, scaledHeight, static_cast<float>(z) / terrainSize - 0.5f);
-			}
-			if (x + 1 < terrainSize)
-			{
-				scaledHeight = (float)heightMap[z * terrainSize + (x + 1)] / SCALE_FACTOR;
-				v2 = Vector3(static_cast<float>(x + 1) / terrainSize - 0.5f, scaledHeight, static_cast<float>(z) / terrainSize - 0.5f);
-			}
-			else
-			{
-				scaledHeight = (float)heightMap[z * terrainSize + x] / SCALE_FACTOR;
-				v2 = Vector3(static_cast<float>(x) / terrainSize - 0.5f, scaledHeight, static_cast<float>(z) / terrainSize - 0.5f);
-			}
-			if (z != 0)
-			{
-				scaledHeight = (float)heightMap[(z - 1) * terrainSize + x] / SCALE_FACTOR;
-				v3 = Vector3(static_cast<float>(x) / terrainSize - 0.5f, scaledHeight, static_cast<float>(z - 1) / terrainSize - 0.5f);
-			}
-			else
-			{
-				scaledHeight = (float)heightMap[z * terrainSize + x] / SCALE_FACTOR;
-				v3 = Vector3(static_cast<float>(x) / terrainSize - 0.5f, scaledHeight, static_cast<float>(z) / terrainSize - 0.5f);
-			}
-			if (x != 0)
-			{
-				scaledHeight = (float)heightMap[z * terrainSize + (x - 1)] / SCALE_FACTOR;
-				v4 = Vector3(static_cast<float>(x - 1) / terrainSize - 0.5f, scaledHeight, static_cast<float>(z) / terrainSize - 0.5f);
-			}
-			else
-			{
-				scaledHeight = (float)heightMap[z * terrainSize + x] / SCALE_FACTOR;
-				v4 = Vector3(static_cast<float>(x) / terrainSize - 0.5f, scaledHeight, static_cast<float>(z) / terrainSize - 0.5f);
-			}
 
 			v.texCoord.Set((float)x / terrainSize * 8, 1.f - (float)z / terrainSize * 8);
 
