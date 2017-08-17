@@ -29,33 +29,23 @@ void Scene01::Init()
 {
 	SceneBase::Init();
 
-	//Calculating aspect ratio
 	m_worldHeight = 100.f;
 	m_worldWidth = m_worldHeight * (float)Application::GetWindowWidth() / Application::GetWindowHeight();
 
 	m_TerrainHeight = 20.f;
 	m_TerrainWidth = 300;
 
-	//Physics code here
 	m_speed = 40.f;
 
 	Math::InitRNG();
 
-	//Exercise 1: initialize m_objectCount
 	m_objectCount = 0;
 	m_ballCount = 0;
 
 	free_look = false;
 
-	Unit_Height_Space = 0;
-	Unit_Width_Space = 0;
-
-	Level = 4;
-	Score = 4;
-	Gold = 10000;
-
-	file.Init(&m_goList);
-	file.Load("Image//Test_Level.csv");
+	//file.Init(&m_goList);
+	//file.Load(false, "Image//Test_Level.csv");
 
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
@@ -64,14 +54,9 @@ void Scene01::Init()
 	m_player->SetHeightmap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
 	m_control = new Controller(m_player);
 
-	//test = FetchGO();
-	//test->type = GameObject::GO_BALL;
-	//test->active = true;
-	//test->dir.Set(0, 1, 0);
-	//test->pos = Vector3(20, 25, 0);
-	//test->vel.Set(0, 0, 0);
-	//test->scale.Set(2, 2, 2);
-	//test->mass = 1;
+	Enemy* enemy = new Enemy();
+	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(0.f, 20.f, 0.f), Vector3(5.f, 5.f, 5.f));
+	enemyList.push_back(enemy);
 }
 
 GameObject* Scene01::FetchGO()
@@ -205,8 +190,17 @@ void Scene01::Update(double dt)
 		m_speed += 0.1f;
 	}
 
+	if (KeyboardController::GetInstance()->IsKeyPressed('U')) // Debug key snow yeti shooting
+	{
+		enemyList[0]->PushProjectile(FetchGO(), m_player->GetPlayerPos(), Vector3(1.f, 1.f, 1.f), 10.f);
+	}
+
 	m_player->Update(dt);
 	m_control->Update(dt);
+	
+	vector<Enemy*>::iterator it, end;
+	end = enemyList.end();
+	for (it = enemyList.begin(); it != end; ++it) (*it)->Update(dt);
 
 	//Mouse Section
 	if (MouseController::GetInstance()->IsButtonPressed(MouseController::LMB))
@@ -279,7 +273,7 @@ void Scene01::Update(double dt)
 				go->vel.x = go->vel.x - go->vel.x * 2.f * (float)dt;
 				if (go->vel.Length() < 3)
 					go->vel.IsZero();
-				go->vel.y = go->vel.y -9.8*go->mass * 2.f * (float)dt;
+				go->vel.y = go->vel.y - 9.8f * go->mass * 2.f * (float)dt;
 				go->pos += go->vel * (float)dt * m_speed;
 				if (go->pos.y <= (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth*0.5) / m_TerrainWidth,0))+go->scale.y * 0.5f)
 				{
@@ -405,6 +399,12 @@ void Scene01::RenderGO(GameObject *go)
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
 		RenderMesh(meshList[GEO_CUBE], false);
 		break;
+
+		case GameObject::GO_ENEMY_SNOWYETI:
+			modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
+			modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
+			RenderMesh(meshList[GEO_CUBE], false);
+			break;
 	}
 
 	modelStack.PopMatrix();
@@ -460,7 +460,7 @@ void Scene01::Render()
 	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 9);
 
 	//Exercise 8c: Render initial and final momentum
-	ss.str("");
+	/*ss.str("");
 	ss << "Initial momentum: " << initialMomentum;
 	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 15);
 
@@ -474,7 +474,7 @@ void Scene01::Render()
 
 	ss.str("");
 	ss << "Final KE: " << finalKE;
-	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 21);
+	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 21);*/
 
 	ss.precision(3);
 	ss.str("");
