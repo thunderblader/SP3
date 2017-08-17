@@ -197,14 +197,14 @@ void Scene01::Update(double dt)
 		//file.Load_Data();
 	}
 
-	/*if (Application::IsKeyPressed('9'))
+	if (KeyboardController::GetInstance()->IsKeyPressed('9'))
 	{
 		m_speed = Math::Max(0.f, m_speed - 0.1f);
 	}
-	if (Application::IsKeyPressed('0'))
+	if (KeyboardController::GetInstance()->IsKeyPressed('0'))
 	{
 		m_speed += 0.1f;
-	}*/
+	}
 
 	m_player->Update(dt);
 	m_control->Update(dt);
@@ -255,7 +255,6 @@ void Scene01::Update(double dt)
 	{
 		std::cout << "RBUTTON UP" << std::endl;
 
-		//Exercise 10: spawn large GO_BALL
 		GameObject *go = FetchGO();
 		go->pos = m_ghost->pos;
 		go->scale.Set(1.5f, 1.5f, 1.5f);

@@ -28,6 +28,7 @@ void Player::Update(double dt)
 
 void Player::Reset()
 {
+	// Resets player values
 }
 
 GameObject Player::GetPlayerObj() const
@@ -67,6 +68,9 @@ void Player::Jump(const double dt)
 
 Player::Player()
 	: playerObj(nullptr)
+	, m_heightmap(nullptr)
+	, m_TerrainWidth(0)
+	, m_TerrainHeight(0)
 {
 }
 

@@ -20,22 +20,32 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\KeyboardController.cpp" />
+    <ClCompile Include="Source\LoadOBJ.cpp" />
+    <ClCompile Include="Source\LoadTGA.cpp" />
     <ClCompile Include="Source\MatrixStack.cpp" />
+    <ClCompile Include="Source\Mesh.cpp" />
     <ClCompile Include="Source\MouseController.cpp" />
     <ClCompile Include="Source\Mtx44.cpp" />
     <ClCompile Include="Source\timer.cpp" />
+    <ClCompile Include="Source\Utility.cpp" />
     <ClCompile Include="Source\Vector3.cpp" />
     <ClCompile Include="Source\Win32Input.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\KeyboardController.h" />
+    <ClInclude Include="Source\LoadOBJ.h" />
+    <ClInclude Include="Source\LoadTGA.h" />
+    <ClInclude Include="Source\Material.h" />
     <ClInclude Include="Source\MatrixStack.h" />
+    <ClInclude Include="Source\Mesh.h" />
     <ClInclude Include="Source\MouseController.h" />
     <ClInclude Include="Source\Mtx44.h" />
     <ClInclude Include="Source\MyMath.h" />
     <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\timer.h" />
+    <ClInclude Include="Source\Utility.h" />
     <ClInclude Include="Source\Vector3.h" />
+    <ClInclude Include="Source\Vertex.h" />
     <ClInclude Include="Source\Win32Input.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -97,8 +107,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>
-      </AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)/glew/include;$(SolutionDir)/glfw/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
