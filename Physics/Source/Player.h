@@ -34,6 +34,7 @@ private:
 	virtual ~Player();
 
 	GameObject* playerObj;
+	Vector3 defaultPos;
 	vector<unsigned char>* m_heightmap;
 	float m_TerrainWidth, m_TerrainHeight;
 

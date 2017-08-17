@@ -32,7 +32,7 @@ void Scene01::Init()
 	m_worldHeight = 100.f;
 	m_worldWidth = m_worldHeight * (float)Application::GetWindowWidth() / Application::GetWindowHeight();
 
-	m_TerrainHeight = 10.f;
+	m_TerrainHeight = 20.f;
 	m_TerrainWidth = 300;
 
 	m_speed = 40.f;
@@ -52,9 +52,13 @@ void Scene01::Init()
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
 	m_player = Player::GetInstance();
-	m_player->Init(FetchGO(), GameObject::GO_BLOCK, Vector3(25, 25, 0), Vector3(5, 2, 1), 2.f, 100.f);
+	m_player->Init(FetchGO(), GameObject::GO_BLOCK, Vector3(25, 25, 0), Vector3(5, 4, 1), 2.f, 100.f);
 	m_player->SetHeightmap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
 	m_control = new Controller(m_player);
+
+	Enemy* enemy = new Enemy();
+	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(0.f, 20.f, 0.f), Vector3(5.f, 5.f, 5.f));
+	enemyList.push_back(enemy);
 }
 
 GameObject* Scene01::FetchGO()
@@ -188,8 +192,17 @@ void Scene01::Update(double dt)
 		m_speed += 0.1f;
 	}
 
+	if (KeyboardController::GetInstance()->IsKeyPressed('U')) // Debug key snow yeti shooting
+	{
+		enemyList[0]->PushProjectile(FetchGO(), m_player->GetPlayerPos(), Vector3(1.f, 1.f, 1.f), 10.f);
+	}
+
 	m_player->Update(dt);
 	m_control->Update(dt);
+	
+	vector<Enemy*>::iterator it, end;
+	end = enemyList.end();
+	for (it = enemyList.begin(); it != end; ++it) (*it)->Update(dt);
 
 	//Mouse Section
 	if (MouseController::GetInstance()->IsButtonPressed(MouseController::LMB))
@@ -262,12 +275,12 @@ void Scene01::Update(double dt)
 				go->vel.x = go->vel.x - go->vel.x * 2.f * (float)dt;
 				if (go->vel.Length() < 3)
 					go->vel.IsZero();
-				go->vel.y = go->vel.y -9.8*go->mass * 2.f * (float)dt;
+				go->vel.y = go->vel.y - 9.8f * go->mass * 2.f * (float)dt;
 				go->pos += go->vel * (float)dt * m_speed;
-				if (go->pos.y <= (m_TerrainHeight * ReadHeightMap(m_heightMap, go->pos.x / m_TerrainWidth,0))+go->scale.y)
+				if (go->pos.y <= (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth*0.5) / m_TerrainWidth,0))+go->scale.y * 0.5f)
 				{
-					go->pos.y = (m_TerrainHeight * ReadHeightMap(m_heightMap, go->pos.x / m_TerrainWidth, 0)) + go->scale.y;
-					float theta = (float)atan2((m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x - go->scale.x/2) / m_TerrainWidth, 0)) - (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + go->scale.x/2) / m_TerrainWidth, 0)), -2);
+					go->pos.y = (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth*0.5) / m_TerrainWidth, 0)) + go->scale.y * 0.5f;
+					float theta = (float)atan2((m_TerrainHeight * ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth*0.5) - go->scale.x * 0.5f) / m_TerrainWidth, 0)) - (m_TerrainHeight * ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth*0.5) + go->scale.x * 0.5f) / m_TerrainWidth, 0)), -go->scale.x);
 					Vector3 tempnormal;
 
 					//if (theta > 3.14159)
@@ -388,6 +401,12 @@ void Scene01::RenderGO(GameObject *go)
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
 		RenderMesh(meshList[GEO_CUBE], false);
 		break;
+
+		case GameObject::GO_ENEMY_SNOWYETI:
+			modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
+			modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
+			RenderMesh(meshList[GEO_CUBE], false);
+			break;
 	}
 
 	modelStack.PopMatrix();
@@ -428,7 +447,7 @@ void Scene01::Render()
 
 	{
 		modelStack.PushMatrix();
-		//modelStack.Translate(m_worldWidth * 0.5, 0, 3);
+		modelStack.Translate(-m_TerrainWidth * 0.5f, 0, 0);
 		modelStack.Scale(m_TerrainWidth, m_TerrainHeight, 1); // values varies.
 		RenderMesh(meshList[GEO_TERRAIN], false);
 		modelStack.PopMatrix();
@@ -443,7 +462,7 @@ void Scene01::Render()
 	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 9);
 
 	//Exercise 8c: Render initial and final momentum
-	ss.str("");
+	/*ss.str("");
 	ss << "Initial momentum: " << initialMomentum;
 	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 15);
 
@@ -457,7 +476,7 @@ void Scene01::Render()
 
 	ss.str("");
 	ss << "Final KE: " << finalKE;
-	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 21);
+	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 21);*/
 
 	ss.precision(3);
 	ss.str("");
