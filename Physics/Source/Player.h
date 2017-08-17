@@ -23,11 +23,11 @@ public:
 	void Reset();
 
 	GameObject GetPlayerObj() const;
+	Vector3 GetPlayerPos();
 	void SetHeightmap(vector<unsigned char>* _heightmap, float _worldWidth, float _worldHeight);
 
 	void Move_LeftRight(const double dt, const bool dLeft);
 	void Jump(const double dt);
-	Vector3 Get_PlayerPos();
 
 private:
 	Player();

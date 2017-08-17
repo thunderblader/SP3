@@ -2,6 +2,7 @@
 #include "GL\glew.h"
 #include "Application.h"
 #include "KeyboardController.h"
+#include "MouseController.h"
 #include "SoundEngine.h"
 #include "Terrain\LoadHmap.h"
 
@@ -209,23 +210,20 @@ void Scene01::Update(double dt)
 	m_control->Update(dt);
 
 	//Mouse Section
-	static bool bLButtonState = false;
-	if (!bLButtonState && Application::IsMousePressed(0))
+	if (MouseController::GetInstance()->IsButtonPressed(MouseController::LMB))
 	{
-		bLButtonState = true;
 		std::cout << "LBUTTON DOWN" << std::endl;
 
 		double x, y;
-		Application::GetCursorPos(&x, &y);
+		MouseController::GetInstance()->GetMousePosition(x, y);
 		int w = Application::GetWindowWidth();
 		int h = Application::GetWindowHeight();
 
 		m_ghost->pos.Set((float)(x / w * m_worldWidth) + camera.position.x, (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
 		//m_ghost->pos.Set((float)(x / w * m_worldWidth), m_worldHeight * 0.5f, 0.f);
 	}
-	else if (bLButtonState && !Application::IsMousePressed(0))
+	else if (MouseController::GetInstance()->IsButtonReleased(MouseController::LMB))
 	{
-		bLButtonState = false;
 		std::cout << "LBUTTON UP" << std::endl;
 
 		//Exercise 6: spawn small GO_BALL
@@ -235,29 +233,26 @@ void Scene01::Update(double dt)
 		go->mass = 1.f;
 
 		double x, y;
-		Application::GetCursorPos(&x, &y);
+		MouseController::GetInstance()->GetMousePosition(x, y);
 		int w = Application::GetWindowWidth();
 		int h = Application::GetWindowHeight();
 		go->vel.Set(m_ghost->pos.x - (float)(x / w * m_worldWidth) - camera.position.x, m_ghost->pos.y - (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
 		go->scale.Set(Math::Clamp(go->vel.Length(), 2.f, 10.f), Math::Clamp(go->vel.Length(), 2.f, 10.f), 0.f);
 	}
-	static bool bRButtonState = false;
-	if (!bRButtonState && Application::IsMousePressed(1))
+	if (MouseController::GetInstance()->IsButtonPressed(MouseController::RMB))
 	{
-		bRButtonState = true;
 		std::cout << "RBUTTON DOWN" << std::endl;
 
 		double x, y;
-		Application::GetCursorPos(&x, &y);
+		MouseController::GetInstance()->GetMousePosition(x, y);
 		int w = Application::GetWindowWidth();
 		int h = Application::GetWindowHeight();
 
 		m_ghost->pos.Set((float)(x / w * m_worldWidth) + camera.position.x, (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
 		//m_ghost->pos.Set((float)(x / w * m_worldWidth), m_worldHeight * 0.5f, 0.f);
 	}
-	else if (bRButtonState && !Application::IsMousePressed(1))
+	else if (MouseController::GetInstance()->IsButtonReleased(MouseController::RMB))
 	{
-		bRButtonState = false;
 		std::cout << "RBUTTON UP" << std::endl;
 
 		//Exercise 10: spawn large GO_BALL
@@ -267,7 +262,7 @@ void Scene01::Update(double dt)
 		go->mass = 1.5f * 1.5f * 1.5f;
 
 		double x, y;
-		Application::GetCursorPos(&x, &y);
+		MouseController::GetInstance()->GetMousePosition(x, y);
 		int w = Application::GetWindowWidth();
 		int h = Application::GetWindowHeight();
 		go->vel.Set(m_ghost->pos.x - (float)(x / w * m_worldWidth) - camera.position.x, m_ghost->pos.y - (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
@@ -390,35 +385,31 @@ void Scene01::Update(double dt)
 
 void Scene01::RenderGO(GameObject *go)
 {
+	modelStack.PushMatrix();
+
 	switch (go->type)
 	{
 	case GameObject::GO_BALL:
-		modelStack.PushMatrix();
-		//Exercise 4: render a sphere using scale and pos
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
 		RenderMesh(meshList[GEO_BALL], false);
-		//Exercise 11: think of a way to give balls different colors
-		modelStack.PopMatrix();
 		break;
 
 	case GameObject::GO_BLOCK:
-		modelStack.PushMatrix();
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
 		modelStack.Rotate(Math::RadianToDegree(atan2(go->dir.y, go->dir.x))+90, 0.f, 0.f, 1.f);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
 		RenderMesh(meshList[GEO_CART], false);
-		modelStack.PopMatrix();
 		break;
 
 	case GameObject::GO_PLAYER:
-		modelStack.PushMatrix();
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
 		RenderMesh(meshList[GEO_CUBE], false);
-		modelStack.PopMatrix();
 		break;
 	}
+
+	modelStack.PopMatrix();
 }
 
 void Scene01::Render()

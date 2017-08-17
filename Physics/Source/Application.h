@@ -4,6 +4,8 @@
 
 #include "timer.h"
 
+struct GLFWwindow;
+
 class Application
 {
 public:
@@ -19,8 +21,8 @@ public:
 	void UpdateInput();
 	void PostInputUpdate();
 
-	static bool IsMousePressed(unsigned short key);
-	static void GetCursorPos(double *xpos, double *ypos);
+	static void MouseButtonCallbacks(GLFWwindow* window, int button, int action, int mods);
+	static void MouseScrollCallbacks(GLFWwindow* window, double xoffset, double yoffset);
 
 	static int GetWindowWidth();
 	static int GetWindowHeight();

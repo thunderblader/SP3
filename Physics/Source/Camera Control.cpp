@@ -27,8 +27,6 @@ void Scene01::Camera_Control(double dt)
 
 	if (free_look == true)
 	{
-		camera.position.x = m_player->Get_PlayerPos().x - 30;
-		camera.target.x = m_player->Get_PlayerPos().x - 30;
 		//camera.position.y = m_player->Get_PlayerPos().y - 45;
 		//camera.target.y = m_player->Get_PlayerPos().y - 45;
 
@@ -44,6 +42,11 @@ void Scene01::Camera_Control(double dt)
 			camera.position.x += dt * (float)(50);
 			camera.target.x += dt * (float)(50);
 		}
+	}
+	else
+	{
+		camera.position.x = m_player->GetPlayerPos().x - 30;
+		camera.target.x = m_player->GetPlayerPos().x - 30;
 	}
 	//std::cout << camera.position.x << std::endl;
 	//std::cout << free_look << std::endl;

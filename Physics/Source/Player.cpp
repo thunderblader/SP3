@@ -35,6 +35,11 @@ GameObject Player::GetPlayerObj() const
 	return *playerObj;
 }
 
+Vector3 Player::GetPlayerPos()
+{
+	return playerObj->pos;
+}
+
 void Player::SetHeightmap(vector<unsigned char>* _heightmap, float _worldWidth, float _worldHeight)
 {
 	m_heightmap = _heightmap;
@@ -58,11 +63,6 @@ void Player::Jump(const double dt)
 		return;
 
 	playerObj->vel += Vector3(0.f, 590.f, 0.f) * dt * (1 / playerObj->mass);
-}
-
-Vector3 Player::Get_PlayerPos()
-{
-	return playerObj->pos;
 }
 
 Player::Player()
