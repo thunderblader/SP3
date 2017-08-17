@@ -32,8 +32,8 @@ void Scene01::Init()
 	m_worldHeight = 100.f;
 	m_worldWidth = m_worldHeight * (float)Application::GetWindowWidth() / Application::GetWindowHeight();
 
-	m_TerrainHeight = 20.f;
-	m_TerrainWidth = 300;
+	m_TerrainHeight = 40.f;
+	m_TerrainWidth = 1000;
 
 	m_speed = 40.f;
 
@@ -50,7 +50,7 @@ void Scene01::Init()
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
 	m_player = Player::GetInstance();
-	m_player->Init(FetchGO(), GameObject::GO_BLOCK, Vector3(25, 25, 0), Vector3(5, 4, 1), 2.f, 100.f);
+	m_player->Init(FetchGO(), GameObject::GO_BLOCK, Vector3(25, 25, 0), Vector3(5, 4, 1), 1.f, 50.f);
 	m_player->SetHeightmap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
 	m_control = new Controller(m_player);
 
@@ -445,7 +445,7 @@ void Scene01::Render()
 
 	{
 		modelStack.PushMatrix();
-		modelStack.Translate(-m_TerrainWidth * 0.5f, 0, 0);
+		modelStack.Translate(-m_TerrainWidth * 0.5f, 0, 1);
 		modelStack.Scale(m_TerrainWidth, m_TerrainHeight, 1); // values varies.
 		RenderMesh(meshList[GEO_TERRAIN], false);
 		modelStack.PopMatrix();
