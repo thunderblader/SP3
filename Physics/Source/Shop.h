@@ -9,9 +9,18 @@ using namespace std;
 class Shop
 {
 public:
-	//bool Load(const string saveFileName = ".//Sample.csv");
 	void Load_Shop();
+	void Purchase_Item();
+	void Purchase_Upgrade();
 
+	struct Items
+	{
+		int item1;
+		int item2;
+		int item3;
+	};
+
+	Load_File shop_file;
 
 
 };

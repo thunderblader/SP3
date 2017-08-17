@@ -1,18 +1,22 @@
 #include "Load_File.h"
 
-
-Scene_Test::Scene_Test()
-{
-}
-
-Scene_Test::~Scene_Test()
-{
-}
-
-void Load_File::Init()
+Load_File::Load_File()
 {
 	Unit_Height_Space = 0;
 	Unit_Width_Space = 0;
+	Level = 0;
+	Score = 0;
+	Gold = 0;
+}
+
+Load_File::~Load_File()
+{
+}
+
+void Load_File::Init(vector<GameObject *>*Gameobj)
+{
+	Gameobject_List = Gameobj;
+	pop.Init();
 }
 
 bool Load_File::Load(const string saveFileName)
@@ -25,7 +29,6 @@ bool Load_File::Load(const string saveFileName)
 		{
 			istringstream ss(line);
 			string content = "";
-			cout << "hi" << endl;
 			while (getline(ss, content))
 			{
 				Process(content);
@@ -48,16 +51,14 @@ void Load_File::Process(string content)
 {
 	string processor;
 	int processed_value;
-	Init();
 
 	for (int i = 0; i < content.length(); i++)
 	{
 		if (content.at(i) == ',')
 		{
-			Scene01 object;
 			Unit_Width_Space += 5;
 			processed_value = atoi(processor.c_str());
-			object.Spawn(processed_value, Unit_Width_Space, Unit_Width_Space);
+			pop.Spawn(processed_value, Unit_Width_Space, Unit_Width_Space, Gameobject_List);
 			processor = "";
 		}
 		else
@@ -111,7 +112,6 @@ bool Load_File::Load_Data(const string saveFileName)
 		myfile.close();
 		return false;
 	}
-
 	return true;
 }
 
