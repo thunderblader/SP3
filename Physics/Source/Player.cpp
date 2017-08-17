@@ -54,7 +54,7 @@ void Player::Move_LeftRight(const double dt, const bool dLeft)
 		playerObj->pos.y > (m_TerrainHeight * ReadHeightMap(*m_heightmap, playerObj->pos.x / m_TerrainWidth, 0)) + playerObj->scale.y)
 		return;
 
-	playerObj->vel += Vector3(dLeft ? -m_speed : m_speed, 0.f, 0.f) * dt * (1 / playerObj->mass);
+	playerObj->vel += Vector3(dLeft ? -m_speed : m_speed, 0.f, 0.f) * (float)dt * (1 / playerObj->mass);
 }
 
 void Player::Jump(const double dt)
@@ -63,7 +63,7 @@ void Player::Jump(const double dt)
 		playerObj->pos.y > (m_TerrainHeight * ReadHeightMap(*m_heightmap, playerObj->pos.x / m_TerrainWidth, 0)) + playerObj->scale.y)
 		return;
 
-	playerObj->vel += Vector3(0.f, 590.f, 0.f) * dt * (1 / playerObj->mass);
+	playerObj->vel += Vector3(0.f, 590.f, 0.f) * (float)dt * (1 / playerObj->mass);
 }
 
 Player::Player()

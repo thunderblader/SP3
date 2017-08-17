@@ -55,10 +55,7 @@ void Scene01::Init()
 	Gold = 10000;
 
 	file.Init(&m_goList);
-
 	file.Load("Image//Test_Level.csv");
-
-
 
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
@@ -279,15 +276,15 @@ void Scene01::Update(double dt)
 			//Exercise 7: handle out of bound game objects
 			if (go->type == GameObject::GO_BALL || go->type == GameObject::GO_BLOCK)
 			{
-				go->vel.x = go->vel.x - go->vel.x * 2 * dt;
+				go->vel.x = go->vel.x - go->vel.x * 2.f * (float)dt;
 				if (go->vel.Length() < 3)
 					go->vel.IsZero();
-				go->vel.y = go->vel.y -9.8*go->mass*2 *dt;
+				go->vel.y = go->vel.y -9.8*go->mass * 2.f * (float)dt;
 				go->pos += go->vel * (float)dt * m_speed;
 				if (go->pos.y <= (m_TerrainHeight * ReadHeightMap(m_heightMap, go->pos.x / m_TerrainWidth,0))+go->scale.y)
 				{
 					go->pos.y = (m_TerrainHeight * ReadHeightMap(m_heightMap, go->pos.x / m_TerrainWidth, 0)) + go->scale.y;
-					float theta = atan2((m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x - go->scale.x/2) / m_TerrainWidth, 0)) - (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + go->scale.x/2) / m_TerrainWidth, 0)), -2);
+					float theta = (float)atan2((m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x - go->scale.x/2) / m_TerrainWidth, 0)) - (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + go->scale.x/2) / m_TerrainWidth, 0)), -2);
 					Vector3 tempnormal;
 
 					//if (theta > 3.14159)
@@ -296,7 +293,7 @@ void Scene01::Update(double dt)
 						tempnormal = Vector3(sin(-theta), cos(-theta), 0).Normalize();
 					go->dir = tempnormal;
 					go->vel = go->vel - (go->vel.Dot(tempnormal) * tempnormal);
-					go->vel.x = go->vel.x - go->vel.x * 5 * dt;
+					go->vel.x = go->vel.x - go->vel.x * 5.f * (float)dt;
 				}
 				/*if ((go->pos.x < 0 + go->scale.x && go->vel.x < 0) || (go->pos.x > m_worldWidth - go->scale.x && go->vel.x > 0))
 				{

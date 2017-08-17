@@ -33,14 +33,14 @@ void Scene01::Camera_Control(double dt)
 		if (KeyboardController::GetInstance()->IsKeyDown('A'))
 		{
 			//CSoundEngine::GetInstance()->PlayASound("Jump");
-			camera.position.x -= dt * (float)(50);
-			camera.target.x -= dt * (float)(50);
+			camera.position.x -= (float)dt * 50.f;
+			camera.target.x -= (float)dt * 50.f;
 
 		}
 		else if (KeyboardController::GetInstance()->IsKeyDown('D'))
 		{
-			camera.position.x += dt * (float)(50);
-			camera.target.x += dt * (float)(50);
+			camera.position.x += (float)dt * 50.f;
+			camera.target.x += (float)dt * 50.f;
 		}
 	}
 	else
