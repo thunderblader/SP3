@@ -53,6 +53,8 @@ void Scene01::Init()
 	m_player->Init(FetchGO(), GameObject::GO_BLOCK, Vector3(25, 25, 0), Vector3(5, 2, 1), 2.f, 100.f);
 	m_player->SetHeightmap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
 	m_control = new Controller(m_player);
+	m_control->LoadConfig("Data//Config.ini", m_gravity, m_airfriction
+		, m_terrainfriction, m_cartmass, m_acceleration, m_speedlimit);
 
 	Enemy* enemy = new Enemy();
 	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(0.f, 20.f, 0.f), Vector3(5.f, 5.f, 5.f));
@@ -389,7 +391,7 @@ void Scene01::RenderGO(GameObject *go)
 
 	case GameObject::GO_BLOCK:
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
-		modelStack.Rotate(Math::RadianToDegree(atan2(go->dir.y, go->dir.x))+90, 0.f, 0.f, 1.f);
+		modelStack.Rotate(Math::RadianToDegree(atan2(go->dir.y, go->dir.x)) + 90, 0.f, 0.f, 1.f);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
 		RenderMesh(meshList[GEO_CART], false);
 		break;
@@ -400,11 +402,11 @@ void Scene01::RenderGO(GameObject *go)
 		RenderMesh(meshList[GEO_CUBE], false);
 		break;
 
-		case GameObject::GO_ENEMY_SNOWYETI:
-			modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
-			modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
-			RenderMesh(meshList[GEO_CUBE], false);
-			break;
+	case GameObject::GO_ENEMY_SNOWYETI:
+		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
+		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
+		RenderMesh(meshList[GEO_CUBE], false);
+		break;
 	}
 
 	modelStack.PopMatrix();

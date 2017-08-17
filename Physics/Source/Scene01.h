@@ -64,6 +64,14 @@ protected:
 	int Level;
 	int Score;
 	int Gold;
+
+	// Physics Parameters
+	float m_gravity;
+	float m_airfriction;
+	float m_terrainfriction;
+	float m_cartmass;
+	float m_acceleration;
+	float m_speedlimit;
 };
 
 #endif

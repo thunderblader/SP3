@@ -4,16 +4,20 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <algorithm>
 
 using std::ifstream;
 using std::istringstream;
 using std::getline;
+using std::remove;
 using std::cout;
 using std::endl;
 
 Controller::Controller()
 	: m_player(nullptr)
 	, kb_jump(0)
+	, kb_left(0)
+	, kb_right(0)
 {
 }
 
@@ -31,27 +35,31 @@ void Controller::Update(double dt)
 	if (!m_player)
 		return;
 
-	if (KeyboardController::GetInstance()->IsKeyDown(VK_RIGHT))
-	{
-		Move_LeftRight(dt, false);
-	}
-	if (KeyboardController::GetInstance()->IsKeyDown(VK_LEFT))
+	if (KeyboardController::GetInstance()->IsKeyDown(kb_left))
 	{
 		Move_LeftRight(dt, true);
 	}
-	if (KeyboardController::GetInstance()->IsKeyDown(VK_SPACE))
+	if (KeyboardController::GetInstance()->IsKeyDown(kb_right))
+	{
+		Move_LeftRight(dt, false);
+	}
+	if (KeyboardController::GetInstance()->IsKeyDown(kb_jump))
 	{
 		Jump(dt);
 	}
 }
 
-bool Controller::LoadConfig(const string filePath)
+bool Controller::LoadConfig(const string filePath
+	, float& _gravity, float& _airFriction
+	, float& _terrainFriction, float& _cartMass
+	, float& _acceleration, float& _speedLimit)
 {
 	ifstream file(filePath.c_str());
 
 	if (file.is_open())
 	{
 		string line;
+		string category;
 
 		while (getline(file, line))
 		{
@@ -60,10 +68,44 @@ bool Controller::LoadConfig(const string filePath)
 			string token = "";
 
 			getline(ss, tag, '=');
+
+			if (tag[0] == '/' || tag == "")
+				continue;
+			else if (tag[0] == '#')
+			{
+				category = tag;
+				continue;
+			}
+
 			getline(ss, token, '\n');
 
-			if (tag == "Jump")
-				kb_jump = VK_SPACE;
+			tag.erase(remove(tag.begin(), tag.end(), ' '), tag.end());
+			token.erase(remove(token.begin(), token.end(), ' '), token.end());
+
+			if (category == "#Keyboard")
+			{
+				if (tag == "Jump")
+					kb_jump = atoi(token.c_str());
+				else if (tag == "MoveLeft")
+					kb_left = atoi(token.c_str());
+				else if (tag == "MoveRight")
+					kb_right = atoi(token.c_str());
+			}
+			else if (category == "#Physics")
+			{
+				if (tag == "Gravity")
+					_gravity = strtof(token.c_str(), 0);
+				else if (tag == "AirFriction")
+					_airFriction = strtof(token.c_str(), 0);
+				else if (tag == "TerrainFriction")
+					_terrainFriction = strtof(token.c_str(), 0);
+				else if (tag == "CartMass")
+					_cartMass = strtof(token.c_str(), 0);
+				else if (tag == "Acceleration")
+					_acceleration = strtof(token.c_str(), 0);
+				else if (tag == "SpeedLimit")
+					_speedLimit = strtof(token.c_str(), 0);
+			}
 		}
 
 		file.close();
