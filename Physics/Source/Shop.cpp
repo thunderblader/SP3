@@ -2,6 +2,17 @@
 
 void Shop::Load_Shop()
 {
-	Load_File file;
-	//file.Load;
+	
+	shop_file.Load("shop_data");
+
+}
+
+void Shop::Purchase_Item()
+{
+
+}
+
+void Shop::Purchase_Upgrade()
+{
+
 }

@@ -54,7 +54,11 @@ void Scene01::Init()
 	Score = 4;
 	Gold = 10000;
 
-	//Load();
+	file.Init(&m_goList);
+
+	file.Load("Image//Test_Level.csv");
+
+
 
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
@@ -62,8 +66,6 @@ void Scene01::Init()
 	m_player->Init(FetchGO(), GameObject::GO_BLOCK, Vector3(25, 25, 0), Vector3(5, 2, 1), 2.f, 100.f);
 	m_player->SetHeightmap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
 	m_control = new Controller(m_player);
-
-	//Load();
 
 	//test = FetchGO();
 	//test->type = GameObject::GO_BALL;
@@ -504,30 +506,5 @@ void Scene01::Exit()
 	{
 		delete m_ghost;
 		m_ghost = NULL;
-	}
-}
-
-void Scene01::Spawn(int value, int Width_Space, int Height_Space)
-{
-	if (value == 0)
-	{
-		spawner = FetchGO();
-		spawner->type = GameObject::GO_BALL;
-		spawner->active = true;
-		spawner->dir.Set(0, 1, 0);
-		spawner->pos = Vector3(m_worldWidth - Unit_Width_Space, m_worldHeight - Unit_Height_Space, 0);
-		spawner->vel.Set(0, 0, 0);
-		spawner->scale.Set(2, 2, 2);
-		spawner->mass = 1;
-		std::cout << "spawned" << std::endl;
-		std::cout << spawner->pos.x << ", " << spawner->pos.y << endl;
-	}
-	else if (value == 1)
-	{
-
-	}
-	else
-	{
-
 	}
 }

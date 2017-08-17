@@ -32,16 +32,9 @@ public:
 	bool CheckCollision(GameObject *go1, GameObject *go2, float dt);
 	void CollisionResponse(GameObject *go1, GameObject *go2);
 	void Camera_Control(double dt);
-	bool Load(const string mapName = "Image//Test_Level.csv");
-	void Process(string content);
-	void Spawn(int value,int Width_Space,int Height_Space);
-	bool Load_Data(const string saveFileName = "Image//test.sav");
-	bool Save_Data(const string saveFileName = "Image//test.sav");
 
 protected:
-
-	//Physics
-	std::vector<GameObject *> m_goList;
+	vector<GameObject *> m_goList;
 	Player* m_player;
 	Controller* m_control;
 	float m_speed;
@@ -55,13 +48,14 @@ protected:
 	int m_ballCount;
 	int m_objectCount;
 
-	//Auditing
 	float m1, m2;
 	Vector3 u1, u2, v1, v2, u1N, u2N;
 	Vector3 initialMomentum, finalMomentum;
 	float initialKE, finalKE;
 
 	bool free_look;
+
+	Load_File file;
 
 	int Unit_Height_Space;
 	int Unit_Width_Space;
