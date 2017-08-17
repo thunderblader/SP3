@@ -2,7 +2,8 @@
 #define SHOP_H
 
 #include <iostream>
-#include "Load_File.h"
+//#include "Load_File.h"
+#include "Tree.h"
 
 using namespace std;
 
@@ -13,14 +14,10 @@ public:
 	void Purchase_Item();
 	void Purchase_Upgrade();
 
-	struct Items
-	{
-		int item1;
-		int item2;
-		int item3;
-	};
 
-	Load_File shop_file;
+	//Load_File shop_file;
+	//Tree *items;
+	Tree itemssss;
 
 
 };

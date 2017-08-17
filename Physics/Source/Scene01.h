@@ -10,6 +10,7 @@
 
 #include <vector>
 #include "Load_File.h"
+#include "Shop.h"
 
 using std::vector;
 using std::string;
@@ -56,6 +57,7 @@ protected:
 	bool free_look;
 
 	Load_File file;
+	Shop shop;
 
 	int Unit_Height_Space;
 	int Unit_Width_Space;

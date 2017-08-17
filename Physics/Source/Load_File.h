@@ -5,6 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include "Spawner.h"
+#include "Shop.h"
 
 using std::vector;
 using std::string;
@@ -35,6 +36,8 @@ protected:
 	int Level;
 	int Score;
 	int Gold;
+
+	Shop test;
 	
 };
 
