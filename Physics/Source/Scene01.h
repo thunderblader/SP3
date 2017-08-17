@@ -7,6 +7,7 @@
 #include "SceneBase.h"
 #include "Player.h"
 #include "Controller\Controller.h"
+#include "Enemy.h"
 
 #include <vector>
 #include "Load_File.h"
@@ -36,6 +37,7 @@ public:
 
 protected:
 	vector<GameObject *> m_goList;
+	vector<Enemy*> enemyList;
 	Player* m_player;
 	Controller* m_control;
 	float m_speed;
