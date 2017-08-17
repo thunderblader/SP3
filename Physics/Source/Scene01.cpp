@@ -29,33 +29,23 @@ void Scene01::Init()
 {
 	SceneBase::Init();
 
-	//Calculating aspect ratio
 	m_worldHeight = 100.f;
 	m_worldWidth = m_worldHeight * (float)Application::GetWindowWidth() / Application::GetWindowHeight();
 
 	m_TerrainHeight = 10.f;
 	m_TerrainWidth = 300;
 
-	//Physics code here
 	m_speed = 40.f;
 
 	Math::InitRNG();
 
-	//Exercise 1: initialize m_objectCount
 	m_objectCount = 0;
 	m_ballCount = 0;
 
 	free_look = false;
 
-	Unit_Height_Space = 0;
-	Unit_Width_Space = 0;
-
-	Level = 4;
-	Score = 4;
-	Gold = 10000;
-
-	file.Init(&m_goList);
-	file.Load("Image//Test_Level.csv");
+	//file.Init(&m_goList);
+	//file.Load(false, "Image//Test_Level.csv");
 
 	m_ghost = new GameObject(GameObject::GO_BALL);
 

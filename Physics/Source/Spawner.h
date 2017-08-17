@@ -19,8 +19,6 @@ public:
 
 private:
 	GameObject *spawner;
-	int Unit_Height_Space;
-	int Unit_Width_Space;
 	float m_worldWidth;
 	float m_worldHeight;
 

@@ -5,10 +5,15 @@
 #include <fstream>
 #include <sstream>
 #include "Spawner.h"
-//#include "Scene01.h"
 
-
-using namespace std;
+using std::vector;
+using std::string;
+using std::ifstream;
+using std::istringstream;
+using std::ofstream;
+using std::ios;
+using std::cout;
+using std::endl;
 
 class Load_File
 {
@@ -17,15 +22,14 @@ public:
 	~Load_File();
 
 	void Init(vector<GameObject *>*Gameobj);
-	bool Load(const string saveFileName);
-	void Process(string content);
+	bool Load(bool checker, const string saveFileName);
+	void Process(bool checker, string content);
 	bool Load_Data(const string saveFileName = "Image//test.sav");
 	bool Save_Data(int data1, int data2, int data3, const string saveFileName = "Image//test.sav");
 
 protected:
 	vector<GameObject *>* Gameobject_List;
-	Spawner object;
-	Spawner pop;
+	Spawner blocks;
 	int Unit_Height_Space;
 	int Unit_Width_Space;
 	int Level;
