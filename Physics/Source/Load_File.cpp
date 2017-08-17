@@ -17,6 +17,7 @@ void Load_File::Init(vector<GameObject *>*Gameobj)
 {
 	Gameobject_List = Gameobj;
 	blocks.Init();
+	//test.Purchase_Item();
 }
 
 bool Load_File::Load(bool checker, const string saveFileName)
