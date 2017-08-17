@@ -169,6 +169,7 @@
     <ClCompile Include="Source\SoundEngine.cpp" />
     <ClCompile Include="Source\Spawner.cpp" />
     <ClCompile Include="Source\Terrain\LoadHmap.cpp" />
+    <ClCompile Include="Source\Tree.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h" />
@@ -187,6 +188,7 @@
     <ClInclude Include="Source\SoundEngine.h" />
     <ClInclude Include="Source\Spawner.h" />
     <ClInclude Include="Source\Terrain\LoadHmap.h" />
+    <ClInclude Include="Source\Tree.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

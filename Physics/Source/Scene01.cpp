@@ -32,8 +32,8 @@ void Scene01::Init()
 	m_worldHeight = 100.f;
 	m_worldWidth = m_worldHeight * (float)Application::GetWindowWidth() / Application::GetWindowHeight();
 
-	m_TerrainHeight = 10.f;
-	m_TerrainWidth = 300;
+	m_TerrainHeight = 40.f;
+	m_TerrainWidth = 1000;
 
 	m_speed = 40.f;
 
@@ -44,13 +44,15 @@ void Scene01::Init()
 
 	free_look = false;
 
-	//file.Init(&m_goList);
-	//file.Load(false, "Image//Test_Level.csv");
+//	file.Init(&m_goList);
+//	file.Load(false, "Image//Test_Level.csv");
+
+	shop.Purchase_Item();
 
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
 	m_player = Player::GetInstance();
-	m_player->Init(FetchGO(), GameObject::GO_BLOCK, Vector3(25, 25, 0), Vector3(5, 2, 1), 2.f, 100.f);
+	m_player->Init(FetchGO(), GameObject::GO_BLOCK, Vector3(25, 25, 0), Vector3(5, 4, 1), 1.f, 50.f);
 	m_player->SetHeightmap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
 	m_control = new Controller(m_player);
 	m_control->LoadConfig("Data//Config.ini", m_gravity, m_airfriction
@@ -277,10 +279,10 @@ void Scene01::Update(double dt)
 					go->vel.IsZero();
 				go->vel.y = go->vel.y - 9.8f * go->mass * 2.f * (float)dt;
 				go->pos += go->vel * (float)dt * m_speed;
-				if (go->pos.y <= (m_TerrainHeight * ReadHeightMap(m_heightMap, go->pos.x / m_TerrainWidth,0))+go->scale.y)
+				if (go->pos.y <= (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth*0.5) / m_TerrainWidth,0))+go->scale.y * 0.5f)
 				{
-					go->pos.y = (m_TerrainHeight * ReadHeightMap(m_heightMap, go->pos.x / m_TerrainWidth, 0)) + go->scale.y;
-					float theta = (float)atan2((m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x - go->scale.x/2) / m_TerrainWidth, 0)) - (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + go->scale.x/2) / m_TerrainWidth, 0)), -2);
+					go->pos.y = (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth*0.5) / m_TerrainWidth, 0)) + go->scale.y * 0.5f;
+					float theta = (float)atan2((m_TerrainHeight * ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth*0.5) - go->scale.x * 0.5f) / m_TerrainWidth, 0)) - (m_TerrainHeight * ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth*0.5) + go->scale.x * 0.5f) / m_TerrainWidth, 0)), -go->scale.x);
 					Vector3 tempnormal;
 
 					//if (theta > 3.14159)
@@ -447,7 +449,7 @@ void Scene01::Render()
 
 	{
 		modelStack.PushMatrix();
-		//modelStack.Translate(m_worldWidth * 0.5, 0, 3);
+		modelStack.Translate(-m_TerrainWidth * 0.5f, 0, 1);
 		modelStack.Scale(m_TerrainWidth, m_TerrainHeight, 1); // values varies.
 		RenderMesh(meshList[GEO_TERRAIN], false);
 		modelStack.PopMatrix();

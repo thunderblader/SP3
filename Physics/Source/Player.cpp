@@ -52,7 +52,7 @@ void Player::SetHeightmap(vector<unsigned char>* _heightmap, float _worldWidth, 
 void Player::Move_LeftRight(const double dt, const bool dLeft)
 {
 	if (!m_heightmap || !playerObj || playerObj->vel.Length() > 10 ||
-		playerObj->pos.y > (m_TerrainHeight * ReadHeightMap(*m_heightmap, playerObj->pos.x / m_TerrainWidth, 0)) + playerObj->scale.y)
+		playerObj->pos.y > (m_TerrainHeight * ReadHeightMap(*m_heightmap, (playerObj->pos.x + m_TerrainWidth*0.5) / m_TerrainWidth, 0)) + playerObj->scale.y *0.5f)
 		return;
 
 	playerObj->vel += Vector3(dLeft ? -m_speed : m_speed, 0.f, 0.f) * (float)dt * (1 / playerObj->mass);
@@ -61,10 +61,10 @@ void Player::Move_LeftRight(const double dt, const bool dLeft)
 void Player::Jump(const double dt)
 {
 	if (!m_heightmap || !playerObj ||
-		playerObj->pos.y > (m_TerrainHeight * ReadHeightMap(*m_heightmap, playerObj->pos.x / m_TerrainWidth, 0)) + playerObj->scale.y)
+		playerObj->pos.y > (m_TerrainHeight * ReadHeightMap(*m_heightmap, (playerObj->pos.x + m_TerrainWidth*0.5) / m_TerrainWidth, 0)) + playerObj->scale.y * 0.5f)
 		return;
 
-	playerObj->vel += Vector3(0.f, 590.f, 0.f) * (float)dt * (1 / playerObj->mass);
+	playerObj->vel += Vector3(0.f, m_speed*5, 0.f) * (float)dt * (1 / playerObj->mass);
 }
 
 Player::Player()
