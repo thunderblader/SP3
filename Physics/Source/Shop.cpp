@@ -3,7 +3,7 @@
 void Shop::Load_Shop()
 {
 	
-	shop_file.Load("shop_data");
+//	shop_file.Load("shop_data");
 
 }
 

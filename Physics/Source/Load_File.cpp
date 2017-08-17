@@ -16,10 +16,10 @@ Load_File::~Load_File()
 void Load_File::Init(vector<GameObject *>*Gameobj)
 {
 	Gameobject_List = Gameobj;
-	pop.Init();
+	blocks.Init();
 }
 
-bool Load_File::Load(const string saveFileName)
+bool Load_File::Load(bool checker, const string saveFileName)
 {
 	ifstream myfile(saveFileName.c_str(), ios::in);
 	if (myfile.is_open())
@@ -31,7 +31,7 @@ bool Load_File::Load(const string saveFileName)
 			string content = "";
 			while (getline(ss, content))
 			{
-				Process(content);
+				Process(checker, content);
 			}
 		}
 		myfile.close();
@@ -47,18 +47,27 @@ bool Load_File::Load(const string saveFileName)
 	return true;
 }
 
-void Load_File::Process(string content)
+void Load_File::Process(bool checker, string content)
 {
 	string processor;
 	int processed_value;
+	int count = 0;
 
 	for (int i = 0; i < content.length(); i++)
 	{
 		if (content.at(i) == ',')
 		{
-			Unit_Width_Space += 5;
-			processed_value = atoi(processor.c_str());
-			pop.Spawn(processed_value, Unit_Width_Space, Unit_Width_Space, Gameobject_List);
+			if (checker == false)
+			{
+				Unit_Width_Space += 5;
+				processed_value = atoi(processor.c_str());
+				blocks.Spawn(processed_value, Unit_Width_Space, Unit_Width_Space, Gameobject_List);
+			}
+			else if (checker == true)
+			{
+				
+				
+			}
 			processor = "";
 		}
 		else

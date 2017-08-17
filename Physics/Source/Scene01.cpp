@@ -29,33 +29,23 @@ void Scene01::Init()
 {
 	SceneBase::Init();
 
-	//Calculating aspect ratio
 	m_worldHeight = 100.f;
 	m_worldWidth = m_worldHeight * (float)Application::GetWindowWidth() / Application::GetWindowHeight();
 
 	m_TerrainHeight = 10.f;
 	m_TerrainWidth = 300;
 
-	//Physics code here
 	m_speed = 40.f;
 
 	Math::InitRNG();
 
-	//Exercise 1: initialize m_objectCount
 	m_objectCount = 0;
 	m_ballCount = 0;
 
 	free_look = false;
 
-	Unit_Height_Space = 0;
-	Unit_Width_Space = 0;
-
-	Level = 4;
-	Score = 4;
-	Gold = 10000;
-
-	file.Init(&m_goList);
-	file.Load("Image//Test_Level.csv");
+	//file.Init(&m_goList);
+	//file.Load(false, "Image//Test_Level.csv");
 
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
@@ -63,15 +53,6 @@ void Scene01::Init()
 	m_player->Init(FetchGO(), GameObject::GO_BLOCK, Vector3(25, 25, 0), Vector3(5, 2, 1), 2.f, 100.f);
 	m_player->SetHeightmap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
 	m_control = new Controller(m_player);
-
-	//test = FetchGO();
-	//test->type = GameObject::GO_BALL;
-	//test->active = true;
-	//test->dir.Set(0, 1, 0);
-	//test->pos = Vector3(20, 25, 0);
-	//test->vel.Set(0, 0, 0);
-	//test->scale.Set(2, 2, 2);
-	//test->mass = 1;
 }
 
 GameObject* Scene01::FetchGO()
