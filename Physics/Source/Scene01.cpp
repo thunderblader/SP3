@@ -44,8 +44,8 @@ void Scene01::Init()
 
 	free_look = false;
 
-	file.Init(&m_goList);
-	file.Load(false, "Image//Test_Level.csv");
+//	file.Init(&m_goList);
+//	file.Load(false, "Image//Test_Level.csv");
 
 	shop.Purchase_Item();
 
