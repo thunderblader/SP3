@@ -51,6 +51,9 @@ public:
 		GEO_PU,
 		GEO_TERRAIN,
 		GEO_CART,
+		GEO_BRICK,
+		GEO_BOMB,
+		GEO_BOOM,
 		NUM_GEOMETRY,
 	};
 public:

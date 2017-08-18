@@ -33,6 +33,7 @@ public:
 
 	bool CheckCollision(GameObject *go1, GameObject *go2, float dt);
 	void CollisionResponse(GameObject *go1, GameObject *go2);
+	void BombCollision(GameObject * go1, GameObject * go2);
 	void Camera_Control(double dt);
 
 protected:

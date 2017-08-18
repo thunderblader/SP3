@@ -18,6 +18,8 @@ public:
 		GO_WALL,
 		GO_BLOCK,
 		GO_TEMP,
+		GO_BRICK,
+		GO_BOMB,
 		GO_TOTAL //must be last
 	};
 	GAMEOBJECT_TYPE type;
@@ -28,6 +30,7 @@ public:
 	Vector3 dir;
 	Vector3 normal;
 	bool active;
+	bool boom;
 	float mass;
 	float momentOfInertia;
 	float angularVelocity;
