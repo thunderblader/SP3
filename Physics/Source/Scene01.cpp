@@ -33,8 +33,8 @@ void Scene01::Init()
 	m_worldHeight = 100.f;
 	m_worldWidth = m_worldHeight * (float)Application::GetWindowWidth() / Application::GetWindowHeight();
 
-	m_TerrainHeight = 40.f;
-	m_TerrainWidth = 1000;
+	m_TerrainHeight = 10.f;
+	m_TerrainWidth = 200;
 
 	m_speed = 40.f;
 
@@ -281,6 +281,7 @@ void Scene01::Update(double dt)
 				go->vel.x = go->vel.x - go->vel.x * 2.f * (float)dt;
 				if (go->vel.Length() < 3)
 					go->vel.IsZero();
+				//go->vel = Physics<Vector3>::K1(go->vel, Vector3(0,-9.8*go->mass * 2,0), dt);
 				go->vel.y = go->vel.y - 9.8f * go->mass * 2.f * (float)dt;
 				go->pos += go->vel * (float)dt * m_speed;
 				if (go->pos.y <= (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth*0.5) / m_TerrainWidth,0))+go->scale.y * 0.5f)

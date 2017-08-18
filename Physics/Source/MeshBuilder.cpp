@@ -470,7 +470,7 @@ Mesh* MeshBuilder::GenerateTerrain(const std::string &meshName, const std::strin
 		{
 			float scaledHeight = (float)heightMap[z * terrainSize + x] / SCALE_FACTOR;
 
-			v.pos.Set(static_cast<float>(x) / terrainSize - 0.5f, scaledHeight, static_cast<float>(z) / terrainSize - 0.5f);
+			v.pos.Set(static_cast<float>(x) / (terrainSize-1) - 0.5f, scaledHeight, static_cast<float>(z) / (terrainSize - 1) - 0.5f);
 			v.color.Set(scaledHeight, scaledHeight, scaledHeight);
 
 			v.texCoord.Set((float)x / terrainSize * 8, 1.f - (float)z / terrainSize * 8);
