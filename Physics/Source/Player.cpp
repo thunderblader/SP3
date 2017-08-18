@@ -64,7 +64,7 @@ void Player::Jump(const double dt)
 		playerObj->pos.y > (m_TerrainHeight * ReadHeightMap(*m_heightmap, (playerObj->pos.x + m_TerrainWidth*0.5) / m_TerrainWidth, 0)) + playerObj->scale.y * 0.5f)
 		return;
 
-	playerObj->vel += Vector3(0.f, m_speed*5, 0.f) * (float)dt * (1 / playerObj->mass);
+	playerObj->vel += Vector3(0.f, m_speed*4, 0.f) * (float)dt * (1 / playerObj->mass);
 }
 
 Player::Player()
