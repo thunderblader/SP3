@@ -180,6 +180,7 @@
     <ClInclude Include="Source\Light.h" />
     <ClInclude Include="Source\Load_File.h" />
     <ClInclude Include="Source\MeshBuilder.h" />
+    <ClInclude Include="Source\ParameterPhysics.h" />
     <ClInclude Include="Source\Player.h" />
     <ClInclude Include="Source\Scene01.h" />
     <ClInclude Include="Source\SceneBase.h" />

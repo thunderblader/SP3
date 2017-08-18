@@ -130,5 +130,8 @@
     <ClInclude Include="Source\Tree.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\ParameterPhysics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

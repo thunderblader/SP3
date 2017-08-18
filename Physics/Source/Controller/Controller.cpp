@@ -1,5 +1,6 @@
 #include "Controller.h"
 #include "KeyboardController.h"
+#include "../ParameterPhysics.h"
 
 #include <iostream>
 #include <fstream>
@@ -49,10 +50,7 @@ void Controller::Update(double dt)
 	}
 }
 
-bool Controller::LoadConfig(const string filePath
-	, float& _gravity, float& _airFriction
-	, float& _terrainFriction, float& _cartMass
-	, float& _acceleration, float& _speedLimit)
+bool Controller::LoadConfig(const string filePath, ParamPhysics& _paramPhysics)
 {
 	ifstream file(filePath.c_str());
 
@@ -94,17 +92,17 @@ bool Controller::LoadConfig(const string filePath
 			else if (category == "#Physics")
 			{
 				if (tag == "Gravity")
-					_gravity = strtof(token.c_str(), 0);
+					_paramPhysics.gravity = strtof(token.c_str(), 0);
 				else if (tag == "AirFriction")
-					_airFriction = strtof(token.c_str(), 0);
+					_paramPhysics.frictionAir = strtof(token.c_str(), 0);
 				else if (tag == "TerrainFriction")
-					_terrainFriction = strtof(token.c_str(), 0);
+					_paramPhysics.frictionTerrain = strtof(token.c_str(), 0);
 				else if (tag == "CartMass")
-					_cartMass = strtof(token.c_str(), 0);
+					_paramPhysics.massCart = strtof(token.c_str(), 0);
 				else if (tag == "Acceleration")
-					_acceleration = strtof(token.c_str(), 0);
+					_paramPhysics.acceleration = strtof(token.c_str(), 0);
 				else if (tag == "SpeedLimit")
-					_speedLimit = strtof(token.c_str(), 0);
+					_paramPhysics.speedLimit = strtof(token.c_str(), 0);
 			}
 		}
 
@@ -113,7 +111,7 @@ bool Controller::LoadConfig(const string filePath
 	}
 	else
 	{
-		cout << "Controller: Unable to load Config file at \"" << filePath << "\"." << endl;
+		cout << "Controller: Unable to load Config file at \"" << filePath << "." << endl;
 		file.close();
 		return false;
 	}

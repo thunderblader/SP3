@@ -8,10 +8,11 @@
 #include "Player.h"
 #include "Controller\Controller.h"
 #include "Enemy.h"
-
-#include <vector>
 #include "Load_File.h"
 #include "Shop.h"
+#include "ParameterPhysics.h"
+
+#include <vector>
 
 using std::vector;
 using std::string;
@@ -68,12 +69,7 @@ protected:
 	int Gold;
 
 	// Physics Parameters
-	float m_gravity;
-	float m_airfriction;
-	float m_terrainfriction;
-	float m_cartmass;
-	float m_acceleration;
-	float m_speedlimit;
+	ParamPhysics param_physics;
 };
 
 #endif

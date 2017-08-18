@@ -8,6 +8,8 @@
 
 using std::string;
 
+struct ParamPhysics;
+
 class Controller
 {
 public:
@@ -17,9 +19,7 @@ public:
 
 	void Update(const double dt);
 
-	bool LoadConfig(const string filePath, float& _gravity, float& _airFriction
-		, float& _terrainFriction, float& _cartMass
-		, float& _acceleration, float& _speedLimit);
+	bool LoadConfig(const string filePath, ParamPhysics& _paramPhysics);
 
 	void SetPlayer(Player* _player);
 

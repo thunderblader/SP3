@@ -55,8 +55,7 @@ void Scene01::Init()
 	m_player->Init(FetchGO(), GameObject::GO_BLOCK, Vector3(25, 25, 0), Vector3(5, 4, 1), 1.f, 50.f);
 	m_player->SetHeightmap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
 	m_control = new Controller(m_player);
-	m_control->LoadConfig("Data//Config.ini", m_gravity, m_airfriction
-		, m_terrainfriction, m_cartmass, m_acceleration, m_speedlimit);
+	m_control->LoadConfig("Data//Config.ini", param_physics);
 
 	Enemy* enemy = new Enemy();
 	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(0.f, 20.f, 0.f), Vector3(5.f, 5.f, 5.f));
