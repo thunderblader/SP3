@@ -5,7 +5,8 @@
 #include <fstream>
 #include <sstream>
 #include "Spawner.h"
-#include "Shop.h"
+#include "Tree.h"
+//#include "Shop.h"
 
 using std::vector;
 using std::string;
@@ -27,6 +28,13 @@ public:
 	void Process(bool checker, string content);
 	bool Load_Data(const string saveFileName = "Image//test.sav");
 	bool Save_Data(int data1, int data2, int data3, const string saveFileName = "Image//test.sav");
+	//Tree *Get_Tree();
+
+	//Tree *Get_Tree()
+	//{
+	//	return items;
+	//	//return Load_File::items;
+	//}
 
 protected:
 	vector<GameObject *>* Gameobject_List;
@@ -37,7 +45,8 @@ protected:
 	int Score;
 	int Gold;
 
-	Shop test;
+	Tree *items = Tree::getInstance();
+	Tree *dog;
 	
 };
 
