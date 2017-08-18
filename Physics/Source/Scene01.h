@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 #ifndef SCENE01_H
 #define SCENE01_H
 

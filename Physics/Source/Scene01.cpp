@@ -5,6 +5,7 @@
 #include "MouseController.h"
 #include "SoundEngine.h"
 #include "Terrain\LoadHmap.h"
+#include "Physics\Physics.h"
 
 #include <sstream>
 #include <fstream>
@@ -60,6 +61,10 @@ void Scene01::Init()
 	Enemy* enemy = new Enemy();
 	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(0.f, 20.f, 0.f), Vector3(5.f, 5.f, 5.f));
 	enemyList.push_back(enemy);
+	
+	//Vector3 test1, test2;
+	//Physics<Vector3>::K1CalcTime(test1, test1, test1);
+	//float test3 = 1 / test2;
 }
 
 GameObject* Scene01::FetchGO()

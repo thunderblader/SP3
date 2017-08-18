@@ -21,6 +21,9 @@
     <Filter Include="Controller">
       <UniqueIdentifier>{a041c02a-3abb-4ffb-b2b3-f1de84111f83}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Physics">
+      <UniqueIdentifier>{8f8a9584-7dca-4267-80fe-ff5a693a96f3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -77,6 +80,9 @@
     <ClCompile Include="Source\Tree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Physics\Physics.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -132,6 +138,9 @@
     </ClInclude>
     <ClInclude Include="Source\ParameterPhysics.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Physics\Physics.h">
+      <Filter>Physics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
