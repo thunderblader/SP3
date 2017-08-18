@@ -8,6 +8,8 @@
 
 using std::string;
 
+struct ParamPhysics;
+
 class Controller
 {
 public:
@@ -17,7 +19,7 @@ public:
 
 	void Update(const double dt);
 
-	bool LoadConfig(const string filePath);
+	bool LoadConfig(const string filePath, ParamPhysics& _paramPhysics);
 
 	void SetPlayer(Player* _player);
 
@@ -25,7 +27,7 @@ public:
 	void Jump(const double dt);
 
 private:
-	char kb_jump;
+	char kb_jump, kb_left, kb_right;
 
 	Player* m_player;
 };

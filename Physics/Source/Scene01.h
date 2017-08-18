@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 #ifndef SCENE01_H
 #define SCENE01_H
 
@@ -8,10 +7,11 @@
 #include "Player.h"
 #include "Controller\Controller.h"
 #include "Enemy.h"
-
-#include <vector>
 #include "Load_File.h"
 #include "Shop.h"
+#include "ParameterPhysics.h"
+
+#include <vector>
 
 using std::vector;
 using std::string;
@@ -66,6 +66,9 @@ protected:
 	int Level;
 	int Score;
 	int Gold;
+
+	// Physics Parameters
+	ParamPhysics param_physics;
 };
 
 #endif

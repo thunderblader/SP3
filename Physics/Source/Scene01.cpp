@@ -5,6 +5,7 @@
 #include "MouseController.h"
 #include "SoundEngine.h"
 #include "Terrain\LoadHmap.h"
+#include "Physics\Physics.h"
 
 #include <sstream>
 #include <fstream>
@@ -32,8 +33,8 @@ void Scene01::Init()
 	m_worldHeight = 100.f;
 	m_worldWidth = m_worldHeight * (float)Application::GetWindowWidth() / Application::GetWindowHeight();
 
-	m_TerrainHeight = 20.f;
-	m_TerrainWidth = 300;
+	m_TerrainHeight = 10.f;
+	m_TerrainWidth = 200;
 
 	m_speed = 40.f;
 
@@ -58,13 +59,18 @@ void Scene01::Init()
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
 	m_player = Player::GetInstance();
-	m_player->Init(FetchGO(), GameObject::GO_BLOCK, Vector3(25, 25, 0), Vector3(5, 4, 1), 2.f, 100.f);
+	m_player->Init(FetchGO(), GameObject::GO_BLOCK, Vector3(25, 25, 0), Vector3(5, 4, 1), 1.f, 50.f);
 	m_player->SetHeightmap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
 	m_control = new Controller(m_player);
+	m_control->LoadConfig("Data//Config.ini", param_physics);
 
 	Enemy* enemy = new Enemy();
 	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(0.f, 20.f, 0.f), Vector3(5.f, 5.f, 5.f));
 	enemyList.push_back(enemy);
+	
+	//Vector3 test1, test2;
+	//Physics<Vector3>::K1CalcTime(test1, test1, test1);
+	//float test3 = 1 / test2;
 }
 
 GameObject* Scene01::FetchGO()
@@ -301,6 +307,7 @@ void Scene01::Update(double dt)
 				go->vel.x = go->vel.x - go->vel.x * 2.f * (float)dt;
 				if (go->vel.Length() < 3)
 					go->vel.IsZero();
+				//go->vel = Physics<Vector3>::K1(go->vel, Vector3(0,-9.8*go->mass * 2,0), dt);
 				go->vel.y = go->vel.y - 9.8f * go->mass * 2.f * (float)dt;
 				go->pos += go->vel * (float)dt * m_speed;
 				if (go->pos.y <= (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth*0.5) / m_TerrainWidth,0))+go->scale.y * 0.5f)
@@ -417,7 +424,7 @@ void Scene01::RenderGO(GameObject *go)
 
 	case GameObject::GO_BLOCK:
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
-		modelStack.Rotate(Math::RadianToDegree(atan2(go->dir.y, go->dir.x))+90, 0.f, 0.f, 1.f);
+		modelStack.Rotate(Math::RadianToDegree(atan2(go->dir.y, go->dir.x)) + 90, 0.f, 0.f, 1.f);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
 		RenderMesh(meshList[GEO_CART], false);
 		break;
@@ -428,11 +435,11 @@ void Scene01::RenderGO(GameObject *go)
 		RenderMesh(meshList[GEO_CUBE], false);
 		break;
 
-		case GameObject::GO_ENEMY_SNOWYETI:
-			modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
-			modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
-			RenderMesh(meshList[GEO_CUBE], false);
-			break;
+	case GameObject::GO_ENEMY_SNOWYETI:
+		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
+		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
+		RenderMesh(meshList[GEO_CUBE], false);
+		break;
 	}
 
 	modelStack.PopMatrix();
@@ -473,7 +480,7 @@ void Scene01::Render()
 
 	{
 		modelStack.PushMatrix();
-		modelStack.Translate(-m_TerrainWidth * 0.5f, 0, 0);
+		modelStack.Translate(-m_TerrainWidth * 0.5f, 0, 1);
 		modelStack.Scale(m_TerrainWidth, m_TerrainHeight, 1); // values varies.
 		RenderMesh(meshList[GEO_TERRAIN], false);
 		modelStack.PopMatrix();

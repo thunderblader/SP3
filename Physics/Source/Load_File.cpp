@@ -56,7 +56,7 @@ void Load_File::Process(bool checker, string content)
 	int money = 0;
 	int stat = 0;
 
-	for (int i = 0; i < content.length(); i++)
+	for (unsigned int i = 0; i < content.length(); i++)
 	{
 		if (content.at(i) == ',')
 		{
