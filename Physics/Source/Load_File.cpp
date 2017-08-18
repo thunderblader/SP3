@@ -17,7 +17,6 @@ void Load_File::Init(vector<GameObject *>*Gameobj)
 {
 	Gameobject_List = Gameobj;
 	blocks.Init();
-	//test.Purchase_Item();
 }
 
 bool Load_File::Load(bool checker, const string saveFileName)
@@ -50,9 +49,12 @@ bool Load_File::Load(bool checker, const string saveFileName)
 
 void Load_File::Process(bool checker, string content)
 {
-	string processor;
+	string processor, item_name;
 	int processed_value;
 	int count = 0;
+	int current = 0;
+	int money = 0;
+	int stat = 0;
 
 	for (int i = 0; i < content.length(); i++)
 	{
@@ -66,8 +68,20 @@ void Load_File::Process(bool checker, string content)
 			}
 			else if (checker == true)
 			{
-				
-				
+				switch (current)
+				{
+					case 0:
+					{
+						item_name = processor;
+						break;
+					}
+					case 1:
+					{
+						money = atoi(processor.c_str());
+						break;
+					}
+				}
+				current++;
 			}
 			processor = "";
 		}
@@ -75,6 +89,17 @@ void Load_File::Process(bool checker, string content)
 		{
 			processor.push_back(content.at(i));
 		}
+		
+	}
+	stat = atoi(processor.c_str());
+	if (checker == true)
+	{
+	//	items = Tree::getInstance()->insert(Tree::getInstance(), stat, money, item_name);
+		items = items->insert(items, stat, money, item_name);
+	//	items->inorder(items);
+		dog = items;
+	//	Tree::setInstance(items);
+		items->setInstance(items);
 	}
 	Unit_Height_Space += 5;
 	Unit_Width_Space = 0;
@@ -148,3 +173,4 @@ bool Load_File::Save_Data(int data1, int data2, int data3, const string saveFile
 		return false;
 	}
 }
+

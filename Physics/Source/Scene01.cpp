@@ -44,10 +44,16 @@ void Scene01::Init()
 
 	free_look = false;
 
-//	file.Init(&m_goList);
-//	file.Load(false, "Image//Test_Level.csv");
+	file.Init(&m_goList);
+	file.Load(false, "Image//Test_Level.csv");
 
-	shop.Purchase_Item();
+	
+
+	file.Load(true, "Image//shop_data.csv");
+
+	shop.Load_Shop();
+
+	shop.Purchase_Item(0);
 
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
@@ -181,6 +187,26 @@ void Scene01::Update(double dt)
 	if (KeyboardController::GetInstance()->IsKeyPressed('K'))
 	{
 		//file.Load_Data();
+	}
+	if (KeyboardController::GetInstance()->IsKeyPressed('I'))
+	{
+		shop.Purchase_Item(0);
+	}
+	if (KeyboardController::GetInstance()->IsKeyPressed('V'))
+	{
+		shop.Purchase_Item(1);
+	}
+	if (KeyboardController::GetInstance()->IsKeyPressed('B'))
+	{
+		shop.Purchase_Item(2);
+	}
+	if (KeyboardController::GetInstance()->IsKeyPressed('N'))
+	{
+		shop.Purchase_Item(3);
+	}
+	if (KeyboardController::GetInstance()->IsKeyPressed('M'))
+	{
+		shop.Purchase_Item(4);
 	}
 
 	if (KeyboardController::GetInstance()->IsKeyPressed('9'))

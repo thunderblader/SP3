@@ -3,45 +3,49 @@
 #define max(a,b)		(((a) > (b)) ? (a) : (b))
 
 #include <iostream>
+#include <string>
 
 using namespace std;
 
-
-
-
-
 class Tree
 {
+private:
+	static Tree *test;
+	Tree();
+
 public:
 	struct avl_node
 	{
 		string name;	//name of item
 		int data;	//data,price,stats
-		bool check;	//check if player has item
-
-
-		struct avl_node *left;
-		struct avl_node *right;
-	}*root;
-
-	avl_node rootss;
-
-	Tree();
+		int price;
+		//bool check;	//check if player has item
+	};
+	
 	~Tree();
 
-	int height(avl_node *);
-	int diff(avl_node *);
-	avl_node *rr_rotation(avl_node *);
-	avl_node *ll_rotation(avl_node *);
-	avl_node *lr_rotation(avl_node *);
-	avl_node *rl_rotation(avl_node *);
-	avl_node* balance(avl_node *);
-	avl_node* insert(avl_node *, int data, string name);
-	void inorder(avl_node *);
+	int height(Tree *);
+	int diff(Tree *);
+	Tree *rr_rotation(Tree *);
+	Tree *ll_rotation(Tree *);
+	Tree *lr_rotation(Tree *);
+	Tree *rl_rotation(Tree *);
+	Tree* balance(Tree *);
+	Tree* insert(Tree *, int data, int price, string name);
+	void inorder(Tree *);
+	void search(Tree *, int value, int price);
 
+	static Tree *getInstance();
+	void setInstance(Tree *);
 
+	int gold = 1000;
 
-
+	
+	Tree *create;
+	Tree *left;
+	Tree *right;
+	Tree *curr;
+	avl_node root;
 
 
 };
