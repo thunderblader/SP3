@@ -1,11 +1,12 @@
 #include "Player.h"
 #include "Terrain\LoadHmap.h"
 
-void Player::Init(GameObject * _playerObj
+void Player::Init(GameObject * _playerObj, GameObject * _playerBomb
 	, GameObject::GAMEOBJECT_TYPE _type
 	, Vector3 _pos, Vector3 _scale, float _mass, float _spd)
 {
 	playerObj = _playerObj;
+	playerBomb = _playerBomb;
 	playerObj->type = _type;
 	playerObj->pos = _pos;
 	playerObj->scale = _scale;
@@ -24,6 +25,30 @@ void Player::Update(double dt)
 		return;
 
 	// Player Physics can be done here
+	static bool launched = false;
+	if (playerObj->pos.x >= 0 && !launched)
+	{
+		launched = true;
+		playerBomb->active = true;
+		playerBomb->type = GameObject::GO_BOMB;
+		playerBomb->vel = playerObj->vel * 5;
+		playerBomb->pos = GetPlayerPos();
+		playerBomb->scale.Set(2, 2, 1);
+		playerObj->active = false;
+	}
+
+	if (playerBomb->active)
+	{
+		playerBomb->pos += playerBomb->vel * dt;
+	}
+
+	if (!playerBomb->active && launched)
+	{
+		playerObj->active = true;
+		launched = false;
+		playerObj->vel.SetZero();
+		Reset();
+	}
 }
 
 void Player::Reset()
@@ -37,9 +62,19 @@ GameObject Player::GetPlayerObj() const
 	return *playerObj;
 }
 
+GameObject Player::GetPlayerBomb() const
+{
+	return *playerBomb;
+}	
+
 Vector3 Player::GetPlayerPos()
 {
 	return playerObj->pos;
+}
+
+Vector3 Player::GetVel()
+{
+	return playerObj->vel;
 }
 
 void Player::SetHeightmap(vector<unsigned char>* _heightmap, float _worldWidth, float _worldHeight)
@@ -74,6 +109,7 @@ void Player::Jump(const double dt)
 
 Player::Player()
 	: playerObj(nullptr)
+	, playerBomb(nullptr)
 	, defaultPos(0.f, 0.f, 0.f)
 	, m_heightmap(nullptr)
 	, m_TerrainWidth(0)

@@ -59,7 +59,7 @@ void Scene01::Init()
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
 	m_player = Player::GetInstance();
-	m_player->Init(FetchGO(), GameObject::GO_BLOCK, Vector3(25, 25, 0), Vector3(5, 4, 1), 1.f, 50.f);
+	m_player->Init(FetchGO(), FetchGO(), GameObject::GO_BLOCK, Vector3(-50, 25, 0), Vector3(5, 4, 1), 1.f, 50.f);
 	m_player->SetHeightmap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
 	m_control = new Controller(m_player);
 	m_control->LoadConfig("Data//Config.ini", param_physics);
@@ -69,12 +69,15 @@ void Scene01::Init()
 	
 	for (int i = 0; i < 5; i++)
 	{
-		GameObject *bricks = FetchGO();
-		bricks->active = true;
-		bricks->type = GameObject::GO_BRICK;
-		bricks->dir.Set(0, 1, 0);
-		bricks->pos.Set(30, 60 - 10 * i, 0);
-		bricks->scale.Set(5, 5, 1);
+		for (int j = 0; j < 2; j++)
+		{
+			GameObject *bricks = FetchGO();
+			bricks->active = true;
+			bricks->type = GameObject::GO_BRICK;
+			bricks->dir.Set(0, 1, 0);
+			bricks->pos.Set(30 + j * 10, 2.5 + 5 * i, 0);
+			bricks->scale.Set(5, 5, 1);
+		}
 	}
 
 	//Vector3 test1, test2;

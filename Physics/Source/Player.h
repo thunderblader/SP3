@@ -16,6 +16,7 @@ class Player : public Singleton<Player>, public Collider
 
 public:
 	void Init(GameObject* _playerObj,
+		GameObject* _playerBomb,
 		GameObject::GAMEOBJECT_TYPE _type,
 		Vector3 _pos = Vector3(0.f, 0.f, 0.f),
 		Vector3 _scale = Vector3(1.f, 1.f, 1.f),
@@ -24,7 +25,9 @@ public:
 	void Reset();
 
 	GameObject GetPlayerObj() const;
+	GameObject GetPlayerBomb() const;
 	Vector3 GetPlayerPos();
+	Vector3 GetVel();
 	void SetHeightmap(vector<unsigned char>* _heightmap, float _worldWidth, float _worldHeight);
 
 	virtual void CollisionResponse();
@@ -36,7 +39,7 @@ private:
 	Player();
 	virtual ~Player();
 
-	GameObject* playerObj;
+	GameObject* playerObj, *playerBomb;
 	Vector3 defaultPos;
 	vector<unsigned char>* m_heightmap;
 	float m_TerrainWidth, m_TerrainHeight;
