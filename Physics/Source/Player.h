@@ -4,12 +4,13 @@
 #include "SingletonTemplate.h"
 #include "Vector3.h"
 #include "GameObject.h"
+#include "Physics\Collision.h"
 
 #include <vector>
 
 using std::vector;
 
-class Player : public Singleton<Player>
+class Player : public Singleton<Player>, public Collider
 {
 	friend Singleton<Player>;
 
@@ -25,6 +26,8 @@ public:
 	GameObject GetPlayerObj() const;
 	Vector3 GetPlayerPos();
 	void SetHeightmap(vector<unsigned char>* _heightmap, float _worldWidth, float _worldHeight);
+
+	virtual void CollisionResponse();
 
 	void Move_LeftRight(const double dt, const bool dLeft);
 	void Jump(const double dt);

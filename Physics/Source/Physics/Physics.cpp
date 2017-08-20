@@ -1,7 +1,7 @@
-#include "Physics.h"
+//#include "Physics.h"
 
-#include <cmath>
-
+//#include <cmath>
+/*
 template<class T>
 T Physics<T>::K1(T _initialVel, T _acceleration, float _time)
 {
@@ -103,3 +103,4 @@ void Physics<T>::CalcAcceleration(T _velocity, float _time, T & _acceleration)
 {
 	_acceleration = _velocity / _time;
 }
+*/

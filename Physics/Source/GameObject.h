@@ -2,9 +2,11 @@
 #define GAME_OBJECT_H
 
 #include "Vector3.h"
+#include "Physics\Collision.h"
 
-struct GameObject
+class GameObject
 {
+public:
 	enum GAMEOBJECT_TYPE
 	{
 		GO_NONE = 0,
@@ -15,9 +17,11 @@ struct GameObject
 		GO_ENEMY_SNOWYETI,
 		GO_WALL,
 		GO_BLOCK,
-		GO_TOTAL, //must be last
+		GO_TEMP,
+		GO_TOTAL //must be last
 	};
 	GAMEOBJECT_TYPE type;
+	ColliderType::COLLIDER_TYPE colType;
 	Vector3 pos;
 	Vector3 vel;
 	Vector3 scale;

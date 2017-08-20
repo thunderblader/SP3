@@ -307,13 +307,15 @@ void Scene01::Update(double dt)
 				go->vel.x = go->vel.x - go->vel.x * 1.f * (float)dt;
 				if (go->vel.Length() < 3)
 					go->vel.IsZero();
-				//go->vel = Physics<Vector3>::K1(go->vel, Vector3(0,-9.8*go->mass * 2,0), dt);
-				go->vel.y = go->vel.y - 9.8f * go->mass  * (float)dt;
+				Physics::K1(go->vel.y, (-9.8f * go->mass * 2.f), (float)dt, go->vel.y);
+				//go->vel.y = go->vel.y - 9.8f * go->mass  * (float)dt;
 				go->pos += go->vel * (float)dt * m_speed;
-				if (go->pos.y <= (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth*0.5) / m_TerrainWidth,0))+go->scale.y * 0.5f)
+				if (go->pos.y <= (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + go->scale.y * 0.5f)
 				{
-					go->pos.y = (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth*0.5) / m_TerrainWidth, 0)) + go->scale.y * 0.5f;
-					float theta = (float)atan2((m_TerrainHeight * ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth*0.5) - go->scale.x * 0.5f) / m_TerrainWidth, 0)) - (m_TerrainHeight * ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth*0.5) + go->scale.x * 0.5f) / m_TerrainWidth, 0)), -go->scale.x);
+					go->pos.y = (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + go->scale.y * 0.5f;
+					float theta = atan2((m_TerrainHeight
+						* ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth*0.5f) - go->scale.x * 0.5f) / m_TerrainWidth, 0.f)) - (m_TerrainHeight
+						* ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth*0.5f) + go->scale.x * 0.5f) / m_TerrainWidth, 0.f)), -go->scale.x);
 					Vector3 tempnormal;
 
 					//if (theta > 3.14159)
@@ -436,6 +438,12 @@ void Scene01::RenderGO(GameObject *go)
 		break;
 
 	case GameObject::GO_ENEMY_SNOWYETI:
+		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
+		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
+		RenderMesh(meshList[GEO_CUBE], false);
+		break;
+
+	case GameObject::GO_TEMP:
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
 		RenderMesh(meshList[GEO_CUBE], false);
