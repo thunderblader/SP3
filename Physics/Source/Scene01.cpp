@@ -298,7 +298,6 @@ void Scene01::Update(double dt)
 	}
 	if (in_shop == false)
 	{
-		
 		Camera_Control(dt);
 		UpdateParticles(dt);
 
@@ -310,13 +309,6 @@ void Scene01::Update(double dt)
 		{
 			//file.Load_Data();
 		}
-	static float projDelay = 0.f;
-	projDelay += (float)dt;
-	if (projDelay > 0.5f) // Debug key snow yeti shooting
-	{
-		enemyList[0]->PushProjectile(FetchGO(), m_player->GetPlayerPos(), Vector3(1.f, 1.f, 1.f), 1.f);
-		projDelay = 0.f;
-	}
 
 		if (KeyboardController::GetInstance()->IsKeyPressed('9'))
 		{
@@ -580,18 +572,19 @@ void Scene01::Update(double dt)
 								pos.y = Math::Clamp(pos.y, 0.f, go2->scale.y);
 
 								pos += go2->pos;
-							if ((pos - go->pos).Length() > 1 && (pos - go->pos).Length() < 30)
-							{
-								float test = (pos - go->pos).Length();
-								test;
-								float energy = (30 - (pos - go->pos).Length()) / 30 * 10;
-
-								if ((pos - go->pos).Length() > 5 && (pos - go->pos).Length() < 100)
+								if ((pos - go->pos).Length() > 1 && (pos - go->pos).Length() < 30)
 								{
+									float test = (pos - go->pos).Length();
+									test;
 									float energy = (30 - (pos - go->pos).Length()) / 30 * 10;
 
-									Vector3 explosion = (go->pos - pos).Normalized() * energy;
-									go2->vel -= explosion;
+									if ((pos - go->pos).Length() > 5 && (pos - go->pos).Length() < 100)
+									{
+										float energy = (30 - (pos - go->pos).Length()) / 30 * 10;
+
+										Vector3 explosion = (go->pos - pos).Normalized() * energy;
+										go2->vel -= explosion;
+									}
 								}
 							}
 						}
@@ -617,7 +610,6 @@ void Scene01::Update(double dt)
 	}
 	else
 	{
-		cout << time_limit << endl;
 		if (time_limit < 3)
 		{
 			time_limit += dt;
@@ -846,7 +838,6 @@ void Scene01::Render()
 			}
 		}
 	}
-
 }
 
 void Scene01::Exit()
