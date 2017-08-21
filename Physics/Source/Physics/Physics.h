@@ -18,9 +18,19 @@ public:
 
 	static T K2(T _initialVel, T _finalVel, float _time);
 	static void K2(T _initialVel, T _finalVel, float _time, T& _distance);
+	static T K2_CalcInitialVel();
+	static void K2_CalcInitialVel();
+	static T K2_CalcFinalVel();
+	static void K2_CalcFinalVel();
+	static T K2_CalcTime();
+	static void K2_CalcTime();
 
 	static T K3(T _initialVel, T _acceleration, float _time);
 	static void K3(T _initialVel, T _acceleration, float _time, T& _distance);
+	static T K3_CalcInitialVel();
+	static void K3_CalcInitialVel();
+	static T K3_CalcAcceleration();
+	static void K3_CalcAcceleration();
 
 	static T K4(T _initialVel, T _acceleration, T _distance);
 	static void K4(T _initialVel, T _acceleration, T _distance, T& _finalVel);
