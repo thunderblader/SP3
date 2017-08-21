@@ -47,10 +47,15 @@ void Scene01::Init()
 	time_limit = 0;
 	item_id = 0;
 
-	free_look = false;
+	
 
-//	file.Init(&m_goList);
-//	file.Load(false, "Image//Test_Level.csv");
+	screen = FetchGO();
+
+	free_look = false;
+	in_shop = false;
+	purchased = false;
+	file.Init(&m_goList);
+	file.Load(false, "Image//Test_Level.csv");
 
 
 
@@ -58,20 +63,24 @@ void Scene01::Init()
 
 	shop.Load_Shop();
 
-	shop.Purchase_Item(0);
+	shop.Purchase_Item(1);
+	item_node = Tree::getInstance();
 
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
+	GameObject* playerObj = FetchGO();
 	m_player = Player::GetInstance();
+
 	m_player->Init(FetchGO(), FetchGO(), GameObject::GO_BLOCK, Vector3(-50, 25, 0), Vector3(5, 4, 1), 1.f, 10.f);
 	m_player->SetHeightmap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
 	m_control = new Controller(m_player);
 	m_control->LoadConfig("Data//Config.ini", param_physics);
 	Enemy* enemy = new Enemy();
+	enemy->SetPlayerObj(playerObj);
 	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(0.f, 40.f, 0.f), Vector3(5.f, 5.f, 5.f));
 	enemyList.push_back(enemy);
-
-	for (int i = 0; i < 5; i++)
+	
+	for (int i = 0; i < 7; i++)
 	{
 		for (int j = 0; j < 5; j++)
 		{
@@ -87,10 +96,6 @@ void Scene01::Init()
 		}
 	}
 
-	//Vector3 test1, test2;
-	//Physics<Vector3>::K1CalcTime(test1, test1, test1);
-	//float test3 = 1 / test2;
-
 	m_particleCount = 0;
 	MAX_PARTICLE = 1000;
 }
@@ -101,7 +106,7 @@ GameObject* Scene01::FetchGO()
 	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;
-		if (!go->active)
+		if (!go->active && go->type != GameObject::GO_BLOCK && go->type != GameObject::GO_BOMB)
 		{
 			go->active = true;
 			++m_objectCount;
@@ -177,7 +182,7 @@ bool Scene01::CheckCollision(GameObject * go1, GameObject * go2, float dt)
 
 void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 {
-	Vector3 N;
+	Vector3	N;
 	switch (go2->type)
 	{
 	case GameObject::GO_BALL:
@@ -286,132 +291,129 @@ void Scene01::UpdateParticles(double dt)
 void Scene01::Update(double dt)
 {
 	SceneBase::Update(dt);
-	Camera_Control(dt);
-	UpdateParticles(dt);
-
-	if (KeyboardController::GetInstance()->IsKeyPressed('L'))
-	{
-		//file.Save_Data(Level, Score, Gold);
-	}
-	if (KeyboardController::GetInstance()->IsKeyPressed('K'))
-	{
-		//file.Load_Data();
-	}
 	if (KeyboardController::GetInstance()->IsKeyPressed('I'))
 	{
-		shop.Purchase_Item(1);
-	}
+		//shop.Purchase_Upgrade(3);
 
-	if (KeyboardController::GetInstance()->IsKeyPressed('B'))
-	{
-		if (item_id >= 1)
+		if (in_shop == false)
 		{
-			item_id--;
-			shop.get_item(item_id);
-			cout << item_id << endl;
+			in_shop = true;
+		}
+		else
+		{
+			in_shop = false;
 		}
 	}
-	if (KeyboardController::GetInstance()->IsKeyPressed('N'))
+	if (in_shop == false)
 	{
-		shop.Purchase_Item(item_id);
-		time_limit = 0;
-	}
-	if (KeyboardController::GetInstance()->IsKeyPressed('M'))
-	{
-		item_id++;
-		shop.get_item(item_id);
-		cout << item_id << endl;
-	}
+		Camera_Control(dt);
+		UpdateParticles(dt);
 
-	if (KeyboardController::GetInstance()->IsKeyPressed('9'))
-	{
-		m_speed = Math::Max(0.f, m_speed - 0.1f);
-	}
-	if (KeyboardController::GetInstance()->IsKeyPressed('0'))
-	{
-		m_speed += 0.1f;
-	}
+		if (KeyboardController::GetInstance()->IsKeyPressed('L'))
+		{
+			//file.Save_Data(Level, Score, Gold);
+		}
+		if (KeyboardController::GetInstance()->IsKeyPressed('K'))
+		{
+			//file.Load_Data();
+		}
 
-	if (KeyboardController::GetInstance()->IsKeyPressed('U')) // Debug key snow yeti shooting
-	{
-		enemyList[0]->PushProjectile(FetchGO(), m_player->GetPlayerPos(), Vector3(1.f, 1.f, 1.f), 10.f);
-	}
+		if (KeyboardController::GetInstance()->IsKeyPressed('9'))
+		{
+			m_speed = Math::Max(0.f, m_speed - 0.1f);
+		}
+		if (KeyboardController::GetInstance()->IsKeyPressed('0'))
+		{
+			m_speed += 0.1f;
+		}
 
-	m_player->Update(dt);
-	m_control->Update(dt);
+		static float projDelay = 0.f;
+		projDelay += (float)dt;
+		if (projDelay > 0.5f) // Debug key snow yeti shooting
+		{
+			//enemyList[0]->PushProjectile(FetchGO(), m_player->GetPlayerPos(), Vector3(1.f, 1.f, 1.f), 10.f);
+			projDelay = 0.f;
+		}
 
-	vector<Enemy*>::iterator it, end;
-	end = enemyList.end();
-	for (it = enemyList.begin(); it != end; ++it) (*it)->Update(dt);
+		m_player->Update(dt);
+		m_control->Update(dt);
 
-	//Mouse Section
-	if (MouseController::GetInstance()->IsButtonPressed(MouseController::LMB))
-	{
-		std::cout << "LBUTTON DOWN" << std::endl;
+		vector<Enemy*>::iterator it, end;
+		end = enemyList.end();
+		for (it = enemyList.begin(); it != end; ++it) (*it)->Update(dt);
 
-		double x, y;
-		MouseController::GetInstance()->GetMousePosition(x, y);
-		int w = Application::GetWindowWidth();
-		int h = Application::GetWindowHeight();
+		//Mouse Section
+		if (MouseController::GetInstance()->IsButtonPressed(MouseController::LMB))
+		{
+			std::cout << "LBUTTON DOWN" << std::endl;
 
-		m_ghost->pos.Set((float)(x / w * m_worldWidth) + camera.position.x, (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
-		//m_ghost->pos.Set((float)(x / w * m_worldWidth), m_worldHeight * 0.5f, 0.f);
-	}
-	else if (MouseController::GetInstance()->IsButtonReleased(MouseController::LMB))
-	{
-		std::cout << "LBUTTON UP" << std::endl;
+			double x, y;
+			MouseController::GetInstance()->GetMousePosition(x, y);
+			int w = Application::GetWindowWidth();
+			int h = Application::GetWindowHeight();
 
-		//Exercise 6: spawn small GO_BALL
-		GameObject *go = FetchGO();
-		go->pos = m_ghost->pos;
-		go->scale.Set(1.f, 1.f, 1.f);
-		go->mass = 1.f;
+			m_ghost->pos.Set((float)(x / w * m_worldWidth) + camera.position.x, (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
+			//m_ghost->pos.Set((float)(x / w * m_worldWidth), m_worldHeight * 0.5f, 0.f);
+		}
+		else if (MouseController::GetInstance()->IsButtonReleased(MouseController::LMB))
+		{
+			std::cout << "LBUTTON UP" << std::endl;
 
-		double x, y;
-		MouseController::GetInstance()->GetMousePosition(x, y);
-		int w = Application::GetWindowWidth();
-		int h = Application::GetWindowHeight();
-		go->vel.Set(m_ghost->pos.x - (float)(x / w * m_worldWidth) - camera.position.x, m_ghost->pos.y - (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
-		go->scale.Set(Math::Clamp(go->vel.Length(), 2.f, 10.f), Math::Clamp(go->vel.Length(), 2.f, 10.f), 0.f);
-	}
-	if (MouseController::GetInstance()->IsButtonPressed(MouseController::RMB))
-	{
-		std::cout << "RBUTTON DOWN" << std::endl;
+			//Exercise 6: spawn small GO_BALL
+			GameObject *go = FetchGO();
+			go->pos = m_ghost->pos;
+			go->scale.Set(1.f, 1.f, 1.f);
+			go->mass = 1.f;
 
-		double x, y;
-		MouseController::GetInstance()->GetMousePosition(x, y);
-		int w = Application::GetWindowWidth();
-		int h = Application::GetWindowHeight();
+			double x, y;
+			MouseController::GetInstance()->GetMousePosition(x, y);
+			int w = Application::GetWindowWidth();
+			int h = Application::GetWindowHeight();
+			go->vel.Set(m_ghost->pos.x - (float)(x / w * m_worldWidth) - camera.position.x, m_ghost->pos.y - (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
+			go->scale.Set(Math::Clamp(go->vel.Length(), 2.f, 10.f), Math::Clamp(go->vel.Length(), 2.f, 10.f), 0.f);
+		}
+		if (MouseController::GetInstance()->IsButtonPressed(MouseController::RMB))
+		{
+			std::cout << "RBUTTON DOWN" << std::endl;
 
-		m_ghost->pos.Set((float)(x / w * m_worldWidth) + camera.position.x, (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
-		//m_ghost->pos.Set((float)(x / w * m_worldWidth), m_worldHeight * 0.5f, 0.f);
-	}
-	else if (MouseController::GetInstance()->IsButtonReleased(MouseController::RMB))
-	{
-		std::cout << "RBUTTON UP" << std::endl;
+			double x, y;
+			MouseController::GetInstance()->GetMousePosition(x, y);
+			int w = Application::GetWindowWidth();
+			int h = Application::GetWindowHeight();
 
-		GameObject *go = FetchGO();
-		go->pos = m_ghost->pos;
-		go->type = GameObject::GO_BOMB;
-		go->boom = false;
-		go->scale.Set(2, 2, 2);
-		go->mass = 1.5f * 1.5f * 1.5f;
+			m_ghost->pos.Set((float)(x / w * m_worldWidth) + camera.position.x, (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
+			//m_ghost->pos.Set((float)(x / w * m_worldWidth), m_worldHeight * 0.5f, 0.f);
+		}
+		else if (MouseController::GetInstance()->IsButtonReleased(MouseController::RMB))
+		{
+			std::cout << "RBUTTON UP" << std::endl;
 
-		double x, y;
-		MouseController::GetInstance()->GetMousePosition(x, y);
-		int w = Application::GetWindowWidth();
-		int h = Application::GetWindowHeight();
-		go->vel.Set(m_ghost->pos.x - (float)(x / w * m_worldWidth) - camera.position.x, m_ghost->pos.y - (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
-	}
+			GameObject *go = FetchGO();
+			go->pos = m_ghost->pos;
+			go->type = GameObject::GO_BOMB;
+			go->boom = false;
+			go->scale.Set(2, 2, 2);
+			go->mass = 1.5f * 1.5f * 1.5f;
 
+			double x, y;
+			MouseController::GetInstance()->GetMousePosition(x, y);
+			int w = Application::GetWindowWidth();
+			int h = Application::GetWindowHeight();
+			go->vel.Set(m_ghost->pos.x - (float)(x / w * m_worldWidth) - camera.position.x, m_ghost->pos.y - (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
+		}
 	//Physics Simulation Section
-
 	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;
 		if (go->active)
 		{
 			//Exercise 7: handle out of bound game objects
+			if (go->type == GameObject::GO_BRICK)
+			{
+				go->pos += go->vel * static_cast<float>(dt);
+				//if (!go->vel.IsZero())
+				//	go->vel += (Vector3(0, 0, 0) - go->vel) * dt;
+			}
 			if (go->type == GameObject::GO_BALL || go->type == GameObject::GO_BLOCK)
 			{
 				go->vel.x = go->vel.x - go->vel.x * 1.f * (float)dt;
@@ -423,9 +425,9 @@ void Scene01::Update(double dt)
 				if (go->pos.y <= (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + go->scale.y * 0.5f)
 				{
 					go->pos.y = (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + go->scale.y * 0.5f;
-					float theta = atan2((m_TerrainHeight
-						* ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth*0.5f) - go->scale.x * 0.5f) / m_TerrainWidth, 0.f)) - (m_TerrainHeight
-							* ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth*0.5f) + go->scale.x * 0.5f) / m_TerrainWidth, 0.f)), -go->scale.x);
+					float backCart = ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth * 0.5f) - go->scale.x * 0.5f) / m_TerrainWidth, 0.f);
+					float frontCart = ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth * 0.5f) + go->scale.x * 0.5f) / m_TerrainWidth, 0.f);
+					float theta = atan2((m_TerrainHeight * backCart) - (m_TerrainHeight * frontCart), -go->scale.x);
 					Vector3 tempnormal;
 
 					//if (theta > 3.14159)
@@ -441,132 +443,213 @@ void Scene01::Update(double dt)
 				go->vel.x = -go->vel.x;
 				}
 
-				if ((go->pos.y > m_worldHeight - go->scale.y && go->vel.y > 0))
-				{
-				go->vel.y = -go->vel.y;
-				}
+		//Physics Simulation Section
 
-				if (go->pos.x < 0 - go->scale.x || go->pos.x > m_worldWidth + go->scale.x ||
-				go->pos.y < 0 - go->scale.y || go->pos.y > m_worldHeight + go->scale.y ||
-				(go->pos.y < 0 - go->scale.y && go->vel.y < 0))
-				{
-				go->active = false;
-				--m_objectCount;
-				continue;
-				}*/
-				//if (go->pos.x + go->scale.x > m_worldWidth && go->vel.x > 0)
-				//{
-				//	go->vel.x = -go->vel.x;
-				//}
-				//else if (go->pos.x - go->scale.x < 0 && go->vel.x < 0)
-				//{
-				//	go->vel.x = -go->vel.x;
-				//}
-				//else if (go->pos.y + go->scale.y > m_worldHeight && go->vel.y > 0)
-				//{
-				//	//go->vel.y = -go->vel.y;
-				//}
-				//else if (go->pos.y - go->scale.y < 0 && go->vel.y < 0)
-				//{
-				//	go->vel.y = -go->vel.y;
-				//}
-
-				for (std::vector<GameObject *>::iterator it2 = it + 1; it2 != m_goList.end(); ++it2)
-				{
-					GameObject *go2 = (GameObject *)*it2;
-
-					if (!go2->active || (go->type != GameObject::GO_BALL && go2->type != GameObject::GO_BALL))
-						continue;
-
-					GameObject *goA, *goB;
-					if (go->type == GameObject::GO_BALL)
-					{
-						goA = go;
-						goB = go2;
-					}
-					else
-					{
-						goA = go2;
-						goB = go;
-					}
-
-					if (CheckCollision(goA, goB, (float)dt))
-					{
-						m1 = goA->mass;
-						m2 = goB->mass;
-						u1 = goA->vel;
-						u2 = goB->vel;
-
-						initialMomentum = m1 * u1 + m2 * u2;
-
-						CollisionResponse(goA, goB);
-
-						v1 = goA->vel;
-						v2 = goB->vel;
-
-						finalMomentum = m1 * v1 + m2 * v2;
-
-						initialKE = 0.5f * m1 * u1.Dot(u1) + 0.5f * m2 * u2.Dot(u2);
-						finalKE = 0.5f * m1 * v1.Dot(v1) + 0.5f * m2 * v2.Dot(v2);
-
-						break;
-					}
-				}
-			}
-
-			if (go->type == GameObject::GO_BOMB)
+		for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
+		{
+			GameObject *go = (GameObject *)*it;
+			if (go->active)
 			{
-				go->pos += go->vel * static_cast<float>(dt);
-				go->vel += Vector3(0, -9.8, 0) * dt;
-				if (go->boom)
+				//Exercise 7: handle out of bound game objects
+				if (go->type == GameObject::GO_BALL || go->type == GameObject::GO_BLOCK)
 				{
-					if (go->scale.x < 5)
-						go->scale *= 1.2;
-					if (go->scale.x > 5)
+					go->vel.x = go->vel.x - go->vel.x * 1.f * (float)dt;
+					if (go->vel.Length() < 3)
+						go->vel.IsZero();
+					Physics::K1(go->vel.y, (-9.8f * go->mass * 2.f), (float)dt, go->vel.y);
+					//go->vel.y = go->vel.y - 9.8f * go->mass  * (float)dt;
+					go->pos += go->vel * (float)dt * m_speed;
+					if (go->pos.y <= (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + go->scale.y * 0.5f)
 					{
-						go->boom = false;
-						go->active = false;
+						go->pos.y = (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + go->scale.y * 0.5f;
+						float backCart = ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth * 0.5f) - go->scale.x * 0.5f) / m_TerrainWidth, 0.f);
+						float frontCart = ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth * 0.5f) + go->scale.x * 0.5f) / m_TerrainWidth, 0.f);
+						float theta = atan2((m_TerrainHeight * backCart) - (m_TerrainHeight * frontCart), -go->scale.x);
+						Vector3 tempnormal;
+
+						//if (theta > 3.14159)
+						//tempnormal = Vector3(0, 1, 0).Normalize();
+						//else
+						tempnormal = Vector3(sin(-theta), cos(-theta), 0).Normalize();
+						go->dir = tempnormal;
+						go->vel = go->vel - (go->vel.Dot(tempnormal) * tempnormal);
+						go->vel.x = go->vel.x - go->vel.x * 5.f * (float)dt;
 					}
+					/*if ((go->pos.x < 0 + go->scale.x && go->vel.x < 0) || (go->pos.x > m_worldWidth - go->scale.x && go->vel.x > 0))
+					{
+					go->vel.x = -go->vel.x;
+					}
+
+					if ((go->pos.y > m_worldHeight - go->scale.y && go->vel.y > 0))
+					{
+					go->vel.y = -go->vel.y;
+					}
+
+					if (go->pos.x < 0 - go->scale.x || go->pos.x > m_worldWidth + go->scale.x ||
+					go->pos.y < 0 - go->scale.y || go->pos.y > m_worldHeight + go->scale.y ||
+					(go->pos.y < 0 - go->scale.y && go->vel.y < 0))
+					{
+					go->active = false;
+					--m_objectCount;
+					continue;
+					}*/
+					//if (go->pos.x + go->scale.x > m_worldWidth && go->vel.x > 0)
+					//{
+					//	go->vel.x = -go->vel.x;
+					//}
+					//else if (go->pos.x - go->scale.x < 0 && go->vel.x < 0)
+					//{
+					//	go->vel.x = -go->vel.x;
+					//}
+					//else if (go->pos.y + go->scale.y > m_worldHeight && go->vel.y > 0)
+					//{
+					//	//go->vel.y = -go->vel.y;
+					//}
+					//else if (go->pos.y - go->scale.y < 0 && go->vel.y < 0)
+					//{
+					//	go->vel.y = -go->vel.y;
+					//}
 
 					for (std::vector<GameObject *>::iterator it2 = it + 1; it2 != m_goList.end(); ++it2)
 					{
-						GameObject *go2 = static_cast<GameObject *>(*it2);
-						if (go2->active)
+						GameObject *go2 = (GameObject *)*it2;
+
+						if (!go2->active || (go->type != GameObject::GO_BALL && go2->type != GameObject::GO_BALL))
 							continue;
 
-						if (go2->type == GameObject::GO_BRICK)
+						GameObject *goA, *goB;
+						if (go->type == GameObject::GO_BALL)
 						{
-							Vector3 pos = go->pos - go2->pos;
-							pos.x = Math::Clamp(pos.x, 0.f, go2->scale.x);
-							pos.y = Math::Clamp(pos.y, 0.f, go2->scale.y);
+							goA = go;
+							goB = go2;
+						}
+						else
+						{
+							goA = go2;
+							goB = go;
+						}
 
-							pos += go2->pos;
+						if (CheckCollision(goA, goB, (float)dt))
+						{
+							m1 = goA->mass;
+							m2 = goB->mass;
+							u1 = goA->vel;
+							u2 = goB->vel;
 
-							if ((pos - go->pos).Length() > 5 && (pos - go->pos).Length() < 100)
-							{
-								float energy = (30 - (pos - go->pos).Length()) / 30 * 10;
+							initialMomentum = m1 * u1 + m2 * u2;
 
-								Vector3 explosion = (go->pos - pos).Normalized() * energy;
-								go2->vel -= explosion;
-							}
+							CollisionResponse(goA, goB);
+
+							v1 = goA->vel;
+							v2 = goB->vel;
+
+							finalMomentum = m1 * v1 + m2 * v2;
+
+							initialKE = 0.5f * m1 * u1.Dot(u1) + 0.5f * m2 * u2.Dot(u2);
+							finalKE = 0.5f * m1 * v1.Dot(v1) + 0.5f * m2 * v2.Dot(v2);
+
+							break;
 						}
 					}
 				}
-				else
-					for (std::vector<GameObject *>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
+
+				if (go->type == GameObject::GO_BOMB)
+				{
+					go->pos += go->vel * static_cast<float>(dt);
+					go->vel += Vector3(0, -9.8, 0) * dt;
+					if (go->boom)
 					{
-						GameObject *go2 = (GameObject *)*it2;
-						if (go2->active)
+						if (go->scale.x < 5)
+							go->scale *= 1.2;
+						if (go->scale.x > 5)
 						{
+							go->boom = false;
+							go->active = false;
+						}
+
+						for (std::vector<GameObject *>::iterator it2 = it + 1; it2 != m_goList.end(); ++it2)
+						{
+							GameObject *go2 = static_cast<GameObject *>(*it2);
+							if (go2->active)
+								continue;
+
 							if (go2->type == GameObject::GO_BRICK)
 							{
-								go2->pos += go2->vel * static_cast<float>(dt);
-								if (!go2->vel.IsZero())
-									go2->vel += (Vector3(0, 0, 0) - go2->vel) * dt;
-								BombCollision(go, go2);
+								Vector3 pos = go->pos - go2->pos;
+								pos.x = Math::Clamp(pos.x, 0.f, go2->scale.x);
+								pos.y = Math::Clamp(pos.y, 0.f, go2->scale.y);
+
+								pos += go2->pos;
+								if ((pos - go->pos).Length() > 1 && (pos - go->pos).Length() < 30)
+								{
+									float test = (pos - go->pos).Length();
+									test;
+									float energy = (30 - (pos - go->pos).Length()) / 30 * 10;
+
+									if ((pos - go->pos).Length() > 5 && (pos - go->pos).Length() < 100)
+									{
+										float energy = (30 - (pos - go->pos).Length()) / 30 * 10;
+
+										Vector3 explosion = (go->pos - pos).Normalized() * energy;
+										go2->vel -= explosion;
+									}
+								}
 							}
 						}
 					}
+					else
+						for (std::vector<GameObject *>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
+						{
+							GameObject *go2 = (GameObject *)*it2;
+							if (go2->active)
+							{
+								if (go2->type == GameObject::GO_BRICK)
+								{
+									go2->pos += go2->vel * static_cast<float>(dt);
+									if (!go2->vel.IsZero())
+										go2->vel += (Vector3(0, 0, 0) - go2->vel) * dt;
+									BombCollision(go, go2);
+								}
+							}
+						}
+				}
+			}
+		}
+	}
+	else
+	{
+		if (time_limit < 3)
+		{
+			time_limit += dt;
+		}
+		if (time_limit >= 3)
+		{
+			buy_item = false;
+		}
+		if (KeyboardController::GetInstance()->IsKeyPressed(VK_LEFT))
+		{
+			if (item_id >= 1)
+			{
+				item_node = Tree::getInstance();
+				item_id--;
+				item_node = item_node->retreve_item(item_node, item_id);
+				cout << item_node->root.name << endl;
+			}
+		}
+		if (KeyboardController::GetInstance()->IsKeyPressed(VK_SPACE))
+		{
+			purchased = shop.Purchase_Item(item_id);
+			time_limit = 0;
+			buy_item = true;
+		}
+		if (KeyboardController::GetInstance()->IsKeyPressed(VK_RIGHT))
+		{
+			if (item_id <= file.number_of_items - 1)
+			{
+				item_node = Tree::getInstance();
+				item_id++;
+				item_node = item_node->retreve_item(item_node, item_id);
+				cout << item_node->root.name << endl;
 			}
 		}
 	}
@@ -604,6 +687,12 @@ void Scene01::RenderGO(GameObject *go)
 		RenderMesh(meshList[GEO_CUBE], false);
 		break;
 
+	case GameObject::GO_PROJ_SNOWBALL:
+		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
+		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
+		RenderMesh(meshList[GEO_SNOWBALL], false);
+		break;
+
 	case GameObject::GO_TEMP:
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
@@ -623,6 +712,11 @@ void Scene01::RenderGO(GameObject *go)
 			RenderMesh(meshList[GEO_BOMB], false);
 		if (go->boom)
 			RenderMesh(meshList[GEO_BOOM], false);
+		break;
+	case GameObject::GO_SCREEN:
+		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
+		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
+		RenderMesh(meshList[GEO_CUBE], false);
 		break;
 	}
 
@@ -672,41 +766,86 @@ void Scene01::Render()
 
 	RenderAllParticles();
 	//On screen text
-
 	std::ostringstream ss;
-	//Exercise 5: Render m_objectCount
-	ss.str("");
-	ss << "Objects: " << m_objectCount;
-	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 9);
+	if (in_shop == false)
+	{
+		ss.str("");
+		ss << "Objects: " << m_objectCount;
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 9);
 
-	//Exercise 8c: Render initial and final momentum
-	/*ss.str("");
-	ss << "Initial momentum: " << initialMomentum;
-	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 15);
+		//Exercise 8c: Render initial and final momentum
+		/*ss.str("");
+		ss << "Initial momentum: " << initialMomentum;
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 15);
 
-	ss.str("");
-	ss << "Final momentum: " << finalMomentum;
-	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 12);
+		ss.str("");
+		ss << "Final momentum: " << finalMomentum;
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 12);
 
-	ss.str("");
-	ss << "Initial KE: " << initialKE;
-	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 18);
+		ss.str("");
+		ss << "Initial KE: " << initialKE;
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 18);
 
-	ss.str("");
-	ss << "Final KE: " << finalKE;
-	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 21);*/
+		ss.str("");
+		ss << "Final KE: " << finalKE;
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 21);*/
 
-	ss.precision(3);
-	ss.str("");
-	ss << "Speed: " << m_speed;
-	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 6);
+		ss.precision(3);
+		ss.str("");
+		ss << "Speed: " << m_speed;
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 6);
 
-	ss.precision(5);
-	ss.str("");
-	ss << "FPS: " << fps;
-	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 3);
+		ss.precision(5);
+		ss.str("");
+		ss << "FPS: " << fps;
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 3);
 
-	RenderTextOnScreen(meshList[GEO_TEXT], "Collision", Color(0, 1, 0), 3, 0, 0);
+		RenderTextOnScreen(meshList[GEO_TEXT], "Collision", Color(0, 1, 0), 3, 0, 0);
+		screen->active = false;
+	}
+	else
+	{
+		
+		screen->active = true;
+		screen->type = GameObject::GO_SCREEN;
+		screen->dir.Set(0, 1, 0);
+		screen->pos.Set(camera.position.x + 65, camera.position.y + 50, 1);
+		screen->scale.Set(100, 85, 1);
+
+		ss.str("");
+		ss << "Shop";
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 4, 33, 51);
+		ss.str("");
+		ss << item_node->root.name;
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 15, 42);
+		ss.str("");
+		ss << "ID: " << item_node->root.data;
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 15, 39);
+		ss.str("");
+		ss << "Price: " << item_node->root.price;
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 15, 36);
+		ss.str("");
+		ss << "Gold: " << shop.gold;
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 15, 15);
+		if (buy_item == true)
+		{
+			if (purchased == true)
+			{
+				ss.str("");
+				ss << "You bought:" << item_node->root.name;
+				RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 15, 18);
+			}
+			else
+			{
+				ss.str("");
+				ss << "You no money";
+				RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 15, 18);
+				ss.str("");
+				ss << "Its costs: " << item_node->root.price;
+				RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 15, 21);
+			}
+		}
+	}
 }
 
 void Scene01::Exit()

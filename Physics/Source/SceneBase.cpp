@@ -107,6 +107,7 @@ void SceneBase::Init()
 	}
 	meshList[GEO_AXES] = MeshBuilder::GenerateAxes("reference", 1000, 1000, 1000);
 	meshList[GEO_BALL] = MeshBuilder::GenerateSphere("ball", Color(0.f, 0.f, 0.f), 10, 10, 1.f);
+	meshList[GEO_SNOWBALL] = MeshBuilder::GenerateSphere("snowball", Color(1.f, 1.f, 1.f), 10, 10, 1.f);
 	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("cube", Color(0.f, 0.f, 0.f), 1.f);
 	meshList[GEO_QUAD] = MeshBuilder::GenerateQuad("quad", Color(0.f, 0.f, 0.f), 1.f);
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);

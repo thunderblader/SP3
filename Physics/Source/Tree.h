@@ -34,6 +34,7 @@ public:
 	Tree* insert(Tree *, int data, int price, string name);
 	void inorder(Tree *);
 	int search(Tree *, int value);
+	Tree* retreve_item(Tree*, int value);
 
 	static Tree *getInstance();
 	void setInstance(Tree *);
@@ -41,7 +42,7 @@ public:
 	int new_gold;
 	bool check;
 
-	
+	Tree* temp;
 	Tree *create;
 	Tree *left;
 	Tree *right;

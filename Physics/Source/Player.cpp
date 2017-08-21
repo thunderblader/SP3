@@ -25,16 +25,20 @@ void Player::Update(double dt)
 		return;
 
 	// Player Physics can be done here
-	static bool launched = false;
-	if (playerObj->pos.x >= -playerObj->scale.x && !launched)
+	if (playerObj->pos.x >= -playerObj->scale.x/2 && !launched)
 	{
-		launched = true;
+		if (playerObj->vel.y < 0)
+		{
+			playerObj->vel = playerObj->vel.Cross(Vector3(0, 0, -1));
+			playerObj->vel.x *= 5;
+		}
 		playerBomb->active = true;
 		playerBomb->type = GameObject::GO_BOMB;
 		playerBomb->vel = playerObj->vel * 5;
 		playerBomb->pos = GetPlayerPos();
 		playerBomb->scale.Set(2, 2, 1);
 		//playerObj->active = false;
+		launched = true;
 	}
 
 	if (playerBomb->active)
@@ -46,14 +50,18 @@ void Player::Update(double dt)
 			playerBomb->active = false;
 		}
 	}
-
-	if (!playerBomb->active && launched)
+	if (!playerBomb->active)
 	{
-		playerObj->active = true;
-		launched = false;
-		playerObj->vel.SetZero();
-		Reset();
+		playerBomb->pos.Set(0, playerObj->pos.y, 0);
+		if (launched)
+		{
+			playerObj->active = true;
+			launched = false;
+			playerObj->vel.SetZero();
+			Reset();
+		}
 	}
+		
 }
 
 void Player::Reset()
@@ -74,7 +82,11 @@ GameObject Player::GetPlayerBomb() const
 
 Vector3 Player::GetPlayerPos()
 {
-	return playerObj->pos;
+	if(!launched)
+		return playerObj->pos;
+
+	if (launched)
+		return playerBomb->pos;
 }
 
 Vector3 Player::GetVel()
@@ -119,6 +131,7 @@ Player::Player()
 	, m_heightmap(nullptr)
 	, m_TerrainWidth(0)
 	, m_TerrainHeight(0)
+	, launched(false)
 {
 }
 

@@ -1,4 +1,7 @@
 #include "Enemy.h"
+#include "Physics\Physics.h"
+
+GameObject* Enemy::playerObj = 0;
 
 Enemy::Enemy()
 	: enemyObj(nullptr)
@@ -25,12 +28,21 @@ void Enemy::Update(double dt)
 	if (!enemyObj)
 		return;
 
-	vector<GameObject*>::iterator it, end;
-	end = projList.end();
-	for (it = projList.begin(); it != end; ++it)
+	for (unsigned i = 0; i < projList.size(); ++i)
 	{
-		if (!(*it)->active)
-			projList.erase(it);
+		//projList[i]->vel *= 4.f;
+		Physics::K1(projList[i]->vel.y, -9.8f * projList[i]->mass * 2.f, (float)dt, projList[i]->vel.y);
+		projList[i]->pos += projList[i]->vel;
+
+		if ((playerObj->pos - projList[i]->pos).LengthSquared()
+			<= (playerObj->scale.x + projList[i]->scale.x) * (playerObj->scale.x + projList[i]->scale.x))
+		{
+			playerObj->vel *= 0.5f;
+			projList[i]->active = false;
+		}
+
+		if (!projList[i]->active)
+			projList.erase(projList.begin() + i);
 	}
 }
 
@@ -43,14 +55,19 @@ void Enemy::Reset()
 	enemyObj->pos = defaultPos;
 }
 
+void Enemy::SetPlayerObj(GameObject * _playerObj)
+{
+	playerObj = _playerObj;
+}
+
 void Enemy::PushProjectile(GameObject * _projObj, Vector3 _target, Vector3 _scale, float _spd)
 {
-	_projObj->type = GameObject::GO_BALL;	// Set type to projectile
+	_projObj->type = GameObject::GO_PROJ_SNOWBALL;	// Set type to projectile
 	_projObj->pos = enemyObj->pos;
 	_projObj->scale = _scale;
 	_projObj->dir = (_target - _projObj->pos).Normalized() + Vector3(0.f, 1.f, 0.f);
 	_projObj->normal.Set(0.f, 1.f, 0.f);
-	_projObj->mass = 4.f;
+	_projObj->mass = .1f;
 	_projObj->vel = _projObj->dir * _spd;
 
 	projList.push_back(_projObj);

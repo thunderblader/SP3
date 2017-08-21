@@ -18,6 +18,8 @@ public:
 	void Exit();
 	void Reset();
 
+	void SetPlayerObj(GameObject* _playerObj);
+
 	void PushProjectile(GameObject* _projObj, Vector3 _target, Vector3 _scale, float _spd);
 
 protected:
@@ -29,6 +31,7 @@ protected:
 	};
 
 private:
+	static GameObject* playerObj;
 	GameObject* enemyObj;
 	Vector3 defaultPos;
 	ENEMY_STATE curState;
