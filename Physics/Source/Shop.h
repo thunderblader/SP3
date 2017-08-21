@@ -11,8 +11,8 @@ class Shop
 {
 public:
 	void Load_Shop();
-	void Purchase_Item(int O);
-	void Purchase_Upgrade();
+	bool Purchase_Item(int id);
+	void Purchase_Upgrade(int id);
 	void get_item(int id);
 	
 	int gold;

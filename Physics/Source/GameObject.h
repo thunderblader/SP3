@@ -20,6 +20,7 @@ public:
 		GO_TEMP,
 		GO_BRICK,
 		GO_BOMB,
+		GO_SCREEN,
 		GO_TOTAL //must be last
 	};
 	GAMEOBJECT_TYPE type;

@@ -221,8 +221,22 @@ int Tree::search(Tree *tree, int value)
 		}
 		search(tree->right, value);
 	}
+}
 
+Tree* Tree::retreve_item(Tree *tree, int value)
+{
+	if (tree == NULL)
+	{
+		return temp;
+	}
+	retreve_item(tree->left, value);
+	if (value == tree->root.data)
+	{
 
+		temp = tree;
+		return temp;
+	}
+	retreve_item(tree->right, value);
 }
 
 
