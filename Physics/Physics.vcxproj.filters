@@ -87,7 +87,7 @@
       <Filter>Physics</Filter>
     </ClCompile>
     <ClCompile Include="Source\Physics\Collision.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Physics</Filter>
     </ClCompile>
     <ClCompile Include="Source\Particle\Particle.cpp">
       <Filter>Particle</Filter>

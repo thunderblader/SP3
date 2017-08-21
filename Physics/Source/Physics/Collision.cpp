@@ -1,10 +1,6 @@
 #include "Collision.h"
 #include "../GameObject.h"
 
-void Collider::CollisionResponse()
-{
-}
-
 bool Collider::CheckCollision(GameObject * go, GameObject * go2)
 {
 	if (go->colType == ColliderType::BOX && go2->colType == ColliderType::BOX)

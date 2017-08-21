@@ -19,7 +19,7 @@ struct ColliderType
 class Collider
 {
 public:
-	virtual void CollisionResponse();
+	virtual void CollisionResponse() = 0;
 
 	bool CheckCollision(GameObject* go, GameObject* go2);
 
