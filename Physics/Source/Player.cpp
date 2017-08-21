@@ -1,12 +1,12 @@
 #include "Player.h"
 #include "Terrain\LoadHmap.h"
+#include "Physics\Physics.h"
 
 void Player::Init(GameObject * _playerObj, GameObject * _playerBomb
 	, GameObject::GAMEOBJECT_TYPE _type
 	, Vector3 _pos, Vector3 _scale, float _mass, float _spd)
 {
 	playerObj = _playerObj;
-	playerBomb = _playerBomb;
 	playerObj->type = _type;
 	playerObj->pos = _pos;
 	playerObj->scale = _scale;
@@ -15,6 +15,12 @@ void Player::Init(GameObject * _playerObj, GameObject * _playerBomb
 	playerObj->dir = Vector3(1.f, 0.f, 0.f);
 	playerObj->normal = Vector3(0.f, 1.f, 0.f);
 //	item_node = Tree::getInstance();
+	playerBomb = _playerBomb;
+	playerBomb->type = GameObject::GO_BOMB;
+	playerBomb->pos = _pos;
+	playerBomb->scale = _scale;
+	playerBomb->mass = _mass;
+	playerBomb->active = false;
 
 	defaultPos = _pos;
 	m_speed = _spd;
@@ -34,16 +40,17 @@ void Player::Update(double dt)
 	//}
 
 	// Player Physics can be done here
-	if (playerObj->pos.x >= -playerObj->scale.x/2 && !launched)
+	if (playerObj->pos.x >= -playerObj->scale.x*2 && !launched)
 	{
 		if (playerObj->vel.y < 0)
 		{
-			playerObj->vel = playerObj->vel.Cross(Vector3(0, 0, -1));
-			playerObj->vel.x *= 5;
+			//playerObj->vel = playerObj->vel.Cross(Vector3(0, 0, -1));
+			//playerObj->vel.x *= 5;
 		}
 		playerBomb->active = true;
 		playerBomb->type = GameObject::GO_BOMB;
-		playerBomb->vel = playerObj->vel * 5;
+		playerBomb->vel = playerObj->vel*1.5;
+		playerBomb->vel.y = 5;
 		playerBomb->pos = GetPlayerPos();
 		playerBomb->scale.Set(2, 2, 1);
 		//playerObj->active = false;
@@ -52,7 +59,8 @@ void Player::Update(double dt)
 
 	if (playerBomb->active)
 	{
-		playerBomb->pos += playerBomb->vel * dt;
+		Physics::K1(playerBomb->vel, Vector3(0.f, -9.8f, 0.f), (float)dt, playerBomb->vel);
+		playerBomb->pos += playerBomb->vel * (float)dt * 40.f;
 
 		if (playerBomb->pos.y < 0)
 		{
