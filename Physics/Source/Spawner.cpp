@@ -38,7 +38,7 @@ void Spawner::Spawn(int value, int Width_Space, int Height_Space, vector<GameObj
 	if (value == 0)
 	{
 		spawner = FetchGO(Gameobject_List);
-		spawner->type = GameObject::GO_BALL;
+		spawner->type = GameObject::GO_TEMP;
 		spawner->active = true;
 		spawner->dir.Set(0, 1, 0);
 		spawner->pos = Vector3(m_worldWidth - Width_Space, m_worldHeight - Height_Space, 0);

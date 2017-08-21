@@ -10,6 +10,8 @@
 #include "GameObject.h"
 #include <vector>
 
+class ParticleObject;
+
 class SceneBase : public Scene
 {
 	enum UNIFORM_TYPE
@@ -51,6 +53,10 @@ public:
 		GEO_PU,
 		GEO_TERRAIN,
 		GEO_CART,
+		GEO_BRICK,
+		GEO_BOMB,
+		GEO_BOOM,
+		GEO_PARTICLE_SPARK,
 		NUM_GEOMETRY,
 	};
 public:
@@ -68,6 +74,10 @@ public:
 	void RenderGO(GameObject *go);
 
 	GameObject* FetchGO();
+
+	void RenderAllParticles();
+	ParticleObject* GetParticle(void);
+	void RenderParticles(ParticleObject* particle);
 protected:
 	unsigned m_vertexArrayID;
 	Mesh* meshList[NUM_GEOMETRY];
@@ -87,6 +97,10 @@ protected:
 	float fps;
 
 	std::vector<unsigned char> m_heightMap;
+	std::vector<ParticleObject*> particleList;
+
+	int m_particleCount;
+	unsigned MAX_PARTICLE;
 };
 
 #endif
