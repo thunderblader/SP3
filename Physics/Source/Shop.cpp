@@ -35,4 +35,5 @@ void Shop::Purchase_Upgrade()
 void Shop::get_item(int id)
 {
 	item_price = Tree::getInstance()->search(stuff, id);
+	cout << "Price: " << item_price << endl;
 }
