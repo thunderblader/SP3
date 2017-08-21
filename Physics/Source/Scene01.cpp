@@ -35,7 +35,7 @@ void Scene01::Init()
 	m_worldWidth = m_worldHeight * (float)Application::GetWindowWidth() / Application::GetWindowHeight();
 
 	m_TerrainHeight = 20.f;
-	m_TerrainWidth = 500;
+	m_TerrainWidth = 1000;
 
 	m_speed = 40.f;
 
@@ -63,12 +63,12 @@ void Scene01::Init()
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
 	m_player = Player::GetInstance();
-	m_player->Init(FetchGO(), FetchGO(), GameObject::GO_BLOCK, Vector3(-50, 25, 0), Vector3(5, 4, 1), 1.f, 50.f);
+	m_player->Init(FetchGO(), FetchGO(), GameObject::GO_BLOCK, Vector3(-50, 25, 0), Vector3(5, 4, 1), 1.f, 10.f);
 	m_player->SetHeightmap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
 	m_control = new Controller(m_player);
 	m_control->LoadConfig("Data//Config.ini", param_physics);
 	Enemy* enemy = new Enemy();
-	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(0.f, 20.f, 0.f), Vector3(5.f, 5.f, 5.f));
+	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(0.f, 40.f, 0.f), Vector3(5.f, 5.f, 5.f));
 	enemyList.push_back(enemy);
 
 	for (int i = 0; i < 5; i++)
@@ -92,7 +92,7 @@ void Scene01::Init()
 	//float test3 = 1 / test2;
 
 	m_particleCount = 0;
-	MAX_PARTICLE = 100;
+	MAX_PARTICLE = 1000;
 }
 
 GameObject* Scene01::FetchGO()
@@ -231,15 +231,29 @@ void Scene01::BombCollision(GameObject * go1, GameObject * go2)
 
 void Scene01::UpdateParticles(double dt)
 {
-	if (m_player->GetVel().Length() > 5 && m_particleCount < MAX_PARTICLE)
-	{
-		ParticleObject* particle = GetParticle();
-		particle->type = ParticleObject_TYPE::P_SPARK;
-		particle->scale.Set(1, 1, 1);
-		particle->vel.Set(Math::RandFloatMinMax(-5, 0), Math::RandFloatMinMax(5, 0), 0);
-		particle->rotationSpeed = Math::RandFloatMinMax(20, 40);
-		//particle->pos.Set(Math::RandFloatMinMax(-1700, 1700), 1200, Math::RandFloatMinMax(-1700, 1700));
-		particle->pos = m_player->GetPlayerPos();
+	if (m_particleCount < MAX_PARTICLE)
+	{	
+		if (m_player->GetVel().Length() > 5)
+		{
+			ParticleObject* particle = GetParticle();
+			particle->type = ParticleObject_TYPE::P_SPARK;
+			particle->scale.Set(1, 1, 1);
+			particle->vel.Set(Math::RandFloatMinMax(-5, 0), Math::RandFloatMinMax(5, 0), 0);
+			particle->rotationSpeed = Math::RandFloatMinMax(20, 40);
+			//particle->pos.Set(Math::RandFloatMinMax(-1700, 1700), 1200, Math::RandFloatMinMax(-1700, 1700));
+			particle->pos = m_player->GetPlayerPos();
+		}
+		for (int i = 0; i < 5; ++i)
+		{
+			ParticleObject* particle = GetParticle();
+			particle->type = ParticleObject_TYPE::P_RAIN;
+			particle->scale.Set(1, 3, 1);
+			particle->vel.Set(Math::RandFloatMinMax(-5, -4), -9.8, 0);
+			particle->rotationSpeed = 0;
+			particle->rotation = Math::RadianToDegree(atan2(particle->vel.Normalized().y, particle->vel.Normalized().x)) - 270;
+			particle->pos.Set(Math::RandFloatMinMax(-m_TerrainWidth*1.5, m_TerrainWidth*1.5), m_worldHeight*1.5, 0);
+		}
+		
 	}
 
 	std::vector<ParticleObject*>::iterator it, end;
@@ -254,24 +268,18 @@ void Scene01::UpdateParticles(double dt)
 			particle->vel.y += -9.8f * (float)dt;
 			particle->pos += particle->vel * (float)dt * 10.0f;
 			particle->rotation += particle->rotationSpeed * (float)dt;
-			if (particle->pos.y <= 1)
-			{
-				particle->isActive = false;
-				--m_particleCount;
-			}
 		}
-		//if (particle->type == ParticleObject_TYPE::P_SMOKE)
-		//{
-		//	particle->vel -= m_gravity  * 0.5f * (float)dt;
-		//	particle->pos += particle->vel * (float)dt * 10.0f;
-		//	particle->rotation += particle->rotationSpeed * (float)dt;
-
-		//	if (particle->pos.y > smokepos.y + 100)
-		//	{
-		//		particle->isActive = false;
-		//		--m_particleCount;
-		//	}
-		//}
+		else if (particle->type == ParticleObject_TYPE::P_RAIN)
+		{
+			particle->vel.y -= 9.8f * (float)dt;
+			particle->pos += particle->vel * (float)dt * 10.0f;
+			//particle->rotation += particle->rotationSpeed * (float)dt;
+		}
+		if (particle->pos.y <= 1)
+		{
+			particle->isActive = false;
+			--m_particleCount;
+		}
 	}
 }
 
@@ -426,7 +434,7 @@ void Scene01::Update(double dt)
 					tempnormal = Vector3(sin(-theta), cos(-theta), 0).Normalize();
 					go->dir = tempnormal;
 					go->vel = go->vel - (go->vel.Dot(tempnormal) * tempnormal);
-					go->vel.x = go->vel.x - go->vel.x * 5.f * (float)dt;
+					go->vel.x = go->vel.x - go->vel.x * 2.f * (float)dt;
 				}
 				/*if ((go->pos.x < 0 + go->scale.x && go->vel.x < 0) || (go->pos.x > m_worldWidth - go->scale.x && go->vel.x > 0))
 				{

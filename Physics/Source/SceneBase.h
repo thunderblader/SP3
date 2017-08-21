@@ -57,6 +57,7 @@ public:
 		GEO_BOMB,
 		GEO_BOOM,
 		GEO_PARTICLE_SPARK,
+		GEO_PARTICLE_RAIN,
 		NUM_GEOMETRY,
 	};
 public:
