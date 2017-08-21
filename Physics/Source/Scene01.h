@@ -35,6 +35,7 @@ public:
 	void CollisionResponse(GameObject *go1, GameObject *go2);
 	void BombCollision(GameObject * go1, GameObject * go2);
 	void Camera_Control(double dt);
+	void UpdateParticles(double dt);
 
 protected:
 	vector<GameObject *> m_goList;

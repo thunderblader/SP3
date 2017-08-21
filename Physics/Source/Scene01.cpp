@@ -6,6 +6,7 @@
 #include "SoundEngine.h"
 #include "Terrain\LoadHmap.h"
 #include "Physics\Physics.h"
+#include "Particle\Particle.h"
 
 #include <sstream>
 #include <fstream>
@@ -34,7 +35,7 @@ void Scene01::Init()
 	m_worldWidth = m_worldHeight * (float)Application::GetWindowWidth() / Application::GetWindowHeight();
 
 	m_TerrainHeight = 20.f;
-	m_TerrainWidth = 1000;
+	m_TerrainWidth = 500;
 
 	m_speed = 40.f;
 
@@ -83,6 +84,9 @@ void Scene01::Init()
 	//Vector3 test1, test2;
 	//Physics<Vector3>::K1CalcTime(test1, test1, test1);
 	//float test3 = 1 / test2;
+
+	m_particleCount = 0;
+	MAX_PARTICLE = 100;
 }
 
 GameObject* Scene01::FetchGO()
@@ -219,11 +223,58 @@ void Scene01::BombCollision(GameObject * go1, GameObject * go2)
 	}
 }
 
+void Scene01::UpdateParticles(double dt)
+{
+	if (m_particleCount < MAX_PARTICLE)
+	{
+		ParticleObject* particle = GetParticle();
+		particle->type = ParticleObject_TYPE::P_SPARK;
+		particle->scale.Set(1, 1, 1);
+		particle->vel.Set(Math::RandFloatMinMax(-5, 0), Math::RandFloatMinMax(5, 0), 0);
+		particle->rotationSpeed = Math::RandFloatMinMax(20, 40);
+		//particle->pos.Set(Math::RandFloatMinMax(-1700, 1700), 1200, Math::RandFloatMinMax(-1700, 1700));
+		particle->pos = m_player->GetPlayerPos();
+		particle->pos.z = 0;
+	}
+
+	std::vector<ParticleObject*>::iterator it, end;
+	end = particleList.end();
+	for (it = particleList.begin(); it != end; ++it)
+	{
+		ParticleObject* particle = (ParticleObject*)*it;
+		if (!particle->isActive)
+			continue;
+		if (particle->type == ParticleObject_TYPE::P_SPARK)
+		{
+			particle->vel.y += -9.8f * (float)dt;
+			particle->pos += particle->vel * (float)dt * 10.0f;
+			particle->rotation += particle->rotationSpeed * (float)dt;
+			if (particle->pos.y <= 1)
+			{
+				particle->isActive = false;
+				--m_particleCount;
+			}
+		}
+		//if (particle->type == ParticleObject_TYPE::P_SMOKE)
+		//{
+		//	particle->vel -= m_gravity  * 0.5f * (float)dt;
+		//	particle->pos += particle->vel * (float)dt * 10.0f;
+		//	particle->rotation += particle->rotationSpeed * (float)dt;
+
+		//	if (particle->pos.y > smokepos.y + 100)
+		//	{
+		//		particle->isActive = false;
+		//		--m_particleCount;
+		//	}
+		//}
+	}
+}
+
 void Scene01::Update(double dt)
 {
 	SceneBase::Update(dt);
 	Camera_Control(dt);
-
+	UpdateParticles(dt);
 	if (KeyboardController::GetInstance()->IsKeyPressed('L'))
 	{
 		//file.Save_Data(Level, Score, Gold);
@@ -598,6 +649,7 @@ void Scene01::Render()
 		modelStack.PopMatrix();
 	}
 
+	RenderAllParticles();
 	//On screen text
 
 	std::ostringstream ss;
