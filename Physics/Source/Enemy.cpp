@@ -1,4 +1,5 @@
 #include "Enemy.h"
+#include "Physics\Physics.h"
 
 GameObject* Enemy::playerObj = 0;
 
@@ -29,6 +30,8 @@ void Enemy::Update(double dt)
 
 	for (unsigned i = 0; i < projList.size(); ++i)
 	{
+		projList[i]->pos += Physics::K1(projList[i]->vel, Vector3(0.f, -9.8f * projList[i]->mass * 2.f, 0.f), dt);
+
 		if ((playerObj->pos - projList[i]->pos).LengthSquared()
 			<= (playerObj->scale.x + projList[i]->scale.x) * (playerObj->scale.x + projList[i]->scale.x))
 		{
@@ -57,7 +60,7 @@ void Enemy::SetPlayerObj(GameObject * _playerObj)
 
 void Enemy::PushProjectile(GameObject * _projObj, Vector3 _target, Vector3 _scale, float _spd)
 {
-	_projObj->type = GameObject::GO_BALL;	// Set type to projectile
+	_projObj->type = GameObject::GO_PROJ_SNOWBALL;	// Set type to projectile
 	_projObj->pos = enemyObj->pos;
 	_projObj->scale = _scale;
 	_projObj->dir = (_target - _projObj->pos).Normalized() + Vector3(0.f, 1.f, 0.f);

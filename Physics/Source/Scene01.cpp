@@ -99,7 +99,9 @@ GameObject* Scene01::FetchGO()
 	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;
-		if (!go->active && (go->type != GameObject::GO_PLAYER || go->type != GameObject::GO_BOMB))
+		if (!go->active && go->type == GameObject::GO_BLOCK)
+			std::cout << "hit";
+		if (!go->active && go->type != GameObject::GO_BLOCK && go->type != GameObject::GO_BOMB)
 		{
 			go->active = true;
 			++m_objectCount;
@@ -326,7 +328,7 @@ void Scene01::Update(double dt)
 	projDelay += (float)dt;
 	if (projDelay > 0.5f) // Debug key snow yeti shooting
 	{
-		//enemyList[0]->PushProjectile(FetchGO(), m_player->GetPlayerPos(), Vector3(1.f, 1.f, 1.f), 10.f);
+		enemyList[0]->PushProjectile(FetchGO(), m_player->GetPlayerPos(), Vector3(1.f, 1.f, 1.f), 10.f);
 		projDelay = 0.f;
 	}
 
@@ -595,6 +597,12 @@ void Scene01::RenderGO(GameObject *go)
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
 		RenderMesh(meshList[GEO_CUBE], false);
+		break;
+
+	case GameObject::GO_PROJ_SNOWBALL:
+		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
+		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
+		RenderMesh(meshList[GEO_SNOWBALL], false);
 		break;
 
 	case GameObject::GO_TEMP:
