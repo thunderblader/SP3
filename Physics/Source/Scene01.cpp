@@ -279,11 +279,6 @@ void Scene01::Update(double dt)
 	Camera_Control(dt);
 	UpdateParticles(dt);
 
-	if (time_limit < 0.125)
-	{
-		time_limit += dt;
-	}
-
 	if (KeyboardController::GetInstance()->IsKeyPressed('L'))
 	{
 		//file.Save_Data(Level, Score, Gold);
@@ -297,23 +292,24 @@ void Scene01::Update(double dt)
 		shop.Purchase_Item(1);
 	}
 
-	if (KeyboardController::GetInstance()->IsKeyPressed('B') && time_limit >= 0.125)
+	if (KeyboardController::GetInstance()->IsKeyPressed('B'))
 	{
-		item_id--;
-		shop.get_item(item_id);
-		time_limit = 0;
-		cout << item_id << endl;
+		if (item_id >= 1)
+		{
+			item_id--;
+			shop.get_item(item_id);
+			cout << item_id << endl;
+		}
 	}
-	if (KeyboardController::GetInstance()->IsKeyPressed('N') && time_limit >= 0.125)
+	if (KeyboardController::GetInstance()->IsKeyPressed('N'))
 	{
 		shop.Purchase_Item(item_id);
 		time_limit = 0;
 	}
-	if (KeyboardController::GetInstance()->IsKeyPressed('M') && time_limit >= 0.125)
+	if (KeyboardController::GetInstance()->IsKeyPressed('M'))
 	{
 		item_id++;
 		shop.get_item(item_id);
-		time_limit = 0;
 		cout << item_id << endl;
 	}
 

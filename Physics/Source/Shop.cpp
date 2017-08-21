@@ -8,14 +8,14 @@ void Shop::Load_Shop()
 	item_price = 0;
 }
 
-void Shop::Purchase_Item(int test)
+void Shop::Purchase_Item(int id)
 {
 	item_price = 0;
 	stuff = Tree::getInstance();
 	cout << "gold: " << gold << endl;
 	cout << "Which do u want to buy?" << endl;
 	cout << "you bought: ";
-	item_price = Tree::getInstance()->search(stuff, test);
+	item_price = Tree::getInstance()->search(stuff, id);
 	if (gold < item_price)
 	{			
 		cout << "you no money" << endl;
