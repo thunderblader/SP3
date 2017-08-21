@@ -33,7 +33,7 @@ void Scene01::Init()
 	m_worldHeight = 100.f;
 	m_worldWidth = m_worldHeight * (float)Application::GetWindowWidth() / Application::GetWindowHeight();
 
-	m_TerrainHeight = 40.f;
+	m_TerrainHeight = 20.f;
 	m_TerrainWidth = 1000;
 
 	m_speed = 40.f;
@@ -45,23 +45,41 @@ void Scene01::Init()
 
 	free_look = false;
 
-//	file.Init(&m_goList);
-//	file.Load(false, "Image//Test_Level.csv");
+	file.Init(&m_goList);
+	file.Load(false, "Image//Test_Level.csv");
 
-	shop.Purchase_Item();
+	
+
+	file.Load(true, "Image//shop_data.csv");
+
+	shop.Load_Shop();
+
+	shop.Purchase_Item(0);
 
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
 	m_player = Player::GetInstance();
-	m_player->Init(FetchGO(), GameObject::GO_BLOCK, Vector3(25, 25, 0), Vector3(5, 4, 1), 1.f, 50.f);
+	m_player->Init(FetchGO(), FetchGO(), GameObject::GO_BLOCK, Vector3(-50, 25, 0), Vector3(5, 4, 1), 1.f, 50.f);
 	m_player->SetHeightmap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
 	m_control = new Controller(m_player);
 	m_control->LoadConfig("Data//Config.ini", param_physics);
-
 	Enemy* enemy = new Enemy();
 	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(0.f, 20.f, 0.f), Vector3(5.f, 5.f, 5.f));
 	enemyList.push_back(enemy);
 	
+	for (int i = 0; i < 5; i++)
+	{
+		for (int j = 0; j < 2; j++)
+		{
+			GameObject *bricks = FetchGO();
+			bricks->active = true;
+			bricks->type = GameObject::GO_BRICK;
+			bricks->dir.Set(0, 1, 0);
+			bricks->pos.Set(30 + j * 10, 2.5 + 5 * i, 0);
+			bricks->scale.Set(5, 5, 1);
+		}
+	}
+
 	//Vector3 test1, test2;
 	//Physics<Vector3>::K1CalcTime(test1, test1, test1);
 	//float test3 = 1 / test2;
@@ -172,7 +190,33 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 		go1->vel = go1->vel - (2 * go1->vel.Dot(N)) * N;
 		break;
 	}
+}
 
+void Scene01::BombCollision(GameObject * go1, GameObject * go2)
+{
+	Vector3 w0 = go2->pos;
+	Vector3 b1 = go1->pos;
+	Vector3 N = go2->dir;
+	Vector3 NP = N.Cross(Vector3(0, 0, 1));
+	float l = go2->scale.y;
+	float r = go1->scale.x;
+	float h = go2->scale.x;
+	if ((w0 - b1).Dot(N) < 0)
+		N = -N;
+
+	Vector3 detect(Math::Clamp((b1 - w0).x, 0.f, h / 2), Math::Clamp((b1 - w0).y, 0.f, l / 2), 0);
+	detect += w0;
+
+	if ((detect - b1).Length() < r)
+	{
+		if (!go1->boom)
+		{
+			go1->vel.SetZero();
+			go1->boom = true;
+
+			go2->active = false;
+		}
+	}
 }
 
 void Scene01::Update(double dt)
@@ -187,6 +231,26 @@ void Scene01::Update(double dt)
 	if (KeyboardController::GetInstance()->IsKeyPressed('K'))
 	{
 		//file.Load_Data();
+	}
+	if (KeyboardController::GetInstance()->IsKeyPressed('I'))
+	{
+		shop.Purchase_Item(0);
+	}
+	if (KeyboardController::GetInstance()->IsKeyPressed('V'))
+	{
+		shop.Purchase_Item(1);
+	}
+	if (KeyboardController::GetInstance()->IsKeyPressed('B'))
+	{
+		shop.Purchase_Item(2);
+	}
+	if (KeyboardController::GetInstance()->IsKeyPressed('N'))
+	{
+		shop.Purchase_Item(3);
+	}
+	if (KeyboardController::GetInstance()->IsKeyPressed('M'))
+	{
+		shop.Purchase_Item(4);
 	}
 
 	if (KeyboardController::GetInstance()->IsKeyPressed('9'))
@@ -258,7 +322,9 @@ void Scene01::Update(double dt)
 
 		GameObject *go = FetchGO();
 		go->pos = m_ghost->pos;
-		go->scale.Set(1.5f, 1.5f, 1.5f);
+		go->type = GameObject::GO_BOMB;
+		go->boom = false;
+		go->scale.Set(2, 2, 2);
 		go->mass = 1.5f * 1.5f * 1.5f;
 
 		double x, y;
@@ -278,15 +344,18 @@ void Scene01::Update(double dt)
 			//Exercise 7: handle out of bound game objects
 			if (go->type == GameObject::GO_BALL || go->type == GameObject::GO_BLOCK)
 			{
-				go->vel.x = go->vel.x - go->vel.x * 2.f * (float)dt;
+				go->vel.x = go->vel.x - go->vel.x * 1.f * (float)dt;
 				if (go->vel.Length() < 3)
 					go->vel.IsZero();
-				go->vel.y = go->vel.y - 9.8f * go->mass * 2.f * (float)dt;
+				Physics::K1(go->vel.y, (-9.8f * go->mass * 2.f), (float)dt, go->vel.y);
+				//go->vel.y = go->vel.y - 9.8f * go->mass  * (float)dt;
 				go->pos += go->vel * (float)dt * m_speed;
-				if (go->pos.y <= (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth*0.5) / m_TerrainWidth,0))+go->scale.y * 0.5f)
+				if (go->pos.y <= (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + go->scale.y * 0.5f)
 				{
-					go->pos.y = (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth*0.5) / m_TerrainWidth, 0)) + go->scale.y * 0.5f;
-					float theta = (float)atan2((m_TerrainHeight * ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth*0.5) - go->scale.x * 0.5f) / m_TerrainWidth, 0)) - (m_TerrainHeight * ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth*0.5) + go->scale.x * 0.5f) / m_TerrainWidth, 0)), -go->scale.x);
+					go->pos.y = (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + go->scale.y * 0.5f;
+					float theta = atan2((m_TerrainHeight
+						* ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth*0.5f) - go->scale.x * 0.5f) / m_TerrainWidth, 0.f)) - (m_TerrainHeight
+						* ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth*0.5f) + go->scale.x * 0.5f) / m_TerrainWidth, 0.f)), -go->scale.x);
 					Vector3 tempnormal;
 
 					//if (theta > 3.14159)
@@ -331,52 +400,103 @@ void Scene01::Update(double dt)
 				//{
 				//	go->vel.y = -go->vel.y;
 				//}
+
+				for (std::vector<GameObject *>::iterator it2 = it + 1; it2 != m_goList.end(); ++it2)
+				{
+					GameObject *go2 = (GameObject *)*it2;
+
+					if (!go2->active || (go->type != GameObject::GO_BALL && go2->type != GameObject::GO_BALL))
+						continue;
+
+					GameObject *goA, *goB;
+					if (go->type == GameObject::GO_BALL)
+					{
+						goA = go;
+						goB = go2;
+					}
+					else
+					{
+						goA = go2;
+						goB = go;
+					}
+
+					if (CheckCollision(goA, goB, (float)dt))
+					{
+						m1 = goA->mass;
+						m2 = goB->mass;
+						u1 = goA->vel;
+						u2 = goB->vel;
+
+						initialMomentum = m1 * u1 + m2 * u2;
+
+						CollisionResponse(goA, goB);
+
+						v1 = goA->vel;
+						v2 = goB->vel;
+
+						finalMomentum = m1 * v1 + m2 * v2;
+
+						initialKE = 0.5f * m1 * u1.Dot(u1) + 0.5f * m2 * u2.Dot(u2);
+						finalKE = 0.5f * m1 * v1.Dot(v1) + 0.5f * m2 * v2.Dot(v2);
+
+						break;
+					}
+				}
 			}
 
-			//Exercise 8a: handle collision between GO_BALL and GO_BALL using velocity swap
-			for (std::vector<GameObject *>::iterator it2 = it + 1; it2 != m_goList.end(); ++it2)
+			if (go->type == GameObject::GO_BOMB)
 			{
-				GameObject *go2 = (GameObject *)*it2;
-
-				//Exercise 12: improve inner loop to prevent double collision
-				if (!go2->active || (go->type != GameObject::GO_BALL && go2->type != GameObject::GO_BALL))
-					continue;
-
-				GameObject *goA, *goB;
-				if (go->type == GameObject::GO_BALL)
+				go->pos += go->vel * static_cast<float>(dt);
+				go->vel += Vector3(0, -9.8, 0) * dt;
+				if (go->boom)
 				{
-					goA = go;
-					goB = go2;
+					if(go->scale.x < 5)
+						go->scale *= 1.2;
+					if (go->scale.x > 5)
+					{
+						go->boom = false;
+						go->active = false;
+					}
+
+					for (std::vector<GameObject *>::iterator it2 = it + 1; it2 != m_goList.end(); ++it2)
+					{
+						GameObject *go2 = static_cast<GameObject *>(*it2);
+						if (go2->active)
+							continue;
+
+						if (go2->type == GameObject::GO_BRICK)
+						{
+							Vector3 pos = go->pos - go2->pos;
+							pos.x = Math::Clamp(pos.x, 0.f, go2->scale.x);
+							pos.y = Math::Clamp(pos.y, 0.f, go2->scale.y);
+
+							pos += go2->pos;
+
+							if ((pos - go->pos).Length() > 5 && (pos - go->pos).Length() < 30)
+							{
+								float energy = (30 - (pos - go->pos).Length()) / 30 * 2;
+
+								Vector3 explosion = (go->pos - pos).Normalized() * energy;
+								go2->vel -= explosion;
+							}
+						}
+					}
 				}
 				else
-				{
-					goA = go2;
-					goB = go;
-				}
-
-				if (CheckCollision(goA, goB, (float)dt))
-				{
-					//Exercise 8b: store values in auditing variables
-					m1 = goA->mass;
-					m2 = goB->mass;
-					u1 = goA->vel;
-					u2 = goB->vel;
-
-					initialMomentum = m1 * u1 + m2 * u2;
-
-					//Exercise 10: handle collision using momentum swap instead
-					CollisionResponse(goA, goB);
-
-					v1 = goA->vel;
-					v2 = goB->vel;
-
-					finalMomentum = m1 * v1 + m2 * v2;
-
-					initialKE = 0.5f * m1 * u1.Dot(u1) + 0.5f * m2 * u2.Dot(u2);
-					finalKE = 0.5f * m1 * v1.Dot(v1) + 0.5f * m2 * v2.Dot(v2);
-
-					break;
-				}
+					for (std::vector<GameObject *>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
+					{
+						GameObject *go2 = (GameObject *)*it2;
+						if (go2->active)
+						{
+							if(go2->type == GameObject::GO_BRICK)
+							{
+								go2->pos += go2->vel * static_cast<float>(dt);
+								if (!go2->vel.IsZero())
+									go2->vel += (Vector3(0, 0, 0) - go2->vel) * dt;
+								BombCollision(go, go2);
+							}
+						}
+					}
 			}
 		}
 	}
@@ -412,6 +532,25 @@ void Scene01::RenderGO(GameObject *go)
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
 		RenderMesh(meshList[GEO_CUBE], false);
+		break;
+
+	case GameObject::GO_TEMP:
+		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
+		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
+		RenderMesh(meshList[GEO_CUBE], false);
+	case GameObject::GO_BRICK:
+		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
+		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
+		RenderMesh(meshList[GEO_BRICK], false);
+		break;
+
+	case GameObject::GO_BOMB:
+		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
+		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
+		if (!go->boom)
+			RenderMesh(meshList[GEO_BOMB], false);
+		if (go->boom)
+			RenderMesh(meshList[GEO_BOOM], false);
 		break;
 	}
 

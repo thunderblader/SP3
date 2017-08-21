@@ -113,12 +113,19 @@ void SceneBase::Init()
 	meshList[GEO_TEXT]->material.kAmbient.Set(1, 0, 0);
 
 	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmap2.raw", m_heightMap);
+	//meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmap3.raw", m_heightMap);
 	meshList[GEO_TERRAIN]->textureID = LoadTGA("Image//moss1.tga");
 	meshList[GEO_CART] = MeshBuilder::GenerateQuad("cart", Color(0.f, 0.f, 0.f), 1.f);
 	meshList[GEO_CART]->textureID = LoadTGA("Image//cart.tga");
+	meshList[GEO_BRICK] = MeshBuilder::GenerateQuad("brick", Color(0.f, 0.f, 0.f), 1.f);
+	meshList[GEO_BRICK]->textureID = LoadTGA("Image//brick.tga");
+	meshList[GEO_BOMB] = MeshBuilder::GenerateQuad("bomb", Color(0.f, 0.f, 0.f), 1.f);
+	meshList[GEO_BOMB]->textureID = LoadTGA("Image//bomb.tga");
+	meshList[GEO_BOOM] = MeshBuilder::GenerateQuad("boom", Color(0.f, 0.f, 0.f), 1.f);
+	meshList[GEO_BOOM]->textureID = LoadTGA("Image//boom.tga");
 
-	CSoundEngine::GetInstance()->Init();
-	CSoundEngine::GetInstance()->AddSound("Jump", "Image//Mario-jump-sound.mp3");
+	//CSoundEngine::GetInstance()->Init();
+	//CSoundEngine::GetInstance()->AddSound("Jump", "Image//Mario-jump-sound.mp3");
 
 	bLightEnabled = false;
 }

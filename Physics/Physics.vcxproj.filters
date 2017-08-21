@@ -83,6 +83,9 @@
     <ClCompile Include="Source\Physics\Physics.cpp">
       <Filter>Physics</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Physics\Collision.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -140,6 +143,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Physics\Physics.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Physics\Collision.h">
       <Filter>Physics</Filter>
     </ClInclude>
   </ItemGroup>
