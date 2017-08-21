@@ -175,7 +175,7 @@ bool Scene01::CheckCollision(GameObject * go1, GameObject * go2, float dt)
 
 void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 {
-	Vector3 N;
+	Vector3	N;
 	switch (go2->type)
 	{
 	case GameObject::GO_BALL:
@@ -401,7 +401,6 @@ void Scene01::Update(double dt)
 	}
 
 	//Physics Simulation Section
-
 	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;
