@@ -35,7 +35,7 @@ void Player::Update(double dt)
 		playerBomb->active = true;
 		playerBomb->type = GameObject::GO_BOMB;
 		playerBomb->vel = playerObj->vel * 5;
-		playerBomb->pos = playerObj->pos;
+		playerBomb->pos = GetPlayerPos();
 		playerBomb->scale.Set(2, 2, 1);
 		playerObj->active = false;
 		launched = true;
@@ -50,7 +50,6 @@ void Player::Update(double dt)
 			playerBomb->active = false;
 		}
 	}
-	std::cout << playerObj->pos.y << std::endl;
 	if (!playerBomb->active)
 	{
 		playerBomb->pos.Set(0, playerObj->pos.y, 0);
