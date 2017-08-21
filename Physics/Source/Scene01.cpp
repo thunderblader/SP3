@@ -70,14 +70,17 @@ void Scene01::Init()
 	
 	for (int i = 0; i < 5; i++)
 	{
-		for (int j = 0; j < 2; j++)
+		for (int j = 0; j < 5; j++)
 		{
-			GameObject *bricks = FetchGO();
-			bricks->active = true;
-			bricks->type = GameObject::GO_BRICK;
-			bricks->dir.Set(0, 1, 0);
-			bricks->pos.Set(30 + j * 10, 2.5 + 5 * i, 0);
-			bricks->scale.Set(5, 5, 1);
+			if (i % 2 == 1 || j % 2 == 1)
+			{
+				GameObject *bricks = FetchGO();
+				bricks->active = true;
+				bricks->type = GameObject::GO_BRICK;
+				bricks->dir.Set(0, 1, 0);
+				bricks->pos.Set(40 + j * 10, 2.5 + 5 * i, 0);
+				bricks->scale.Set(5, 5, 1);
+			}
 		}
 	}
 
@@ -522,9 +525,9 @@ void Scene01::Update(double dt)
 
 							pos += go2->pos;
 
-							if ((pos - go->pos).Length() > 5 && (pos - go->pos).Length() < 30)
+							if ((pos - go->pos).Length() > 5 && (pos - go->pos).Length() < 100)
 							{
-								float energy = (30 - (pos - go->pos).Length()) / 30 * 2;
+								float energy = (30 - (pos - go->pos).Length()) / 30 * 10;
 
 								Vector3 explosion = (go->pos - pos).Normalized() * energy;
 								go2->vel -= explosion;
@@ -588,6 +591,8 @@ void Scene01::RenderGO(GameObject *go)
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
 		RenderMesh(meshList[GEO_CUBE], false);
+		break;
+
 	case GameObject::GO_BRICK:
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
