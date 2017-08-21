@@ -13,11 +13,13 @@ public:
 	void Load_Shop();
 	void Purchase_Item(int O);
 	void Purchase_Upgrade();
+	void get_item(int id);
 	
 	int gold;
+	int item_price;
 
 	Load_File shop_file;
-	//Tree *items = new Tree;
+	Tree *stuff;
 	
 	
 

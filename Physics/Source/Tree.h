@@ -10,7 +10,7 @@ using namespace std;
 class Tree
 {
 private:
-	static Tree *test;
+	static Tree *node;
 	Tree();
 
 public:
@@ -33,12 +33,13 @@ public:
 	Tree* balance(Tree *);
 	Tree* insert(Tree *, int data, int price, string name);
 	void inorder(Tree *);
-	void search(Tree *, int value, int price);
+	int search(Tree *, int value);
 
 	static Tree *getInstance();
 	void setInstance(Tree *);
 
-	int gold = 1000;
+	int new_gold;
+	bool check;
 
 	
 	Tree *create;

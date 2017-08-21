@@ -2,6 +2,7 @@
 
 Tree::Tree()
 {
+	check = false;
 	root.data = NULL;
 	curr = NULL;
 }
@@ -9,20 +10,20 @@ Tree::Tree()
 Tree::~Tree()
 {
 }
-Tree *Tree::test = NULL;
+Tree *Tree::node = NULL;
 
 Tree *Tree::getInstance()
 {
-	if (test == NULL)
+	if (node == NULL)
 	{
-		test = new Tree();
+		node = new Tree();
 	}
-	return test;
+	return node;
 }
 
 void Tree::setInstance(Tree* input)
 {
-	test = input;
+	node = input;
 }
 
 int Tree::height(Tree *temp)
@@ -195,28 +196,33 @@ void Tree::inorder(Tree *tree)
 	cout << tree->root.data << endl;
 	inorder(tree->right);
 }
-//void Tree::search(Tree *tree, int value, int price)
-//{
-//	search(tree->left, value, price);
-//	if (value == tree->root.price)
-//	{
-//	
-//		if (gold <= 0)
-//		{
-//			cout << "you no money" << endl;
-//		}
-//		else
-//		{
-//			gold -= tree->root.price;
-//	/*		value -= tree->root.price;
-//			value -= Tree::getInstance()->root.price;*/
-//			cout << "gold: " << gold << endl;
-//		}
-//
-//	}
-//	search(tree->right, value, price);
-//}
+int Tree::search(Tree *tree, int value)
+{
+	if (tree == NULL)
+	{
+		if (check == true)
+		{
+			return new_gold;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+	else
+	{
+		search(tree->left, value);
+		if (value == tree->root.data)
+		{
+			cout << tree->root.name << endl;
+			new_gold = tree->root.price;
+			check = true;
+			return tree->root.price;
+		}
+		search(tree->right, value);
+	}
 
 
+}
 
 

@@ -44,12 +44,15 @@ void Scene01::Init()
 	m_objectCount = 0;
 	m_ballCount = 0;
 
+	time_limit = 0;
+	item_id = 0;
+
 	free_look = false;
 
-	file.Init(&m_goList);
-	file.Load(false, "Image//Test_Level.csv");
+//	file.Init(&m_goList);
+//	file.Load(false, "Image//Test_Level.csv");
 
-	
+
 
 	file.Load(true, "Image//shop_data.csv");
 
@@ -69,7 +72,7 @@ void Scene01::Init()
 	enemy->SetPlayerObj(playerObj);
 	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(0.f, 20.f, 0.f), Vector3(5.f, 5.f, 5.f));
 	enemyList.push_back(enemy);
-	
+
 	for (int i = 0; i < 5; i++)
 	{
 		for (int j = 0; j < 5; j++)
@@ -275,6 +278,12 @@ void Scene01::Update(double dt)
 	SceneBase::Update(dt);
 	Camera_Control(dt);
 	UpdateParticles(dt);
+
+	if (time_limit < 0.125)
+	{
+		time_limit += dt;
+	}
+
 	if (KeyboardController::GetInstance()->IsKeyPressed('L'))
 	{
 		//file.Save_Data(Level, Score, Gold);
@@ -285,23 +294,27 @@ void Scene01::Update(double dt)
 	}
 	if (KeyboardController::GetInstance()->IsKeyPressed('I'))
 	{
-		shop.Purchase_Item(0);
-	}
-	if (KeyboardController::GetInstance()->IsKeyPressed('V'))
-	{
 		shop.Purchase_Item(1);
 	}
-	if (KeyboardController::GetInstance()->IsKeyPressed('B'))
+
+	if (KeyboardController::GetInstance()->IsKeyPressed('B') && time_limit >= 0.125)
 	{
-		shop.Purchase_Item(2);
+		item_id--;
+		shop.get_item(item_id);
+		time_limit = 0;
+		cout << item_id << endl;
 	}
-	if (KeyboardController::GetInstance()->IsKeyPressed('N'))
+	if (KeyboardController::GetInstance()->IsKeyPressed('N') && time_limit >= 0.125)
 	{
-		shop.Purchase_Item(3);
+		shop.Purchase_Item(item_id);
+		time_limit = 0;
 	}
-	if (KeyboardController::GetInstance()->IsKeyPressed('M'))
+	if (KeyboardController::GetInstance()->IsKeyPressed('M') && time_limit >= 0.125)
 	{
-		shop.Purchase_Item(4);
+		item_id++;
+		shop.get_item(item_id);
+		time_limit = 0;
+		cout << item_id << endl;
 	}
 
 	if (KeyboardController::GetInstance()->IsKeyPressed('9'))
@@ -323,7 +336,7 @@ void Scene01::Update(double dt)
 
 	m_player->Update(dt);
 	m_control->Update(dt);
-	
+
 	vector<Enemy*>::iterator it, end;
 	end = enemyList.end();
 	for (it = enemyList.begin(); it != end; ++it) (*it)->Update(dt);
@@ -413,30 +426,30 @@ void Scene01::Update(double dt)
 					Vector3 tempnormal;
 
 					//if (theta > 3.14159)
-						//tempnormal = Vector3(0, 1, 0).Normalize();
+					//tempnormal = Vector3(0, 1, 0).Normalize();
 					//else
-						tempnormal = Vector3(sin(-theta), cos(-theta), 0).Normalize();
+					tempnormal = Vector3(sin(-theta), cos(-theta), 0).Normalize();
 					go->dir = tempnormal;
 					go->vel = go->vel - (go->vel.Dot(tempnormal) * tempnormal);
 					go->vel.x = go->vel.x - go->vel.x * 5.f * (float)dt;
 				}
 				/*if ((go->pos.x < 0 + go->scale.x && go->vel.x < 0) || (go->pos.x > m_worldWidth - go->scale.x && go->vel.x > 0))
 				{
-					go->vel.x = -go->vel.x;
+				go->vel.x = -go->vel.x;
 				}
 
 				if ((go->pos.y > m_worldHeight - go->scale.y && go->vel.y > 0))
 				{
-					go->vel.y = -go->vel.y;
+				go->vel.y = -go->vel.y;
 				}
 
 				if (go->pos.x < 0 - go->scale.x || go->pos.x > m_worldWidth + go->scale.x ||
-					go->pos.y < 0 - go->scale.y || go->pos.y > m_worldHeight + go->scale.y ||
-					(go->pos.y < 0 - go->scale.y && go->vel.y < 0))
+				go->pos.y < 0 - go->scale.y || go->pos.y > m_worldHeight + go->scale.y ||
+				(go->pos.y < 0 - go->scale.y && go->vel.y < 0))
 				{
-					go->active = false;
-					--m_objectCount;
-					continue;
+				go->active = false;
+				--m_objectCount;
+				continue;
 				}*/
 				//if (go->pos.x + go->scale.x > m_worldWidth && go->vel.x > 0)
 				//{
@@ -504,7 +517,7 @@ void Scene01::Update(double dt)
 				go->vel += Vector3(0, -9.8, 0) * dt;
 				if (go->boom)
 				{
-					if(go->scale.x < 5)
+					if (go->scale.x < 5)
 						go->scale *= 1.2;
 					if (go->scale.x > 5)
 					{
@@ -542,7 +555,7 @@ void Scene01::Update(double dt)
 						GameObject *go2 = (GameObject *)*it2;
 						if (go2->active)
 						{
-							if(go2->type == GameObject::GO_BRICK)
+							if (go2->type == GameObject::GO_BRICK)
 							{
 								go2->pos += go2->vel * static_cast<float>(dt);
 								if (!go2->vel.IsZero())
