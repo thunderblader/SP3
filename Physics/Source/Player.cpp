@@ -34,7 +34,7 @@ void Player::Update(double dt)
 		playerBomb->vel = playerObj->vel * 5;
 		playerBomb->pos = playerObj->pos;
 		playerBomb->scale.Set(2, 2, 1);
-		//playerObj->active = false;
+		playerObj->active = false;
 	}
 
 	if (playerBomb->active)

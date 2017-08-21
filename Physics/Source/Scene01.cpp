@@ -70,7 +70,7 @@ void Scene01::Init()
 	m_control->LoadConfig("Data//Config.ini", param_physics);
 	Enemy* enemy = new Enemy();
 	enemy->SetPlayerObj(playerObj);
-	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(0.f, 20.f, 0.f), Vector3(5.f, 5.f, 5.f));
+	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(0.f, 40.f, 0.f), Vector3(5.f, 5.f, 5.f));
 	enemyList.push_back(enemy);
 
 	for (int i = 0; i < 5; i++)
@@ -326,7 +326,7 @@ void Scene01::Update(double dt)
 	projDelay += (float)dt;
 	if (projDelay > 0.5f) // Debug key snow yeti shooting
 	{
-		enemyList[0]->PushProjectile(FetchGO(), m_player->GetPlayerPos(), Vector3(1.f, 1.f, 1.f), 10.f);
+		//enemyList[0]->PushProjectile(FetchGO(), m_player->GetPlayerPos(), Vector3(1.f, 1.f, 1.f), 10.f);
 		projDelay = 0.f;
 	}
 
