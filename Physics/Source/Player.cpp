@@ -6,7 +6,6 @@ void Player::Init(GameObject * _playerObj, GameObject * _playerBomb
 	, Vector3 _pos, Vector3 _scale, float _mass, float _spd)
 {
 	playerObj = _playerObj;
-	playerBomb = _playerBomb;
 	playerObj->type = _type;
 	playerObj->pos = _pos;
 	playerObj->scale = _scale;
@@ -14,6 +13,12 @@ void Player::Init(GameObject * _playerObj, GameObject * _playerBomb
 	playerObj->vel = Vector3(0.f, 0.f, 0.f);
 	playerObj->dir = Vector3(1.f, 0.f, 0.f);
 	playerObj->normal = Vector3(0.f, 1.f, 0.f);
+	playerBomb = _playerBomb;
+	playerBomb->type = GameObject::GO_BOMB;
+	playerBomb->pos = _pos;
+	playerBomb->scale = _scale;
+	playerBomb->mass = _mass;
+	playerBomb->active = false;
 
 	defaultPos = _pos;
 	m_speed = _spd;
