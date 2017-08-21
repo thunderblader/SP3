@@ -58,12 +58,14 @@ void Scene01::Init()
 
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
+	GameObject* playerObj = FetchGO();
 	m_player = Player::GetInstance();
-	m_player->Init(FetchGO(), FetchGO(), GameObject::GO_BLOCK, Vector3(-50, 25, 0), Vector3(5, 4, 1), 1.f, 50.f);
+	m_player->Init(playerObj, FetchGO(), GameObject::GO_BLOCK, Vector3(-50, 25, 0), Vector3(5, 4, 1), 1.f, 50.f);
 	m_player->SetHeightmap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
 	m_control = new Controller(m_player);
 	m_control->LoadConfig("Data//Config.ini", param_physics);
 	Enemy* enemy = new Enemy();
+	enemy->SetPlayerObj(playerObj);
 	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(0.f, 20.f, 0.f), Vector3(5.f, 5.f, 5.f));
 	enemyList.push_back(enemy);
 	
@@ -79,10 +81,6 @@ void Scene01::Init()
 			bricks->scale.Set(5, 5, 1);
 		}
 	}
-
-	//Vector3 test1, test2;
-	//Physics<Vector3>::K1CalcTime(test1, test1, test1);
-	//float test3 = 1 / test2;
 }
 
 GameObject* Scene01::FetchGO()
@@ -91,7 +89,7 @@ GameObject* Scene01::FetchGO()
 	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;
-		if (!go->active)
+		if (!go->active && go->type != GameObject::GO_PLAYER)
 		{
 			go->active = true;
 			++m_objectCount;
@@ -262,9 +260,12 @@ void Scene01::Update(double dt)
 		m_speed += 0.1f;
 	}
 
-	if (KeyboardController::GetInstance()->IsKeyPressed('U')) // Debug key snow yeti shooting
+	static float projDelay = 0.f;
+	projDelay += (float)dt;
+	if (projDelay > 0.5f) // Debug key snow yeti shooting
 	{
 		enemyList[0]->PushProjectile(FetchGO(), m_player->GetPlayerPos(), Vector3(1.f, 1.f, 1.f), 10.f);
+		projDelay = 0.f;
 	}
 
 	m_player->Update(dt);
@@ -353,9 +354,9 @@ void Scene01::Update(double dt)
 				if (go->pos.y <= (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + go->scale.y * 0.5f)
 				{
 					go->pos.y = (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + go->scale.y * 0.5f;
-					float theta = atan2((m_TerrainHeight
-						* ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth*0.5f) - go->scale.x * 0.5f) / m_TerrainWidth, 0.f)) - (m_TerrainHeight
-						* ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth*0.5f) + go->scale.x * 0.5f) / m_TerrainWidth, 0.f)), -go->scale.x);
+					float backCart = ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth * 0.5f) - go->scale.x * 0.5f) / m_TerrainWidth, 0.f);
+					float frontCart = ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth * 0.5f) + go->scale.x * 0.5f) / m_TerrainWidth, 0.f);
+					float theta = atan2((m_TerrainHeight * backCart) - (m_TerrainHeight * frontCart), -go->scale.x);
 					Vector3 tempnormal;
 
 					//if (theta > 3.14159)
