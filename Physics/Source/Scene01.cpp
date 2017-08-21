@@ -326,9 +326,22 @@ void Scene01::Update(double dt)
 		}
 		if (KeyboardController::GetInstance()->IsKeyPressed(VK_SPACE))
 		{
-			purchased = shop.Purchase_Item(item_id);
 			time_limit = 0;
-			buy_item = true;
+			if (item_node->root.has_item == true)
+			{
+
+			}
+			else
+			{
+				purchased = shop.Purchase_Item(item_id);
+				buy_item = true;
+				if (purchased)
+				{
+					item_node->root.has_item = true;
+					item_node->set_item(item_id);
+					m_player->Upgrade(item_id);
+				}
+			}
 		}
 		if (KeyboardController::GetInstance()->IsKeyPressed(VK_RIGHT))
 		{
@@ -338,6 +351,7 @@ void Scene01::Update(double dt)
 				item_id++;
 				item_node = item_node->retreve_item(item_node, item_id);
 				cout << item_node->root.name << endl;
+				cout << item_node->root.has_item << endl;
 			}
 		}
 		return;

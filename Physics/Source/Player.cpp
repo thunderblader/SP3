@@ -14,6 +14,7 @@ void Player::Init(GameObject * _playerObj, GameObject * _playerBomb
 	playerObj->vel = Vector3(0.f, 0.f, 0.f);
 	playerObj->dir = Vector3(1.f, 0.f, 0.f);
 	playerObj->normal = Vector3(0.f, 1.f, 0.f);
+//	item_node = Tree::getInstance();
 
 	defaultPos = _pos;
 	m_speed = _spd;
@@ -23,6 +24,14 @@ void Player::Update(double dt)
 {
 	if (!playerObj)
 		return;
+
+	
+	//item_node = item_node->retreve_item(item_node, 2);
+	//if (item_node->root.has_item)
+	//{
+	//	
+
+	//}
 
 	// Player Physics can be done here
 	if (playerObj->pos.x >= -playerObj->scale.x/2 && !launched)
@@ -122,6 +131,22 @@ void Player::Jump(const double dt)
 		return;
 
 	playerObj->vel += Vector3(0.f, 300.f, 0.f) * (float)dt * (1.f / playerObj->mass);
+}
+
+void Player::Upgrade(int id)
+{
+	if (id == 1)
+	{
+		playerObj->scale.x *= 10;
+	}
+	else if (id == 2)
+	{
+		playerObj->scale.x *= 5;
+	}
+	else if (id == 3)
+	{
+		playerObj->scale.x *= 2;
+	}
 }
 
 Player::Player()

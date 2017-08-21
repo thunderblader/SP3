@@ -81,6 +81,11 @@ void Load_File::Process(bool checker, string content)
 						money = atoi(processor.c_str());
 						break;
 					}
+					case 2:
+					{
+						has_item = atoi(processor.c_str());
+						break;
+					}
 				}
 				current++;
 			}
@@ -94,7 +99,7 @@ void Load_File::Process(bool checker, string content)
 	stat = atoi(processor.c_str());
 	if (checker == true)
 	{
-		items = items->insert(items, stat, money, item_name);
+		items = items->insert(items, stat, has_item, money, item_name);
 		items->setInstance(items);
 		number_of_items++;
 	}
