@@ -161,6 +161,7 @@
     <ClCompile Include="Source\Load_File.cpp" />
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\MeshBuilder.cpp" />
+    <ClCompile Include="Source\Particle\Particle.cpp" />
     <ClCompile Include="Source\Physics\Collision.cpp" />
     <ClCompile Include="Source\Physics\Physics.cpp" />
     <ClCompile Include="Source\Player.cpp" />
@@ -183,6 +184,7 @@
     <ClInclude Include="Source\Load_File.h" />
     <ClInclude Include="Source\MeshBuilder.h" />
     <ClInclude Include="Source\ParameterPhysics.h" />
+    <ClInclude Include="Source\Particle\Particle.h" />
     <ClInclude Include="Source\Physics\Collision.h" />
     <ClInclude Include="Source\Physics\Physics.h" />
     <ClInclude Include="Source\Player.h" />
