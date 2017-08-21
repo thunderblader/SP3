@@ -43,6 +43,9 @@ void Scene01::Init()
 	m_objectCount = 0;
 	m_ballCount = 0;
 
+	time_limit = 0;
+	item_id = 0;
+
 	free_look = false;
 
 	file.Init(&m_goList);
@@ -185,7 +188,11 @@ void Scene01::Update(double dt)
 {
 	SceneBase::Update(dt);
 	Camera_Control(dt);
-
+	if (time_limit < 0.125)
+	{
+		time_limit += dt;
+	}
+	//cout << time_limit << endl;
 	if (KeyboardController::GetInstance()->IsKeyPressed('L'))
 	{
 		//file.Save_Data(Level, Score, Gold);
@@ -196,23 +203,27 @@ void Scene01::Update(double dt)
 	}
 	if (KeyboardController::GetInstance()->IsKeyPressed('I'))
 	{
-		shop.Purchase_Item(0);
-	}
-	if (KeyboardController::GetInstance()->IsKeyPressed('V'))
-	{
 		shop.Purchase_Item(1);
 	}
-	if (KeyboardController::GetInstance()->IsKeyPressed('B'))
+
+	if (KeyboardController::GetInstance()->IsKeyPressed('B') && time_limit >= 0.125)
 	{
-		shop.Purchase_Item(2);
+		item_id--;
+		shop.get_item(item_id);
+		time_limit = 0;
+		cout << item_id << endl;
 	}
-	if (KeyboardController::GetInstance()->IsKeyPressed('N'))
+	if (KeyboardController::GetInstance()->IsKeyPressed('N') && time_limit >= 0.125)
 	{
-		shop.Purchase_Item(3);
+		shop.Purchase_Item(item_id);
+		time_limit = 0;
 	}
-	if (KeyboardController::GetInstance()->IsKeyPressed('M'))
+	if (KeyboardController::GetInstance()->IsKeyPressed('M') && time_limit >= 0.125)
 	{
-		shop.Purchase_Item(4);
+		item_id++;
+		shop.get_item(item_id);
+		time_limit = 0;
+		cout << item_id << endl;
 	}
 
 	if (KeyboardController::GetInstance()->IsKeyPressed('9'))

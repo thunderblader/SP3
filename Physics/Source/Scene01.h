@@ -61,11 +61,15 @@ protected:
 	Load_File file;
 	Shop shop;
 
+	int id;
+
 	int Unit_Height_Space;
 	int Unit_Width_Space;
 	int Level;
 	int Score;
 	int Gold;
+	float time_limit;
+	int item_id;
 
 	// Physics Parameters
 	ParamPhysics param_physics;
