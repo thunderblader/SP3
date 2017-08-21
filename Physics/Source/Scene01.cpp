@@ -68,7 +68,7 @@ void Scene01::Init()
 	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(0.f, 20.f, 0.f), Vector3(5.f, 5.f, 5.f));
 	enemyList.push_back(enemy);
 	
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 7; i++)
 	{
 		for (int j = 0; j < 5; j++)
 		{
@@ -395,6 +395,12 @@ void Scene01::Update(double dt)
 		if (go->active)
 		{
 			//Exercise 7: handle out of bound game objects
+			if (go->type == GameObject::GO_BRICK)
+			{
+				go->pos += go->vel * static_cast<float>(dt);
+				//if (!go->vel.IsZero())
+				//	go->vel += (Vector3(0, 0, 0) - go->vel) * dt;
+			}
 			if (go->type == GameObject::GO_BALL || go->type == GameObject::GO_BLOCK)
 			{
 				go->vel.x = go->vel.x - go->vel.x * 1.f * (float)dt;
@@ -525,8 +531,10 @@ void Scene01::Update(double dt)
 
 							pos += go2->pos;
 
-							if ((pos - go->pos).Length() > 5 && (pos - go->pos).Length() < 100)
+							if ((pos - go->pos).Length() > 1 && (pos - go->pos).Length() < 30)
 							{
+								float test = (pos - go->pos).Length();
+								test;
 								float energy = (30 - (pos - go->pos).Length()) / 30 * 10;
 
 								Vector3 explosion = (go->pos - pos).Normalized() * energy;
