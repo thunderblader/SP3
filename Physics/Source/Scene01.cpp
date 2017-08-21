@@ -99,7 +99,7 @@ GameObject* Scene01::FetchGO()
 	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;
-		if (!go->active && go->type != GameObject::GO_PLAYER)
+		if (!go->active && (go->type != GameObject::GO_PLAYER || go->type != GameObject::GO_BOMB))
 		{
 			go->active = true;
 			++m_objectCount;
