@@ -15,11 +15,13 @@ public:
 		GO_PLAYER,
 		GO_ENEMY,
 		GO_ENEMY_SNOWYETI,
+		GO_PROJ_SNOWBALL,
 		GO_WALL,
 		GO_BLOCK,
 		GO_TEMP,
 		GO_BRICK,
 		GO_BOMB,
+		GO_SCREEN,
 		GO_TOTAL //must be last
 	};
 	GAMEOBJECT_TYPE type;

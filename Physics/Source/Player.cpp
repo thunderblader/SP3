@@ -42,7 +42,7 @@ void Player::Update(double dt)
 		playerBomb->vel = playerObj->vel * 5;
 		playerBomb->pos = GetPlayerPos();
 		playerBomb->scale.Set(2, 2, 1);
-		playerObj->active = false;
+		//playerObj->active = false;
 		launched = true;
 	}
 
@@ -126,7 +126,7 @@ void Player::Jump(const double dt)
 		playerObj->pos.y > (m_TerrainHeight * ReadHeightMap(*m_heightmap, (playerObj->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + playerObj->scale.y * 0.5f)
 		return;
 
-	playerObj->vel += Vector3(0.f, m_speed * 4.f, 0.f) * (float)dt * (1.f / playerObj->mass);
+	playerObj->vel += Vector3(0.f, 300.f, 0.f) * (float)dt * (1.f / playerObj->mass);
 }
 
 Player::Player()

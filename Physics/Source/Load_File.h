@@ -28,13 +28,8 @@ public:
 	void Process(bool checker, string content);
 	bool Load_Data(const string saveFileName = "Image//test.sav");
 	bool Save_Data(int data1, int data2, int data3, const string saveFileName = "Image//test.sav");
-	//Tree *Get_Tree();
 
-	//Tree *Get_Tree()
-	//{
-	//	return items;
-	//	//return Load_File::items;
-	//}
+	int number_of_items;
 
 protected:
 	vector<GameObject *>* Gameobject_List;

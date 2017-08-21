@@ -35,7 +35,7 @@ void Scene01::Init()
 	m_worldWidth = m_worldHeight * (float)Application::GetWindowWidth() / Application::GetWindowHeight();
 
 	m_TerrainHeight = 20.f;
-	m_TerrainWidth = 500;
+	m_TerrainWidth = 1000;
 
 	m_speed = 40.f;
 
@@ -47,10 +47,15 @@ void Scene01::Init()
 	time_limit = 0;
 	item_id = 0;
 
-	free_look = false;
+	
 
-//	file.Init(&m_goList);
-//	file.Load(false, "Image//Test_Level.csv");
+	screen = FetchGO();
+
+	free_look = false;
+	in_shop = false;
+	purchased = false;
+	file.Init(&m_goList);
+	file.Load(false, "Image//Test_Level.csv");
 
 
 
@@ -58,13 +63,15 @@ void Scene01::Init()
 
 	shop.Load_Shop();
 
-	shop.Purchase_Item(0);
+	shop.Purchase_Item(1);
+	item_node = Tree::getInstance();
 
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
 	GameObject* playerObj = FetchGO();
 	m_player = Player::GetInstance();
-	m_player->Init(playerObj, FetchGO(), GameObject::GO_BLOCK, Vector3(-50, 25, 0), Vector3(5, 4, 1), 1.f, 50.f);
+
+	m_player->Init(FetchGO(), FetchGO(), GameObject::GO_BLOCK, Vector3(-50, 25, 0), Vector3(5, 4, 1), 1.f, 10.f);
 	m_player->SetHeightmap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
 	m_control = new Controller(m_player);
 	m_control->LoadConfig("Data//Config.ini", param_physics);
@@ -90,7 +97,7 @@ void Scene01::Init()
 	}
 
 	m_particleCount = 0;
-	MAX_PARTICLE = 100;
+	MAX_PARTICLE = 1000;
 }
 
 GameObject* Scene01::FetchGO()
@@ -99,7 +106,7 @@ GameObject* Scene01::FetchGO()
 	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;
-		if (!go->active && (go->type != GameObject::GO_PLAYER || go->type != GameObject::GO_BOMB))
+		if (!go->active && go->type != GameObject::GO_BLOCK && go->type != GameObject::GO_BOMB)
 		{
 			go->active = true;
 			++m_objectCount;
@@ -229,15 +236,29 @@ void Scene01::BombCollision(GameObject * go1, GameObject * go2)
 
 void Scene01::UpdateParticles(double dt)
 {
-	if (m_player->GetVel().Length() > 5 && m_particleCount < MAX_PARTICLE)
-	{
-		ParticleObject* particle = GetParticle();
-		particle->type = ParticleObject_TYPE::P_SPARK;
-		particle->scale.Set(1, 1, 1);
-		particle->vel.Set(Math::RandFloatMinMax(-5, 0), Math::RandFloatMinMax(5, 0), 0);
-		particle->rotationSpeed = Math::RandFloatMinMax(20, 40);
-		//particle->pos.Set(Math::RandFloatMinMax(-1700, 1700), 1200, Math::RandFloatMinMax(-1700, 1700));
-		particle->pos = m_player->GetPlayerPos();
+	if (m_particleCount < MAX_PARTICLE)
+	{	
+		if (m_player->GetVel().Length() > 5)
+		{
+			ParticleObject* particle = GetParticle();
+			particle->type = ParticleObject_TYPE::P_SPARK;
+			particle->scale.Set(1, 1, 1);
+			particle->vel.Set(Math::RandFloatMinMax(-5, 0), Math::RandFloatMinMax(5, 0), 0);
+			particle->rotationSpeed = Math::RandFloatMinMax(20, 40);
+			//particle->pos.Set(Math::RandFloatMinMax(-1700, 1700), 1200, Math::RandFloatMinMax(-1700, 1700));
+			particle->pos = m_player->GetPlayerPos();
+		}
+		for (int i = 0; i < 5; ++i)
+		{
+			ParticleObject* particle = GetParticle();
+			particle->type = ParticleObject_TYPE::P_RAIN;
+			particle->scale.Set(1, 3, 1);
+			particle->vel.Set(Math::RandFloatMinMax(-5, -4), -9.8, 0);
+			particle->rotationSpeed = 0;
+			particle->rotation = Math::RadianToDegree(atan2(particle->vel.Normalized().y, particle->vel.Normalized().x)) - 270;
+			particle->pos.Set(Math::RandFloatMinMax(-m_TerrainWidth*1.5, m_TerrainWidth*1.5), m_worldHeight*1.5, 0);
+		}
+		
 	}
 
 	std::vector<ParticleObject*>::iterator it, end;
@@ -252,30 +273,76 @@ void Scene01::UpdateParticles(double dt)
 			particle->vel.y += -9.8f * (float)dt;
 			particle->pos += particle->vel * (float)dt * 10.0f;
 			particle->rotation += particle->rotationSpeed * (float)dt;
-			if (particle->pos.y <= 1)
-			{
-				particle->isActive = false;
-				--m_particleCount;
-			}
 		}
-		//if (particle->type == ParticleObject_TYPE::P_SMOKE)
-		//{
-		//	particle->vel -= m_gravity  * 0.5f * (float)dt;
-		//	particle->pos += particle->vel * (float)dt * 10.0f;
-		//	particle->rotation += particle->rotationSpeed * (float)dt;
-
-		//	if (particle->pos.y > smokepos.y + 100)
-		//	{
-		//		particle->isActive = false;
-		//		--m_particleCount;
-		//	}
-		//}
+		else if (particle->type == ParticleObject_TYPE::P_RAIN)
+		{
+			particle->vel.y -= 9.8f * (float)dt;
+			particle->pos += particle->vel * (float)dt * 10.0f;
+			//particle->rotation += particle->rotationSpeed * (float)dt;
+		}
+		if (particle->pos.y <= 1)
+		{
+			particle->isActive = false;
+			--m_particleCount;
+		}
 	}
 }
 
 void Scene01::Update(double dt)
 {
 	SceneBase::Update(dt);
+	if (KeyboardController::GetInstance()->IsKeyPressed('I'))
+	{
+		//shop.Purchase_Upgrade(3);
+
+		if (in_shop == false)
+		{
+			in_shop = true;
+		}
+		else
+		{
+			in_shop = false;
+		}
+	}
+	if (in_shop)
+	{
+		if (time_limit < 3)
+		{
+			time_limit += dt;
+		}
+		if (time_limit >= 3)
+		{
+			buy_item = false;
+		}
+		if (KeyboardController::GetInstance()->IsKeyPressed(VK_LEFT))
+		{
+			if (item_id >= 1)
+			{
+				item_node = Tree::getInstance();
+				item_id--;
+				item_node = item_node->retreve_item(item_node, item_id);
+				cout << item_node->root.name << endl;
+			}
+		}
+		if (KeyboardController::GetInstance()->IsKeyPressed(VK_SPACE))
+		{
+			purchased = shop.Purchase_Item(item_id);
+			time_limit = 0;
+			buy_item = true;
+		}
+		if (KeyboardController::GetInstance()->IsKeyPressed(VK_RIGHT))
+		{
+			if (item_id <= file.number_of_items - 1)
+			{
+				item_node = Tree::getInstance();
+				item_id++;
+				item_node = item_node->retreve_item(item_node, item_id);
+				cout << item_node->root.name << endl;
+			}
+		}
+		return;
+	}
+
 	Camera_Control(dt);
 	UpdateParticles(dt);
 
@@ -286,34 +353,6 @@ void Scene01::Update(double dt)
 	if (KeyboardController::GetInstance()->IsKeyPressed('K'))
 	{
 		//file.Load_Data();
-	}
-	if (KeyboardController::GetInstance()->IsKeyPressed('I'))
-	{
-		shop.Purchase_Item(1);
-	}
-
-	if (KeyboardController::GetInstance()->IsKeyPressed('B'))
-	{
-		if (item_id >= 1)
-		{
-			item_id--;
-			shop.get_item(item_id);
-			cout << item_id << endl;
-		}
-	}
-	if (KeyboardController::GetInstance()->IsKeyPressed('N'))
-	{
-		shop.Purchase_Item(item_id);
-		time_limit = 0;
-	}
-	if (KeyboardController::GetInstance()->IsKeyPressed('M'))
-	{
-		if (item_id <= 3)
-		{
-			item_id++;
-			shop.get_item(item_id);
-			cout << item_id << endl;
-		}
 	}
 
 	if (KeyboardController::GetInstance()->IsKeyPressed('9'))
@@ -399,7 +438,6 @@ void Scene01::Update(double dt)
 		int h = Application::GetWindowHeight();
 		go->vel.Set(m_ghost->pos.x - (float)(x / w * m_worldWidth) - camera.position.x, m_ghost->pos.y - (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
 	}
-
 	//Physics Simulation Section
 	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
@@ -435,42 +473,79 @@ void Scene01::Update(double dt)
 					tempnormal = Vector3(sin(-theta), cos(-theta), 0).Normalize();
 					go->dir = tempnormal;
 					go->vel = go->vel - (go->vel.Dot(tempnormal) * tempnormal);
-					go->vel.x = go->vel.x - go->vel.x * 5.f * (float)dt;
+					go->vel.x = go->vel.x - go->vel.x * 2.f * (float)dt;
 				}
 				/*if ((go->pos.x < 0 + go->scale.x && go->vel.x < 0) || (go->pos.x > m_worldWidth - go->scale.x && go->vel.x > 0))
 				{
 				go->vel.x = -go->vel.x;
 				}
 
-				if ((go->pos.y > m_worldHeight - go->scale.y && go->vel.y > 0))
-				{
-				go->vel.y = -go->vel.y;
-				}
+		//Physics Simulation Section
 
-				if (go->pos.x < 0 - go->scale.x || go->pos.x > m_worldWidth + go->scale.x ||
-				go->pos.y < 0 - go->scale.y || go->pos.y > m_worldHeight + go->scale.y ||
-				(go->pos.y < 0 - go->scale.y && go->vel.y < 0))
+		for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
+		{
+			GameObject *go = (GameObject *)*it;
+			if (go->active)
+			{
+				//Exercise 7: handle out of bound game objects
+				if (go->type == GameObject::GO_BALL || go->type == GameObject::GO_BLOCK)
 				{
-				go->active = false;
-				--m_objectCount;
-				continue;
-				}*/
-				//if (go->pos.x + go->scale.x > m_worldWidth && go->vel.x > 0)
-				//{
-				//	go->vel.x = -go->vel.x;
-				//}
-				//else if (go->pos.x - go->scale.x < 0 && go->vel.x < 0)
-				//{
-				//	go->vel.x = -go->vel.x;
-				//}
-				//else if (go->pos.y + go->scale.y > m_worldHeight && go->vel.y > 0)
-				//{
-				//	//go->vel.y = -go->vel.y;
-				//}
-				//else if (go->pos.y - go->scale.y < 0 && go->vel.y < 0)
-				//{
-				//	go->vel.y = -go->vel.y;
-				//}
+					go->vel.x = go->vel.x - go->vel.x * 1.f * (float)dt;
+					if (go->vel.Length() < 3)
+						go->vel.IsZero();
+					Physics::K1(go->vel.y, (-9.8f * go->mass * 2.f), (float)dt, go->vel.y);
+					//go->vel.y = go->vel.y - 9.8f * go->mass  * (float)dt;
+					go->pos += go->vel * (float)dt * m_speed;
+					if (go->pos.y <= (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + go->scale.y * 0.5f)
+					{
+						go->pos.y = (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + go->scale.y * 0.5f;
+						float backCart = ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth * 0.5f) - go->scale.x * 0.5f) / m_TerrainWidth, 0.f);
+						float frontCart = ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth * 0.5f) + go->scale.x * 0.5f) / m_TerrainWidth, 0.f);
+						float theta = atan2((m_TerrainHeight * backCart) - (m_TerrainHeight * frontCart), -go->scale.x);
+						Vector3 tempnormal;
+
+						//if (theta > 3.14159)
+						//tempnormal = Vector3(0, 1, 0).Normalize();
+						//else
+						tempnormal = Vector3(sin(-theta), cos(-theta), 0).Normalize();
+						go->dir = tempnormal;
+						go->vel = go->vel - (go->vel.Dot(tempnormal) * tempnormal);
+						go->vel.x = go->vel.x - go->vel.x * 5.f * (float)dt;
+					}
+					/*if ((go->pos.x < 0 + go->scale.x && go->vel.x < 0) || (go->pos.x > m_worldWidth - go->scale.x && go->vel.x > 0))
+					{
+					go->vel.x = -go->vel.x;
+					}
+
+					if ((go->pos.y > m_worldHeight - go->scale.y && go->vel.y > 0))
+					{
+					go->vel.y = -go->vel.y;
+					}
+
+					if (go->pos.x < 0 - go->scale.x || go->pos.x > m_worldWidth + go->scale.x ||
+					go->pos.y < 0 - go->scale.y || go->pos.y > m_worldHeight + go->scale.y ||
+					(go->pos.y < 0 - go->scale.y && go->vel.y < 0))
+					{
+					go->active = false;
+					--m_objectCount;
+					continue;
+					}*/
+					//if (go->pos.x + go->scale.x > m_worldWidth && go->vel.x > 0)
+					//{
+					//	go->vel.x = -go->vel.x;
+					//}
+					//else if (go->pos.x - go->scale.x < 0 && go->vel.x < 0)
+					//{
+					//	go->vel.x = -go->vel.x;
+					//}
+					//else if (go->pos.y + go->scale.y > m_worldHeight && go->vel.y > 0)
+					//{
+					//	//go->vel.y = -go->vel.y;
+					//}
+					//else if (go->pos.y - go->scale.y < 0 && go->vel.y < 0)
+					//{
+					//	go->vel.y = -go->vel.y;
+					//}
 
 				for (std::vector<GameObject *>::iterator it2 = it + 1; it2 != m_goList.end(); ++it2)
 				{
@@ -542,15 +617,19 @@ void Scene01::Update(double dt)
 							pos.y = Math::Clamp(pos.y, 0.f, go2->scale.y);
 
 							pos += go2->pos;
-
 							if ((pos - go->pos).Length() > 1 && (pos - go->pos).Length() < 30)
 							{
 								float test = (pos - go->pos).Length();
 								test;
 								float energy = (30 - (pos - go->pos).Length()) / 30 * 10;
 
-								Vector3 explosion = (go->pos - pos).Normalized() * energy;
-								go2->vel -= explosion;
+								if ((pos - go->pos).Length() > 5 && (pos - go->pos).Length() < 100)
+								{
+									float energy = (30 - (pos - go->pos).Length()) / 30 * 10;
+
+									Vector3 explosion = (go->pos - pos).Normalized() * energy;
+									go2->vel -= explosion;
+								}
 							}
 						}
 					}
@@ -607,6 +686,12 @@ void Scene01::RenderGO(GameObject *go)
 		RenderMesh(meshList[GEO_CUBE], false);
 		break;
 
+	case GameObject::GO_PROJ_SNOWBALL:
+		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
+		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
+		RenderMesh(meshList[GEO_SNOWBALL], false);
+		break;
+
 	case GameObject::GO_TEMP:
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
@@ -626,6 +711,11 @@ void Scene01::RenderGO(GameObject *go)
 			RenderMesh(meshList[GEO_BOMB], false);
 		if (go->boom)
 			RenderMesh(meshList[GEO_BOOM], false);
+		break;
+	case GameObject::GO_SCREEN:
+		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
+		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
+		RenderMesh(meshList[GEO_CUBE], false);
 		break;
 	}
 
@@ -675,41 +765,86 @@ void Scene01::Render()
 
 	RenderAllParticles();
 	//On screen text
-
 	std::ostringstream ss;
-	//Exercise 5: Render m_objectCount
-	ss.str("");
-	ss << "Objects: " << m_objectCount;
-	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 9);
+	if (in_shop == false)
+	{
+		ss.str("");
+		ss << "Objects: " << m_objectCount;
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 9);
 
-	//Exercise 8c: Render initial and final momentum
-	/*ss.str("");
-	ss << "Initial momentum: " << initialMomentum;
-	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 15);
+		//Exercise 8c: Render initial and final momentum
+		/*ss.str("");
+		ss << "Initial momentum: " << initialMomentum;
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 15);
 
-	ss.str("");
-	ss << "Final momentum: " << finalMomentum;
-	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 12);
+		ss.str("");
+		ss << "Final momentum: " << finalMomentum;
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 12);
 
-	ss.str("");
-	ss << "Initial KE: " << initialKE;
-	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 18);
+		ss.str("");
+		ss << "Initial KE: " << initialKE;
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 18);
 
-	ss.str("");
-	ss << "Final KE: " << finalKE;
-	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 21);*/
+		ss.str("");
+		ss << "Final KE: " << finalKE;
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 21);*/
 
-	ss.precision(3);
-	ss.str("");
-	ss << "Speed: " << m_speed;
-	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 6);
+		ss.precision(3);
+		ss.str("");
+		ss << "Speed: " << m_speed;
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 6);
 
-	ss.precision(5);
-	ss.str("");
-	ss << "FPS: " << fps;
-	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 3);
+		ss.precision(5);
+		ss.str("");
+		ss << "FPS: " << fps;
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 3);
 
-	RenderTextOnScreen(meshList[GEO_TEXT], "Collision", Color(0, 1, 0), 3, 0, 0);
+		RenderTextOnScreen(meshList[GEO_TEXT], "Collision", Color(0, 1, 0), 3, 0, 0);
+		screen->active = false;
+	}
+	else
+	{
+		
+		screen->active = true;
+		screen->type = GameObject::GO_SCREEN;
+		screen->dir.Set(0, 1, 0);
+		screen->pos.Set(camera.position.x + 65, camera.position.y + 50, 1);
+		screen->scale.Set(100, 85, 1);
+
+		ss.str("");
+		ss << "Shop";
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 4, 33, 51);
+		ss.str("");
+		ss << item_node->root.name;
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 15, 42);
+		ss.str("");
+		ss << "ID: " << item_node->root.data;
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 15, 39);
+		ss.str("");
+		ss << "Price: " << item_node->root.price;
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 15, 36);
+		ss.str("");
+		ss << "Gold: " << shop.gold;
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 15, 15);
+		if (buy_item == true)
+		{
+			if (purchased == true)
+			{
+				ss.str("");
+				ss << "You bought:" << item_node->root.name;
+				RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 15, 18);
+			}
+			else
+			{
+				ss.str("");
+				ss << "You no money";
+				RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 15, 18);
+				ss.str("");
+				ss << "Its costs: " << item_node->root.price;
+				RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 15, 21);
+			}
+		}
+	}
 }
 
 void Scene01::Exit()

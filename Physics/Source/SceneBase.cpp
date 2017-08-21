@@ -107,6 +107,7 @@ void SceneBase::Init()
 	}
 	meshList[GEO_AXES] = MeshBuilder::GenerateAxes("reference", 1000, 1000, 1000);
 	meshList[GEO_BALL] = MeshBuilder::GenerateSphere("ball", Color(0.f, 0.f, 0.f), 10, 10, 1.f);
+	meshList[GEO_SNOWBALL] = MeshBuilder::GenerateSphere("snowball", Color(1.f, 1.f, 1.f), 10, 10, 1.f);
 	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("cube", Color(0.f, 0.f, 0.f), 1.f);
 	meshList[GEO_QUAD] = MeshBuilder::GenerateQuad("quad", Color(0.f, 0.f, 0.f), 1.f);
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
@@ -127,6 +128,9 @@ void SceneBase::Init()
 
 	meshList[GEO_PARTICLE_SPARK] = MeshBuilder::GenerateQuad("GEO_PARTICLE_SPARK", Color(1, 1, 1), 1.f);
 	meshList[GEO_PARTICLE_SPARK]->textureID = LoadTGA("Image//spark.tga");
+
+	meshList[GEO_PARTICLE_RAIN] = MeshBuilder::GenerateQuad("GEO_PARTICLE_RAIN", Color(1, 1, 1), 1.f);
+	meshList[GEO_PARTICLE_RAIN]->textureID = LoadTGA("Image//rain.tga");
 
 	//CSoundEngine::GetInstance()->Init();
 	//CSoundEngine::GetInstance()->AddSound("Jump", "Image//Mario-jump-sound.mp3");
@@ -318,14 +322,14 @@ void SceneBase::RenderParticles(ParticleObject * particle)
 		RenderMesh(meshList[GEO_PARTICLE_SPARK], false);
 		modelStack.PopMatrix();
 		break;
-	//case ParticleObject_TYPE::P_SMOKE:
-	//	modelStack.PushMatrix();
-	//	modelStack.Translate(particle->pos.x, particle->pos.y, particle->pos.z);
-	//	modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - particle->pos.x, camera.position.z - particle->pos.z)), 0.0f, 1.0f, 0.0f);
-	//	modelStack.Scale(particle->scale.x, particle->scale.y, particle->scale.z);
-	//	RenderMesh(meshList[GEO_PARTICLE_SMOKE], false);
-	//	modelStack.PopMatrix();
-	//	break;
+	case ParticleObject_TYPE::P_RAIN:
+		modelStack.PushMatrix();
+		modelStack.Translate(particle->pos.x, particle->pos.y, particle->pos.z);
+		modelStack.Rotate(particle->rotation, 0.0f, 0.0f, 1.0f);
+		modelStack.Scale(particle->scale.x, particle->scale.y, particle->scale.z);
+		RenderMesh(meshList[GEO_PARTICLE_RAIN], false);
+		modelStack.PopMatrix();
+		break;
 	default:
 		break;
 	}

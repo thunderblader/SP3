@@ -4,7 +4,7 @@
 enum ParticleObject_TYPE
 {
 	P_SPARK = 0,
-	P_SMOKE,
+	P_RAIN,
 	P_TOTAL
 };
 
