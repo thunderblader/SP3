@@ -44,12 +44,15 @@ void Scene01::Init()
 	m_objectCount = 0;
 	m_ballCount = 0;
 
+	time_limit = 0;
+	item_id = 0;
+
 	free_look = false;
 
-	file.Init(&m_goList);
-	file.Load(false, "Image//Test_Level.csv");
+//	file.Init(&m_goList);
+//	file.Load(false, "Image//Test_Level.csv");
 
-	
+
 
 	file.Load(true, "Image//shop_data.csv");
 
@@ -59,16 +62,19 @@ void Scene01::Init()
 
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
+	GameObject* playerObj = FetchGO();
 	m_player = Player::GetInstance();
-	m_player->Init(FetchGO(), FetchGO(), GameObject::GO_BLOCK, Vector3(-50, 25, 0), Vector3(5, 4, 1), 1.f, 50.f);
+	m_player->Init(playerObj, FetchGO(), GameObject::GO_BLOCK, Vector3(-50, 25, 0), Vector3(5, 4, 1), 1.f, 50.f);
 	m_player->SetHeightmap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
 	m_control = new Controller(m_player);
 	m_control->LoadConfig("Data//Config.ini", param_physics);
 	Enemy* enemy = new Enemy();
-	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(0.f, 20.f, 0.f), Vector3(5.f, 5.f, 5.f));
+	enemy->SetPlayerObj(playerObj);
+	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(0.f, 40.f, 0.f), Vector3(5.f, 5.f, 5.f));
 	enemyList.push_back(enemy);
 	
 	for (int i = 0; i < 7; i++)
+	for (int i = 0; i < 5; i++)
 	{
 		for (int j = 0; j < 5; j++)
 		{
@@ -84,10 +90,6 @@ void Scene01::Init()
 		}
 	}
 
-	//Vector3 test1, test2;
-	//Physics<Vector3>::K1CalcTime(test1, test1, test1);
-	//float test3 = 1 / test2;
-
 	m_particleCount = 0;
 	MAX_PARTICLE = 100;
 }
@@ -98,7 +100,7 @@ GameObject* Scene01::FetchGO()
 	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;
-		if (!go->active)
+		if (!go->active && (go->type != GameObject::GO_PLAYER || go->type != GameObject::GO_BOMB))
 		{
 			go->active = true;
 			++m_objectCount;
@@ -277,6 +279,7 @@ void Scene01::Update(double dt)
 	SceneBase::Update(dt);
 	Camera_Control(dt);
 	UpdateParticles(dt);
+
 	if (KeyboardController::GetInstance()->IsKeyPressed('L'))
 	{
 		//file.Save_Data(Level, Score, Gold);
@@ -287,23 +290,31 @@ void Scene01::Update(double dt)
 	}
 	if (KeyboardController::GetInstance()->IsKeyPressed('I'))
 	{
-		shop.Purchase_Item(0);
-	}
-	if (KeyboardController::GetInstance()->IsKeyPressed('V'))
-	{
 		shop.Purchase_Item(1);
 	}
+
 	if (KeyboardController::GetInstance()->IsKeyPressed('B'))
 	{
-		shop.Purchase_Item(2);
+		if (item_id >= 1)
+		{
+			item_id--;
+			shop.get_item(item_id);
+			cout << item_id << endl;
+		}
 	}
 	if (KeyboardController::GetInstance()->IsKeyPressed('N'))
 	{
-		shop.Purchase_Item(3);
+		shop.Purchase_Item(item_id);
+		time_limit = 0;
 	}
 	if (KeyboardController::GetInstance()->IsKeyPressed('M'))
 	{
-		shop.Purchase_Item(4);
+		if (item_id <= 3)
+		{
+			item_id++;
+			shop.get_item(item_id);
+			cout << item_id << endl;
+		}
 	}
 
 	if (KeyboardController::GetInstance()->IsKeyPressed('9'))
@@ -315,14 +326,17 @@ void Scene01::Update(double dt)
 		m_speed += 0.1f;
 	}
 
-	if (KeyboardController::GetInstance()->IsKeyPressed('U')) // Debug key snow yeti shooting
+	static float projDelay = 0.f;
+	projDelay += (float)dt;
+	if (projDelay > 0.5f) // Debug key snow yeti shooting
 	{
-		enemyList[0]->PushProjectile(FetchGO(), m_player->GetPlayerPos(), Vector3(1.f, 1.f, 1.f), 10.f);
+		//enemyList[0]->PushProjectile(FetchGO(), m_player->GetPlayerPos(), Vector3(1.f, 1.f, 1.f), 10.f);
+		projDelay = 0.f;
 	}
 
 	m_player->Update(dt);
 	m_control->Update(dt);
-	
+
 	vector<Enemy*>::iterator it, end;
 	end = enemyList.end();
 	for (it = enemyList.begin(); it != end; ++it) (*it)->Update(dt);
@@ -412,36 +426,36 @@ void Scene01::Update(double dt)
 				if (go->pos.y <= (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + go->scale.y * 0.5f)
 				{
 					go->pos.y = (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + go->scale.y * 0.5f;
-					float theta = atan2((m_TerrainHeight
-						* ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth*0.5f) - go->scale.x * 0.5f) / m_TerrainWidth, 0.f)) - (m_TerrainHeight
-						* ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth*0.5f) + go->scale.x * 0.5f) / m_TerrainWidth, 0.f)), -go->scale.x);
+					float backCart = ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth * 0.5f) - go->scale.x * 0.5f) / m_TerrainWidth, 0.f);
+					float frontCart = ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth * 0.5f) + go->scale.x * 0.5f) / m_TerrainWidth, 0.f);
+					float theta = atan2((m_TerrainHeight * backCart) - (m_TerrainHeight * frontCart), -go->scale.x);
 					Vector3 tempnormal;
 
 					//if (theta > 3.14159)
-						//tempnormal = Vector3(0, 1, 0).Normalize();
+					//tempnormal = Vector3(0, 1, 0).Normalize();
 					//else
-						tempnormal = Vector3(sin(-theta), cos(-theta), 0).Normalize();
+					tempnormal = Vector3(sin(-theta), cos(-theta), 0).Normalize();
 					go->dir = tempnormal;
 					go->vel = go->vel - (go->vel.Dot(tempnormal) * tempnormal);
 					go->vel.x = go->vel.x - go->vel.x * 5.f * (float)dt;
 				}
 				/*if ((go->pos.x < 0 + go->scale.x && go->vel.x < 0) || (go->pos.x > m_worldWidth - go->scale.x && go->vel.x > 0))
 				{
-					go->vel.x = -go->vel.x;
+				go->vel.x = -go->vel.x;
 				}
 
 				if ((go->pos.y > m_worldHeight - go->scale.y && go->vel.y > 0))
 				{
-					go->vel.y = -go->vel.y;
+				go->vel.y = -go->vel.y;
 				}
 
 				if (go->pos.x < 0 - go->scale.x || go->pos.x > m_worldWidth + go->scale.x ||
-					go->pos.y < 0 - go->scale.y || go->pos.y > m_worldHeight + go->scale.y ||
-					(go->pos.y < 0 - go->scale.y && go->vel.y < 0))
+				go->pos.y < 0 - go->scale.y || go->pos.y > m_worldHeight + go->scale.y ||
+				(go->pos.y < 0 - go->scale.y && go->vel.y < 0))
 				{
-					go->active = false;
-					--m_objectCount;
-					continue;
+				go->active = false;
+				--m_objectCount;
+				continue;
 				}*/
 				//if (go->pos.x + go->scale.x > m_worldWidth && go->vel.x > 0)
 				//{
@@ -509,7 +523,7 @@ void Scene01::Update(double dt)
 				go->vel += Vector3(0, -9.8, 0) * dt;
 				if (go->boom)
 				{
-					if(go->scale.x < 5)
+					if (go->scale.x < 5)
 						go->scale *= 1.2;
 					if (go->scale.x > 5)
 					{
@@ -549,7 +563,7 @@ void Scene01::Update(double dt)
 						GameObject *go2 = (GameObject *)*it2;
 						if (go2->active)
 						{
-							if(go2->type == GameObject::GO_BRICK)
+							if (go2->type == GameObject::GO_BRICK)
 							{
 								go2->pos += go2->vel * static_cast<float>(dt);
 								if (!go2->vel.IsZero())

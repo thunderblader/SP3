@@ -35,7 +35,7 @@ void Player::Update(double dt)
 		playerBomb->active = true;
 		playerBomb->type = GameObject::GO_BOMB;
 		playerBomb->vel = playerObj->vel * 5;
-		playerBomb->pos = GetPlayerPos();
+		playerBomb->pos = playerObj->pos;
 		playerBomb->scale.Set(2, 2, 1);
 		playerObj->active = false;
 		launched = true;
