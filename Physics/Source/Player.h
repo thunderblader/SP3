@@ -45,6 +45,7 @@ private:
 	float m_TerrainWidth, m_TerrainHeight;
 
 	float m_speed;
+	bool launched;
 };
 
 #endif // !PLAYER_H

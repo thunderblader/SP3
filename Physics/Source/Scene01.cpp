@@ -79,8 +79,8 @@ void Scene01::Init()
 	enemy->SetPlayerObj(playerObj);
 	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(0.f, 40.f, 0.f), Vector3(5.f, 5.f, 5.f));
 	enemyList.push_back(enemy);
-
-	for (int i = 0; i < 5; i++)
+	
+	for (int i = 0; i < 7; i++)
 	{
 		for (int j = 0; j < 5; j++)
 		{
@@ -106,7 +106,7 @@ GameObject* Scene01::FetchGO()
 	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;
-		if (!go->active && (go->type != GameObject::GO_PLAYER || go->type != GameObject::GO_BOMB))
+		if (!go->active && go->type != GameObject::GO_BLOCK && go->type != GameObject::GO_BOMB)
 		{
 			go->active = true;
 			++m_objectCount;
@@ -182,7 +182,7 @@ bool Scene01::CheckCollision(GameObject * go1, GameObject * go2, float dt)
 
 void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 {
-	Vector3 N;
+	Vector3	N;
 	switch (go2->type)
 	{
 	case GameObject::GO_BALL:
@@ -310,6 +310,13 @@ void Scene01::Update(double dt)
 		{
 			//file.Load_Data();
 		}
+	static float projDelay = 0.f;
+	projDelay += (float)dt;
+	if (projDelay > 0.5f) // Debug key snow yeti shooting
+	{
+		enemyList[0]->PushProjectile(FetchGO(), m_player->GetPlayerPos(), Vector3(1.f, 1.f, 1.f), 1.f);
+		projDelay = 0.f;
+	}
 
 		if (KeyboardController::GetInstance()->IsKeyPressed('9'))
 		{
@@ -394,6 +401,47 @@ void Scene01::Update(double dt)
 			int h = Application::GetWindowHeight();
 			go->vel.Set(m_ghost->pos.x - (float)(x / w * m_worldWidth) - camera.position.x, m_ghost->pos.y - (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
 		}
+	//Physics Simulation Section
+	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
+	{
+		GameObject *go = (GameObject *)*it;
+		if (go->active)
+		{
+			//Exercise 7: handle out of bound game objects
+			if (go->type == GameObject::GO_BRICK)
+			{
+				go->pos += go->vel * static_cast<float>(dt);
+				//if (!go->vel.IsZero())
+				//	go->vel += (Vector3(0, 0, 0) - go->vel) * dt;
+			}
+			if (go->type == GameObject::GO_BALL || go->type == GameObject::GO_BLOCK)
+			{
+				go->vel.x = go->vel.x - go->vel.x * 1.f * (float)dt;
+				if (go->vel.Length() < 3)
+					go->vel.IsZero();
+				Physics::K1(go->vel.y, (-9.8f * go->mass * 2.f), (float)dt, go->vel.y);
+				//go->vel.y = go->vel.y - 9.8f * go->mass  * (float)dt;
+				go->pos += go->vel * (float)dt * m_speed;
+				if (go->pos.y <= (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + go->scale.y * 0.5f)
+				{
+					go->pos.y = (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + go->scale.y * 0.5f;
+					float backCart = ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth * 0.5f) - go->scale.x * 0.5f) / m_TerrainWidth, 0.f);
+					float frontCart = ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth * 0.5f) + go->scale.x * 0.5f) / m_TerrainWidth, 0.f);
+					float theta = atan2((m_TerrainHeight * backCart) - (m_TerrainHeight * frontCart), -go->scale.x);
+					Vector3 tempnormal;
+
+					//if (theta > 3.14159)
+					//tempnormal = Vector3(0, 1, 0).Normalize();
+					//else
+					tempnormal = Vector3(sin(-theta), cos(-theta), 0).Normalize();
+					go->dir = tempnormal;
+					go->vel = go->vel - (go->vel.Dot(tempnormal) * tempnormal);
+					go->vel.x = go->vel.x - go->vel.x * 5.f * (float)dt;
+				}
+				/*if ((go->pos.x < 0 + go->scale.x && go->vel.x < 0) || (go->pos.x > m_worldWidth - go->scale.x && go->vel.x > 0))
+				{
+				go->vel.x = -go->vel.x;
+				}
 
 		//Physics Simulation Section
 
@@ -532,6 +580,11 @@ void Scene01::Update(double dt)
 								pos.y = Math::Clamp(pos.y, 0.f, go2->scale.y);
 
 								pos += go2->pos;
+							if ((pos - go->pos).Length() > 1 && (pos - go->pos).Length() < 30)
+							{
+								float test = (pos - go->pos).Length();
+								test;
+								float energy = (30 - (pos - go->pos).Length()) / 30 * 10;
 
 								if ((pos - go->pos).Length() > 5 && (pos - go->pos).Length() < 100)
 								{
@@ -632,6 +685,12 @@ void Scene01::RenderGO(GameObject *go)
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
 		RenderMesh(meshList[GEO_CUBE], false);
+		break;
+
+	case GameObject::GO_PROJ_SNOWBALL:
+		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
+		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
+		RenderMesh(meshList[GEO_SNOWBALL], false);
 		break;
 
 	case GameObject::GO_TEMP:
