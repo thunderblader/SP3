@@ -1,5 +1,7 @@
 #include "Enemy.h"
 
+GameObject* Enemy::playerObj = 0;
+
 Enemy::Enemy()
 	: enemyObj(nullptr)
 	, defaultPos(0.f, 0.f, 0.f)
@@ -25,12 +27,17 @@ void Enemy::Update(double dt)
 	if (!enemyObj)
 		return;
 
-	vector<GameObject*>::iterator it, end;
-	end = projList.end();
-	for (it = projList.begin(); it != end; ++it)
+	for (unsigned i = 0; i < projList.size(); ++i)
 	{
-		if (!(*it)->active)
-			projList.erase(it);
+		if ((playerObj->pos - projList[i]->pos).LengthSquared()
+			<= (playerObj->scale.x + projList[i]->scale.x) * (playerObj->scale.x + projList[i]->scale.x))
+		{
+			playerObj->vel *= 0.7f;
+			projList[i]->active = false;
+		}
+
+		if (!projList[i]->active)
+			projList.erase(projList.begin() + i);
 	}
 }
 
@@ -41,6 +48,11 @@ void Enemy::Exit()
 void Enemy::Reset()
 {
 	enemyObj->pos = defaultPos;
+}
+
+void Enemy::SetPlayerObj(GameObject * _playerObj)
+{
+	playerObj = _playerObj;
 }
 
 void Enemy::PushProjectile(GameObject * _projObj, Vector3 _target, Vector3 _scale, float _spd)
