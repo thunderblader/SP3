@@ -90,7 +90,6 @@ void Load_File::Process(bool checker, string content)
 		{
 			processor.push_back(content.at(i));
 		}
-		
 	}
 	stat = atoi(processor.c_str());
 	if (checker == true)
