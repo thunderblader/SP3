@@ -74,7 +74,6 @@ void Scene01::Init()
 	enemyList.push_back(enemy);
 	
 	for (int i = 0; i < 7; i++)
-	for (int i = 0; i < 5; i++)
 	{
 		for (int j = 0; j < 5; j++)
 		{
@@ -100,8 +99,6 @@ GameObject* Scene01::FetchGO()
 	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;
-		if (!go->active && go->type == GameObject::GO_BLOCK)
-			std::cout << "hit";
 		if (!go->active && go->type != GameObject::GO_BLOCK && go->type != GameObject::GO_BOMB)
 		{
 			go->active = true;
@@ -332,7 +329,7 @@ void Scene01::Update(double dt)
 	projDelay += (float)dt;
 	if (projDelay > 0.5f) // Debug key snow yeti shooting
 	{
-		enemyList[0]->PushProjectile(FetchGO(), m_player->GetPlayerPos(), Vector3(1.f, 1.f, 1.f), 10.f);
+		enemyList[0]->PushProjectile(FetchGO(), m_player->GetPlayerPos(), Vector3(1.f, 1.f, 1.f), 1.f);
 		projDelay = 0.f;
 	}
 
