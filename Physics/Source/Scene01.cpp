@@ -310,9 +310,12 @@ void Scene01::Update(double dt)
 	}
 	if (KeyboardController::GetInstance()->IsKeyPressed('M'))
 	{
-		item_id++;
-		shop.get_item(item_id);
-		cout << item_id << endl;
+		if (item_id <= 3)
+		{
+			item_id++;
+			shop.get_item(item_id);
+			cout << item_id << endl;
+		}
 	}
 
 	if (KeyboardController::GetInstance()->IsKeyPressed('9'))
