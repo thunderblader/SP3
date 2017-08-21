@@ -304,103 +304,140 @@ void Scene01::Update(double dt)
 			in_shop = false;
 		}
 	}
-	if (in_shop == false)
+	if (in_shop)
 	{
-		Camera_Control(dt);
-		UpdateParticles(dt);
-
-		if (KeyboardController::GetInstance()->IsKeyPressed('L'))
+		if (time_limit < 3)
 		{
-			//file.Save_Data(Level, Score, Gold);
+			time_limit += dt;
 		}
-		if (KeyboardController::GetInstance()->IsKeyPressed('K'))
+		if (time_limit >= 3)
 		{
-			//file.Load_Data();
+			buy_item = false;
 		}
-
-		if (KeyboardController::GetInstance()->IsKeyPressed('9'))
+		if (KeyboardController::GetInstance()->IsKeyPressed(VK_LEFT))
 		{
-			m_speed = Math::Max(0.f, m_speed - 0.1f);
+			if (item_id >= 1)
+			{
+				item_node = Tree::getInstance();
+				item_id--;
+				item_node = item_node->retreve_item(item_node, item_id);
+				cout << item_node->root.name << endl;
+			}
 		}
-		if (KeyboardController::GetInstance()->IsKeyPressed('0'))
+		if (KeyboardController::GetInstance()->IsKeyPressed(VK_SPACE))
 		{
-			m_speed += 0.1f;
+			purchased = shop.Purchase_Item(item_id);
+			time_limit = 0;
+			buy_item = true;
 		}
-
-		static float projDelay = 0.f;
-		projDelay += (float)dt;
-		if (projDelay > 0.5f) // Debug key snow yeti shooting
+		if (KeyboardController::GetInstance()->IsKeyPressed(VK_RIGHT))
 		{
-			//enemyList[0]->PushProjectile(FetchGO(), m_player->GetPlayerPos(), Vector3(1.f, 1.f, 1.f), 10.f);
-			projDelay = 0.f;
+			if (item_id <= file.number_of_items - 1)
+			{
+				item_node = Tree::getInstance();
+				item_id++;
+				item_node = item_node->retreve_item(item_node, item_id);
+				cout << item_node->root.name << endl;
+			}
 		}
+		return;
+	}
 
-		m_player->Update(dt);
-		m_control->Update(dt);
+	Camera_Control(dt);
+	UpdateParticles(dt);
 
-		vector<Enemy*>::iterator it, end;
-		end = enemyList.end();
-		for (it = enemyList.begin(); it != end; ++it) (*it)->Update(dt);
+	if (KeyboardController::GetInstance()->IsKeyPressed('L'))
+	{
+		//file.Save_Data(Level, Score, Gold);
+	}
+	if (KeyboardController::GetInstance()->IsKeyPressed('K'))
+	{
+		//file.Load_Data();
+	}
 
-		//Mouse Section
-		if (MouseController::GetInstance()->IsButtonPressed(MouseController::LMB))
-		{
-			std::cout << "LBUTTON DOWN" << std::endl;
+	if (KeyboardController::GetInstance()->IsKeyPressed('9'))
+	{
+		m_speed = Math::Max(0.f, m_speed - 0.1f);
+	}
+	if (KeyboardController::GetInstance()->IsKeyPressed('0'))
+	{
+		m_speed += 0.1f;
+	}
 
-			double x, y;
-			MouseController::GetInstance()->GetMousePosition(x, y);
-			int w = Application::GetWindowWidth();
-			int h = Application::GetWindowHeight();
+	static float projDelay = 0.f;
+	projDelay += (float)dt;
+	if (projDelay > 0.5f) // Debug key snow yeti shooting
+	{
+		//enemyList[0]->PushProjectile(FetchGO(), m_player->GetPlayerPos(), Vector3(1.f, 1.f, 1.f), 10.f);
+		projDelay = 0.f;
+	}
 
-			m_ghost->pos.Set((float)(x / w * m_worldWidth) + camera.position.x, (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
-			//m_ghost->pos.Set((float)(x / w * m_worldWidth), m_worldHeight * 0.5f, 0.f);
-		}
-		else if (MouseController::GetInstance()->IsButtonReleased(MouseController::LMB))
-		{
-			std::cout << "LBUTTON UP" << std::endl;
+	m_player->Update(dt);
+	m_control->Update(dt);
 
-			//Exercise 6: spawn small GO_BALL
-			GameObject *go = FetchGO();
-			go->pos = m_ghost->pos;
-			go->scale.Set(1.f, 1.f, 1.f);
-			go->mass = 1.f;
+	vector<Enemy*>::iterator it, end;
+	end = enemyList.end();
+	for (it = enemyList.begin(); it != end; ++it) (*it)->Update(dt);
 
-			double x, y;
-			MouseController::GetInstance()->GetMousePosition(x, y);
-			int w = Application::GetWindowWidth();
-			int h = Application::GetWindowHeight();
-			go->vel.Set(m_ghost->pos.x - (float)(x / w * m_worldWidth) - camera.position.x, m_ghost->pos.y - (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
-			go->scale.Set(Math::Clamp(go->vel.Length(), 2.f, 10.f), Math::Clamp(go->vel.Length(), 2.f, 10.f), 0.f);
-		}
-		if (MouseController::GetInstance()->IsButtonPressed(MouseController::RMB))
-		{
-			std::cout << "RBUTTON DOWN" << std::endl;
+	//Mouse Section
+	if (MouseController::GetInstance()->IsButtonPressed(MouseController::LMB))
+	{
+		std::cout << "LBUTTON DOWN" << std::endl;
 
-			double x, y;
-			MouseController::GetInstance()->GetMousePosition(x, y);
-			int w = Application::GetWindowWidth();
-			int h = Application::GetWindowHeight();
+		double x, y;
+		MouseController::GetInstance()->GetMousePosition(x, y);
+		int w = Application::GetWindowWidth();
+		int h = Application::GetWindowHeight();
 
-			m_ghost->pos.Set((float)(x / w * m_worldWidth) + camera.position.x, (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
-			//m_ghost->pos.Set((float)(x / w * m_worldWidth), m_worldHeight * 0.5f, 0.f);
-		}
-		else if (MouseController::GetInstance()->IsButtonReleased(MouseController::RMB))
-		{
-			std::cout << "RBUTTON UP" << std::endl;
+		m_ghost->pos.Set((float)(x / w * m_worldWidth) + camera.position.x, (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
+		//m_ghost->pos.Set((float)(x / w * m_worldWidth), m_worldHeight * 0.5f, 0.f);
+	}
+	else if (MouseController::GetInstance()->IsButtonReleased(MouseController::LMB))
+	{
+		std::cout << "LBUTTON UP" << std::endl;
 
-			GameObject *go = FetchGO();
-			go->pos = m_ghost->pos;
-			go->type = GameObject::GO_BOMB;
-			go->boom = false;
-			go->scale.Set(2, 2, 2);
-			go->mass = 1.5f * 1.5f * 1.5f;
+		//Exercise 6: spawn small GO_BALL
+		GameObject *go = FetchGO();
+		go->pos = m_ghost->pos;
+		go->scale.Set(1.f, 1.f, 1.f);
+		go->mass = 1.f;
 
-			double x, y;
-			MouseController::GetInstance()->GetMousePosition(x, y);
-			int w = Application::GetWindowWidth();
-			int h = Application::GetWindowHeight();
-			go->vel.Set(m_ghost->pos.x - (float)(x / w * m_worldWidth) - camera.position.x, m_ghost->pos.y - (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
-		}
+		double x, y;
+		MouseController::GetInstance()->GetMousePosition(x, y);
+		int w = Application::GetWindowWidth();
+		int h = Application::GetWindowHeight();
+		go->vel.Set(m_ghost->pos.x - (float)(x / w * m_worldWidth) - camera.position.x, m_ghost->pos.y - (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
+		go->scale.Set(Math::Clamp(go->vel.Length(), 2.f, 10.f), Math::Clamp(go->vel.Length(), 2.f, 10.f), 0.f);
+	}
+	if (MouseController::GetInstance()->IsButtonPressed(MouseController::RMB))
+	{
+		std::cout << "RBUTTON DOWN" << std::endl;
+
+		double x, y;
+		MouseController::GetInstance()->GetMousePosition(x, y);
+		int w = Application::GetWindowWidth();
+		int h = Application::GetWindowHeight();
+
+		m_ghost->pos.Set((float)(x / w * m_worldWidth) + camera.position.x, (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
+		//m_ghost->pos.Set((float)(x / w * m_worldWidth), m_worldHeight * 0.5f, 0.f);
+	}
+	else if (MouseController::GetInstance()->IsButtonReleased(MouseController::RMB))
+	{
+		std::cout << "RBUTTON UP" << std::endl;
+
+		GameObject *go = FetchGO();
+		go->pos = m_ghost->pos;
+		go->type = GameObject::GO_BOMB;
+		go->boom = false;
+		go->scale.Set(2, 2, 2);
+		go->mass = 1.5f * 1.5f * 1.5f;
+
+		double x, y;
+		MouseController::GetInstance()->GetMousePosition(x, y);
+		int w = Application::GetWindowWidth();
+		int h = Application::GetWindowHeight();
+		go->vel.Set(m_ghost->pos.x - (float)(x / w * m_worldWidth) - camera.position.x, m_ghost->pos.y - (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
+	}
 	//Physics Simulation Section
 	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
@@ -510,146 +547,108 @@ void Scene01::Update(double dt)
 					//	go->vel.y = -go->vel.y;
 					//}
 
-					for (std::vector<GameObject *>::iterator it2 = it + 1; it2 != m_goList.end(); ++it2)
-					{
-						GameObject *go2 = (GameObject *)*it2;
-
-						if (!go2->active || (go->type != GameObject::GO_BALL && go2->type != GameObject::GO_BALL))
-							continue;
-
-						GameObject *goA, *goB;
-						if (go->type == GameObject::GO_BALL)
-						{
-							goA = go;
-							goB = go2;
-						}
-						else
-						{
-							goA = go2;
-							goB = go;
-						}
-
-						if (CheckCollision(goA, goB, (float)dt))
-						{
-							m1 = goA->mass;
-							m2 = goB->mass;
-							u1 = goA->vel;
-							u2 = goB->vel;
-
-							initialMomentum = m1 * u1 + m2 * u2;
-
-							CollisionResponse(goA, goB);
-
-							v1 = goA->vel;
-							v2 = goB->vel;
-
-							finalMomentum = m1 * v1 + m2 * v2;
-
-							initialKE = 0.5f * m1 * u1.Dot(u1) + 0.5f * m2 * u2.Dot(u2);
-							finalKE = 0.5f * m1 * v1.Dot(v1) + 0.5f * m2 * v2.Dot(v2);
-
-							break;
-						}
-					}
-				}
-
-				if (go->type == GameObject::GO_BOMB)
+				for (std::vector<GameObject *>::iterator it2 = it + 1; it2 != m_goList.end(); ++it2)
 				{
-					go->pos += go->vel * static_cast<float>(dt);
-					go->vel += Vector3(0, -9.8, 0) * dt;
-					if (go->boom)
+					GameObject *go2 = (GameObject *)*it2;
+
+					if (!go2->active || (go->type != GameObject::GO_BALL && go2->type != GameObject::GO_BALL))
+						continue;
+
+					GameObject *goA, *goB;
+					if (go->type == GameObject::GO_BALL)
 					{
-						if (go->scale.x < 5)
-							go->scale *= 1.2;
-						if (go->scale.x > 5)
-						{
-							go->boom = false;
-							go->active = false;
-						}
-
-						for (std::vector<GameObject *>::iterator it2 = it + 1; it2 != m_goList.end(); ++it2)
-						{
-							GameObject *go2 = static_cast<GameObject *>(*it2);
-							if (go2->active)
-								continue;
-
-							if (go2->type == GameObject::GO_BRICK)
-							{
-								Vector3 pos = go->pos - go2->pos;
-								pos.x = Math::Clamp(pos.x, 0.f, go2->scale.x);
-								pos.y = Math::Clamp(pos.y, 0.f, go2->scale.y);
-
-								pos += go2->pos;
-								if ((pos - go->pos).Length() > 1 && (pos - go->pos).Length() < 30)
-								{
-									float test = (pos - go->pos).Length();
-									test;
-									float energy = (30 - (pos - go->pos).Length()) / 30 * 10;
-
-									if ((pos - go->pos).Length() > 5 && (pos - go->pos).Length() < 100)
-									{
-										float energy = (30 - (pos - go->pos).Length()) / 30 * 10;
-
-										Vector3 explosion = (go->pos - pos).Normalized() * energy;
-										go2->vel -= explosion;
-									}
-								}
-							}
-						}
+						goA = go;
+						goB = go2;
 					}
 					else
-						for (std::vector<GameObject *>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
+					{
+						goA = go2;
+						goB = go;
+					}
+
+					if (CheckCollision(goA, goB, (float)dt))
+					{
+						m1 = goA->mass;
+						m2 = goB->mass;
+						u1 = goA->vel;
+						u2 = goB->vel;
+
+						initialMomentum = m1 * u1 + m2 * u2;
+
+						CollisionResponse(goA, goB);
+
+						v1 = goA->vel;
+						v2 = goB->vel;
+
+						finalMomentum = m1 * v1 + m2 * v2;
+
+						initialKE = 0.5f * m1 * u1.Dot(u1) + 0.5f * m2 * u2.Dot(u2);
+						finalKE = 0.5f * m1 * v1.Dot(v1) + 0.5f * m2 * v2.Dot(v2);
+
+						break;
+					}
+				}
+			}
+
+			if (go->type == GameObject::GO_BOMB)
+			{
+				go->pos += go->vel * static_cast<float>(dt);
+				go->vel += Vector3(0, -9.8, 0) * dt;
+				if (go->boom)
+				{
+					if (go->scale.x < 5)
+						go->scale *= 1.2;
+					if (go->scale.x > 5)
+					{
+						go->boom = false;
+						go->active = false;
+					}
+
+					for (std::vector<GameObject *>::iterator it2 = it + 1; it2 != m_goList.end(); ++it2)
+					{
+						GameObject *go2 = static_cast<GameObject *>(*it2);
+						if (go2->active)
+							continue;
+
+						if (go2->type == GameObject::GO_BRICK)
 						{
-							GameObject *go2 = (GameObject *)*it2;
-							if (go2->active)
+							Vector3 pos = go->pos - go2->pos;
+							pos.x = Math::Clamp(pos.x, 0.f, go2->scale.x);
+							pos.y = Math::Clamp(pos.y, 0.f, go2->scale.y);
+
+							pos += go2->pos;
+							if ((pos - go->pos).Length() > 1 && (pos - go->pos).Length() < 30)
 							{
-								if (go2->type == GameObject::GO_BRICK)
+								float test = (pos - go->pos).Length();
+								test;
+								float energy = (30 - (pos - go->pos).Length()) / 30 * 10;
+
+								if ((pos - go->pos).Length() > 5 && (pos - go->pos).Length() < 100)
 								{
-									go2->pos += go2->vel * static_cast<float>(dt);
-									if (!go2->vel.IsZero())
-										go2->vel += (Vector3(0, 0, 0) - go2->vel) * dt;
-									BombCollision(go, go2);
+									float energy = (30 - (pos - go->pos).Length()) / 30 * 10;
+
+									Vector3 explosion = (go->pos - pos).Normalized() * energy;
+									go2->vel -= explosion;
 								}
 							}
 						}
+					}
 				}
-			}
-		}
-	}
-	else
-	{
-		if (time_limit < 3)
-		{
-			time_limit += dt;
-		}
-		if (time_limit >= 3)
-		{
-			buy_item = false;
-		}
-		if (KeyboardController::GetInstance()->IsKeyPressed(VK_LEFT))
-		{
-			if (item_id >= 1)
-			{
-				item_node = Tree::getInstance();
-				item_id--;
-				item_node = item_node->retreve_item(item_node, item_id);
-				cout << item_node->root.name << endl;
-			}
-		}
-		if (KeyboardController::GetInstance()->IsKeyPressed(VK_SPACE))
-		{
-			purchased = shop.Purchase_Item(item_id);
-			time_limit = 0;
-			buy_item = true;
-		}
-		if (KeyboardController::GetInstance()->IsKeyPressed(VK_RIGHT))
-		{
-			if (item_id <= file.number_of_items - 1)
-			{
-				item_node = Tree::getInstance();
-				item_id++;
-				item_node = item_node->retreve_item(item_node, item_id);
-				cout << item_node->root.name << endl;
+				else
+					for (std::vector<GameObject *>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
+					{
+						GameObject *go2 = (GameObject *)*it2;
+						if (go2->active)
+						{
+							if (go2->type == GameObject::GO_BRICK)
+							{
+								go2->pos += go2->vel * static_cast<float>(dt);
+								if (!go2->vel.IsZero())
+									go2->vel += (Vector3(0, 0, 0) - go2->vel) * dt;
+								BombCollision(go, go2);
+							}
+						}
+					}
 			}
 		}
 	}
