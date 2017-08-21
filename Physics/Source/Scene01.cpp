@@ -225,7 +225,7 @@ void Scene01::BombCollision(GameObject * go1, GameObject * go2)
 
 void Scene01::UpdateParticles(double dt)
 {
-	if (m_particleCount < MAX_PARTICLE)
+	if (m_player->GetVel().Length() > 5 && m_particleCount < MAX_PARTICLE)
 	{
 		ParticleObject* particle = GetParticle();
 		particle->type = ParticleObject_TYPE::P_SPARK;
@@ -234,7 +234,6 @@ void Scene01::UpdateParticles(double dt)
 		particle->rotationSpeed = Math::RandFloatMinMax(20, 40);
 		//particle->pos.Set(Math::RandFloatMinMax(-1700, 1700), 1200, Math::RandFloatMinMax(-1700, 1700));
 		particle->pos = m_player->GetPlayerPos();
-		particle->pos.z = 0;
 	}
 
 	std::vector<ParticleObject*>::iterator it, end;
