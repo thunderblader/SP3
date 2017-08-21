@@ -8,6 +8,7 @@
 #include "LoadTGA.h"
 #include "KeyboardController.h"
 #include "SoundEngine.h"
+#include "Particle\Particle.h"
 
 #include <sstream>
 
@@ -22,7 +23,7 @@ SceneBase::~SceneBase()
 void SceneBase::Init()
 {
 	// Black background
-	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
+	glClearColor(0.0f, 0.0f, 1.0f, 0.0f);
 	// Enable depth test
 	glEnable(GL_DEPTH_TEST);
 	// Accept fragment if it closer to the camera than the former one
@@ -123,6 +124,9 @@ void SceneBase::Init()
 	meshList[GEO_BOMB]->textureID = LoadTGA("Image//bomb.tga");
 	meshList[GEO_BOOM] = MeshBuilder::GenerateQuad("boom", Color(0.f, 0.f, 0.f), 1.f);
 	meshList[GEO_BOOM]->textureID = LoadTGA("Image//boom.tga");
+
+	meshList[GEO_PARTICLE_SPARK] = MeshBuilder::GenerateQuad("GEO_PARTICLE_SPARK", Color(1, 1, 1), 1.f);
+	meshList[GEO_PARTICLE_SPARK]->textureID = LoadTGA("Image//spark.tga");
 
 	//CSoundEngine::GetInstance()->Init();
 	//CSoundEngine::GetInstance()->AddSound("Jump", "Image//Mario-jump-sound.mp3");
@@ -257,6 +261,74 @@ void SceneBase::RenderMesh(Mesh *mesh, bool enableLight)
 void SceneBase::Render()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void SceneBase::RenderAllParticles()
+{
+	glDisable(GL_DEPTH_TEST);
+	std::vector <ParticleObject*>::iterator it, end;
+	end = particleList.end();
+
+	for (it = particleList.begin(); it != end; ++it)
+	{
+		ParticleObject* particle = (ParticleObject*)*it;
+		if (!particle->isActive)
+			continue;
+		RenderParticles(particle);
+	}
+	glEnable(GL_DEPTH_TEST);
+}
+
+ParticleObject * SceneBase::GetParticle(void)
+{
+	std::vector <ParticleObject*>::iterator it, end;
+	end = particleList.end();
+
+	for (it = particleList.begin(); it != end; ++it)
+	{
+		ParticleObject* particle = (ParticleObject*)*it;
+		if (!particle->isActive)
+		{
+			particle->isActive = true;
+			++m_particleCount;
+			return particle;
+		}
+	}
+	for (unsigned int i = 0; i < 10; ++i)
+	{
+		ParticleObject* particle = new ParticleObject(ParticleObject_TYPE::P_SPARK);
+		particleList.push_back(particle);
+	}
+
+	ParticleObject* particle = particleList.back();
+	particle->isActive = true;
+	++m_particleCount;
+	return particle;
+}
+
+void SceneBase::RenderParticles(ParticleObject * particle)
+{
+	switch (particle->type)
+	{
+	case ParticleObject_TYPE::P_SPARK:
+		modelStack.PushMatrix();
+		modelStack.Translate(particle->pos.x, particle->pos.y, particle->pos.z);
+		modelStack.Rotate(particle->rotation, 0.0f, 0.0f, 1.0f);
+		modelStack.Scale(particle->scale.x, particle->scale.y, particle->scale.z);
+		RenderMesh(meshList[GEO_PARTICLE_SPARK], false);
+		modelStack.PopMatrix();
+		break;
+	//case ParticleObject_TYPE::P_SMOKE:
+	//	modelStack.PushMatrix();
+	//	modelStack.Translate(particle->pos.x, particle->pos.y, particle->pos.z);
+	//	modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - particle->pos.x, camera.position.z - particle->pos.z)), 0.0f, 1.0f, 0.0f);
+	//	modelStack.Scale(particle->scale.x, particle->scale.y, particle->scale.z);
+	//	RenderMesh(meshList[GEO_PARTICLE_SMOKE], false);
+	//	modelStack.PopMatrix();
+	//	break;
+	default:
+		break;
+	}
 }
 
 void SceneBase::Exit()

@@ -26,7 +26,7 @@ void Player::Update(double dt)
 
 	// Player Physics can be done here
 	static bool launched = false;
-	if (playerObj->pos.x >= 0 && !launched)
+	if (playerObj->pos.x >= -1 && !launched)
 	{
 		launched = true;
 		playerBomb->active = true;
@@ -40,6 +40,11 @@ void Player::Update(double dt)
 	if (playerBomb->active)
 	{
 		playerBomb->pos += playerBomb->vel * dt;
+
+		if (playerBomb->pos.y < 0)
+		{
+			playerBomb->active = false;
+		}
 	}
 
 	if (!playerBomb->active && launched)

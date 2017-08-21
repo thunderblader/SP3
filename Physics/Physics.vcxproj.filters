@@ -24,6 +24,9 @@
     <Filter Include="Physics">
       <UniqueIdentifier>{8f8a9584-7dca-4267-80fe-ff5a693a96f3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Particle">
+      <UniqueIdentifier>{16569b4b-a889-4703-adda-4c627de9e2a3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -82,6 +85,9 @@
     </ClCompile>
     <ClCompile Include="Source\Physics\Collision.cpp">
       <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Particle\Particle.cpp">
+      <Filter>Particle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -144,6 +150,9 @@
     </ClInclude>
     <ClInclude Include="Source\Physics\Collision.h">
       <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Particle\Particle.h">
+      <Filter>Particle</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

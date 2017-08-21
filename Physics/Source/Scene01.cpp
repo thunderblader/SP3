@@ -6,6 +6,7 @@
 #include "SoundEngine.h"
 #include "Terrain\LoadHmap.h"
 #include "Physics\Physics.h"
+#include "Particle\Particle.h"
 
 #include <sstream>
 #include <fstream>
@@ -34,7 +35,7 @@ void Scene01::Init()
 	m_worldWidth = m_worldHeight * (float)Application::GetWindowWidth() / Application::GetWindowHeight();
 
 	m_TerrainHeight = 20.f;
-	m_TerrainWidth = 1000;
+	m_TerrainWidth = 500;
 
 	m_speed = 40.f;
 
@@ -71,16 +72,22 @@ void Scene01::Init()
 	
 	for (int i = 0; i < 5; i++)
 	{
-		for (int j = 0; j < 2; j++)
+		for (int j = 0; j < 5; j++)
 		{
-			GameObject *bricks = FetchGO();
-			bricks->active = true;
-			bricks->type = GameObject::GO_BRICK;
-			bricks->dir.Set(0, 1, 0);
-			bricks->pos.Set(30 + j * 10, 2.5 + 5 * i, 0);
-			bricks->scale.Set(5, 5, 1);
+			if (i % 2 == 1 || j % 2 == 1)
+			{
+				GameObject *bricks = FetchGO();
+				bricks->active = true;
+				bricks->type = GameObject::GO_BRICK;
+				bricks->dir.Set(0, 1, 0);
+				bricks->pos.Set(40 + j * 10, 2.5 + 5 * i, 0);
+				bricks->scale.Set(5, 5, 1);
+			}
 		}
 	}
+
+	m_particleCount = 0;
+	MAX_PARTICLE = 100;
 }
 
 GameObject* Scene01::FetchGO()
@@ -217,11 +224,57 @@ void Scene01::BombCollision(GameObject * go1, GameObject * go2)
 	}
 }
 
+void Scene01::UpdateParticles(double dt)
+{
+	if (m_player->GetVel().Length() > 5 && m_particleCount < MAX_PARTICLE)
+	{
+		ParticleObject* particle = GetParticle();
+		particle->type = ParticleObject_TYPE::P_SPARK;
+		particle->scale.Set(1, 1, 1);
+		particle->vel.Set(Math::RandFloatMinMax(-5, 0), Math::RandFloatMinMax(5, 0), 0);
+		particle->rotationSpeed = Math::RandFloatMinMax(20, 40);
+		//particle->pos.Set(Math::RandFloatMinMax(-1700, 1700), 1200, Math::RandFloatMinMax(-1700, 1700));
+		particle->pos = m_player->GetPlayerPos();
+	}
+
+	std::vector<ParticleObject*>::iterator it, end;
+	end = particleList.end();
+	for (it = particleList.begin(); it != end; ++it)
+	{
+		ParticleObject* particle = (ParticleObject*)*it;
+		if (!particle->isActive)
+			continue;
+		if (particle->type == ParticleObject_TYPE::P_SPARK)
+		{
+			particle->vel.y += -9.8f * (float)dt;
+			particle->pos += particle->vel * (float)dt * 10.0f;
+			particle->rotation += particle->rotationSpeed * (float)dt;
+			if (particle->pos.y <= 1)
+			{
+				particle->isActive = false;
+				--m_particleCount;
+			}
+		}
+		//if (particle->type == ParticleObject_TYPE::P_SMOKE)
+		//{
+		//	particle->vel -= m_gravity  * 0.5f * (float)dt;
+		//	particle->pos += particle->vel * (float)dt * 10.0f;
+		//	particle->rotation += particle->rotationSpeed * (float)dt;
+
+		//	if (particle->pos.y > smokepos.y + 100)
+		//	{
+		//		particle->isActive = false;
+		//		--m_particleCount;
+		//	}
+		//}
+	}
+}
+
 void Scene01::Update(double dt)
 {
 	SceneBase::Update(dt);
 	Camera_Control(dt);
-
+	UpdateParticles(dt);
 	if (KeyboardController::GetInstance()->IsKeyPressed('L'))
 	{
 		//file.Save_Data(Level, Score, Gold);
@@ -473,9 +526,9 @@ void Scene01::Update(double dt)
 
 							pos += go2->pos;
 
-							if ((pos - go->pos).Length() > 5 && (pos - go->pos).Length() < 30)
+							if ((pos - go->pos).Length() > 5 && (pos - go->pos).Length() < 100)
 							{
-								float energy = (30 - (pos - go->pos).Length()) / 30 * 2;
+								float energy = (30 - (pos - go->pos).Length()) / 30 * 10;
 
 								Vector3 explosion = (go->pos - pos).Normalized() * energy;
 								go2->vel -= explosion;
@@ -539,6 +592,8 @@ void Scene01::RenderGO(GameObject *go)
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
 		RenderMesh(meshList[GEO_CUBE], false);
+		break;
+
 	case GameObject::GO_BRICK:
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
@@ -599,6 +654,7 @@ void Scene01::Render()
 		modelStack.PopMatrix();
 	}
 
+	RenderAllParticles();
 	//On screen text
 
 	std::ostringstream ss;
