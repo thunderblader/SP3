@@ -94,8 +94,7 @@ Vector3 Player::GetPlayerPos()
 {
 	if(!launched)
 		return playerObj->pos;
-
-	if (launched)
+	else
 		return playerBomb->pos;
 }
 

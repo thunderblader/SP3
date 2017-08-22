@@ -238,7 +238,7 @@ void Scene01::BombCollision(GameObject * go1, GameObject * go2)
 
 void Scene01::UpdateParticles(double dt)
 {
-	if (m_particleCount < MAX_PARTICLE)
+	if (m_particleCount < (int)MAX_PARTICLE)
 	{	
 		if (m_player->GetVel().Length() > 5)
 		{
@@ -255,10 +255,10 @@ void Scene01::UpdateParticles(double dt)
 			ParticleObject* particle = GetParticle();
 			particle->type = ParticleObject_TYPE::P_RAIN;
 			particle->scale.Set(1, 3, 1);
-			particle->vel.Set(Math::RandFloatMinMax(-5, -4), -9.8, 0);
+			particle->vel.Set(Math::RandFloatMinMax(-5.f, -4.f), -9.8f, 0.f);
 			particle->rotationSpeed = 0;
 			particle->rotation = Math::RadianToDegree(atan2(particle->vel.Normalized().y, particle->vel.Normalized().x)) - 270;
-			particle->pos.Set(Math::RandFloatMinMax(-m_TerrainWidth*1.5, m_TerrainWidth*1.5), m_worldHeight*1.5, 0);
+			particle->pos.Set(Math::RandFloatMinMax(-m_TerrainWidth*1.5f, m_TerrainWidth*1.5f), m_worldHeight*1.5f, 0);
 		}
 		//if(go->boom)
 		for (int i = 0; i < 5; ++i)
@@ -583,11 +583,11 @@ void Scene01::Update(double dt)
 			if (go->type == GameObject::GO_BOMB)
 			{
 				go->pos += go->vel * static_cast<float>(dt);
-				go->vel += Vector3(0, -9.8, 0) * dt;
+				go->vel += Vector3(0.f, -9.8f, 0.f) * (float)dt;
 				if (go->boom)
 				{
 					if (go->scale.x < 5)
-						go->scale *= 1.2;
+						go->scale *= 1.2f;
 					if (go->scale.x > 5)
 					{
 						go->boom = false;
@@ -634,7 +634,7 @@ void Scene01::Update(double dt)
 							{
 								go2->pos += go2->vel * static_cast<float>(dt);
 								if (!go2->vel.IsZero())
-									go2->vel += (Vector3(0, 0, 0) - go2->vel) * dt;
+									go2->vel += (Vector3(0, 0, 0) - go2->vel) * (float)dt;
 								BombCollision(go, go2);
 							}
 						}

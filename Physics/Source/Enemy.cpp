@@ -1,8 +1,7 @@
 #include "Enemy.h"
 #include "Physics\Physics.h"
 #include "Mesh.h"
-
-#include <iostream>
+#include "Physics\Collision.h"
 
 GameObject* Enemy::playerObj = 0;
 GameObject* Enemy::bombObj = 0;
@@ -27,6 +26,7 @@ void Enemy::Init(GameObject* _enemyObj, GameObject::GAMEOBJECT_TYPE _type, Vecto
 	enemyObj->scale = _scale;
 	enemyObj->mass = 1.f;
 	enemyObj->vel.Set(0.f, 0.f, 0.f);
+	enemyObj->colType = Collider::SPHERE;
 	curState = IDLE;
 	projSpd = 0.f;
 }
@@ -131,14 +131,12 @@ void Enemy::RunYeti(double dt)
 
 void Enemy::RunKing(double dt)
 {
-	if ((bombObj->pos - enemyObj->pos).LengthSquared()
-		<= (bombObj->scale.x + enemyObj->scale.x) * (bombObj->scale.x + enemyObj->scale.x))
+	if (Collider::CheckCollision(enemyObj, bombObj))
 		enemyObj->active = false;
 }
 
 void Enemy::RunKnight(double dt)
 {
-	if ((bombObj->pos - enemyObj->pos).LengthSquared()
-		<= (bombObj->scale.x + enemyObj->scale.x) * (bombObj->scale.x + enemyObj->scale.x))
+	if (Collider::CheckCollision(enemyObj, bombObj))
 		enemyObj->active = false;
 }
