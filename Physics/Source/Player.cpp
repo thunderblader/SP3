@@ -1,12 +1,12 @@
 #include "Player.h"
 #include "Terrain\LoadHmap.h"
+#include "Physics\Physics.h"
 
 void Player::Init(GameObject * _playerObj, GameObject * _playerBomb
 	, GameObject::GAMEOBJECT_TYPE _type
 	, Vector3 _pos, Vector3 _scale, float _mass, float _spd)
 {
 	playerObj = _playerObj;
-	playerBomb = _playerBomb;
 	playerObj->type = _type;
 	playerObj->pos = _pos;
 	playerObj->scale = _scale;
@@ -14,6 +14,13 @@ void Player::Init(GameObject * _playerObj, GameObject * _playerBomb
 	playerObj->vel = Vector3(0.f, 0.f, 0.f);
 	playerObj->dir = Vector3(1.f, 0.f, 0.f);
 	playerObj->normal = Vector3(0.f, 1.f, 0.f);
+//	item_node = Tree::getInstance();
+	playerBomb = _playerBomb;
+	playerBomb->type = GameObject::GO_BOMB;
+	playerBomb->pos = _pos;
+	playerBomb->scale = _scale;
+	playerBomb->mass = _mass;
+	playerBomb->active = false;
 
 	defaultPos = _pos;
 	m_speed = _spd;
@@ -24,26 +31,36 @@ void Player::Update(double dt)
 	if (!playerObj)
 		return;
 
+	
+	//item_node = item_node->retreve_item(item_node, 2);
+	//if (item_node->root.has_item)
+	//{
+	//	
+
+	//}
+
 	// Player Physics can be done here
-	if (playerObj->pos.x >= -playerObj->scale.x/2 && !launched)
+	if (playerObj->pos.x >= -playerObj->scale.x*2 && !launched)
 	{
 		if (playerObj->vel.y < 0)
 		{
-			playerObj->vel = playerObj->vel.Cross(Vector3(0, 0, -1));
-			playerObj->vel.x *= 5;
+			//playerObj->vel = playerObj->vel.Cross(Vector3(0, 0, -1));
+			//playerObj->vel.x *= 5;
 		}
 		playerBomb->active = true;
 		playerBomb->type = GameObject::GO_BOMB;
-		playerBomb->vel = playerObj->vel * 5;
+		playerBomb->vel = playerObj->vel*1.5;
+		playerBomb->vel.y = 5;
 		playerBomb->pos = GetPlayerPos();
 		playerBomb->scale.Set(2, 2, 1);
-		playerObj->active = false;
+		//playerObj->active = false;
 		launched = true;
 	}
 
 	if (playerBomb->active)
 	{
-		playerBomb->pos += playerBomb->vel * dt;
+		Physics::K1(playerBomb->vel, Vector3(0.f, -9.8f, 0.f), (float)dt, playerBomb->vel);
+		playerBomb->pos += playerBomb->vel * (float)dt * 40.f;
 
 		if (playerBomb->pos.y < 0)
 		{
@@ -121,7 +138,23 @@ void Player::Jump(const double dt)
 		playerObj->pos.y > (m_TerrainHeight * ReadHeightMap(*m_heightmap, (playerObj->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + playerObj->scale.y * 0.5f)
 		return;
 
-	playerObj->vel += Vector3(0.f, m_speed * 4.f, 0.f) * (float)dt * (1.f / playerObj->mass);
+	playerObj->vel += Vector3(0.f, 300.f, 0.f) * (float)dt * (1.f / playerObj->mass);
+}
+
+void Player::Upgrade(int id)
+{
+	if (id == 1)
+	{
+		playerObj->scale.x *= 10;
+	}
+	else if (id == 2)
+	{
+		playerObj->scale.x *= 5;
+	}
+	else if (id == 3)
+	{
+		playerObj->scale.x *= 2;
+	}
 }
 
 Player::Player()

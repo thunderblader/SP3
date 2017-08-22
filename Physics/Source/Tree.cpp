@@ -106,13 +106,14 @@ Tree *Tree::balance(Tree *temp)
 	return temp;
 }
 
-Tree* Tree::insert(Tree *oak, int value, int price, string name)
+Tree* Tree::insert(Tree *oak, int value, bool has_item, int price, string name)
 {
 	curr = oak;
 	bool check = false;
 	create = new Tree;
 	create->root.name = name;
 	create->root.data = value;
+	create->root.has_item = has_item;
 	create->root.price = price;
 	while (check == false)
 	{
@@ -181,7 +182,6 @@ Tree* Tree::insert(Tree *oak, int value, int price, string name)
 			oak = balance(oak);
 		}
 	}
-	//birch = oak;
 	return oak;
 }
 void Tree::inorder(Tree *tree)
@@ -221,8 +221,33 @@ int Tree::search(Tree *tree, int value)
 		}
 		search(tree->right, value);
 	}
-
-
 }
 
+Tree* Tree::retreve_item(Tree *tree, int value)
+{
+	if (tree == NULL)
+	{
+		return temp;
+	}
+	retreve_item(tree->left, value);
+	if (value == tree->root.data)
+	{
+		temp = tree;
+		return temp;
+	}
+	retreve_item(tree->right, value);
+}
 
+void Tree::set_item(int id)
+{
+	if (node == NULL)
+	{
+		return;
+	}
+	inorder(node->left);
+	if (id == node->root.data)
+	{
+		node->root.has_item = true;
+	}
+	inorder(node->right);
+}

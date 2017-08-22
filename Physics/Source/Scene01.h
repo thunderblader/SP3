@@ -10,6 +10,7 @@
 #include "Load_File.h"
 #include "Shop.h"
 #include "ParameterPhysics.h"
+#include "Tree.h"
 
 #include <vector>
 
@@ -50,6 +51,7 @@ protected:
 	GameObject *m_ghost;
 	GameObject *test;
 	GameObject *spawner;
+	GameObject *screen;
 	int m_ballCount;
 	int m_objectCount;
 
@@ -59,9 +61,13 @@ protected:
 	float initialKE, finalKE;
 
 	bool free_look;
+	bool in_shop;
+	bool buy_item;
+	bool purchased;
 
 	Load_File file;
 	Shop shop;
+	Tree* item_node;
 
 	int id;
 

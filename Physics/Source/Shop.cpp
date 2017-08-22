@@ -2,38 +2,43 @@
 
 void Shop::Load_Shop()
 {
-	
-//	shop_file.Load("shop_data");
 	gold = 1000;
 	item_price = 0;
+	
 }
 
-void Shop::Purchase_Item(int id)
+bool Shop::Purchase_Item(int id)
 {
 	item_price = 0;
 	stuff = Tree::getInstance();
+	stuff = stuff->retreve_item(stuff, id);
 	cout << "gold: " << gold << endl;
 	cout << "Which do u want to buy?" << endl;
-	cout << "you bought: ";
-	item_price = Tree::getInstance()->search(stuff, id);
-	if (gold < item_price)
+	
+	if (gold < stuff->root.price)
 	{			
 		cout << "you no money" << endl;
 		cout << "cost is: " << item_price << endl;
+		return false;
 	}
 	else
 	{
-		gold -= item_price;
+		gold -= stuff->root.price;
 		cout << "gold: " << gold << endl;
+		cout << "you bought: " << stuff->root.name << endl;
+		return true;
 	}
 }
 
-void Shop::Purchase_Upgrade()
+void Shop::Purchase_Upgrade(int id)
 {
-
+	stuff = Tree::getInstance();
+	stuff = stuff->retreve_item(stuff, id);
+	cout << stuff->root.data << endl;
+	cout << stuff->root.name << endl;
+	cout << stuff->root.price << endl;
 }
 void Shop::get_item(int id)
 {
-	item_price = Tree::getInstance()->search(stuff, id);
-	cout << "Price: " << item_price << endl;
+	stuff = stuff->retreve_item(stuff, id);
 }

@@ -34,6 +34,10 @@ protected:
 		NUM_ENEMY_STATE
 	};
 
+	void RunYeti(double dt);
+	void RunKing(double dt);
+	void RunKnight(double dt);
+
 private:
 	static GameObject* playerObj;
 	GameObject* enemyObj;
@@ -42,6 +46,7 @@ private:
 	SpriteAnimation* spriteAnim;
 
 	vector<GameObject*> projList;
+	float projSpd;
 };
 
 #endif // !ENEMY_H

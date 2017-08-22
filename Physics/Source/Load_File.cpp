@@ -7,6 +7,7 @@ Load_File::Load_File()
 	Level = 0;
 	Score = 0;
 	Gold = 0;
+	number_of_items = 0;
 }
 
 Load_File::~Load_File()
@@ -80,6 +81,11 @@ void Load_File::Process(bool checker, string content)
 						money = atoi(processor.c_str());
 						break;
 					}
+					case 2:
+					{
+						has_item = atoi(processor.c_str());
+						break;
+					}
 				}
 				current++;
 			}
@@ -89,17 +95,13 @@ void Load_File::Process(bool checker, string content)
 		{
 			processor.push_back(content.at(i));
 		}
-		
 	}
 	stat = atoi(processor.c_str());
 	if (checker == true)
 	{
-	//	items = Tree::getInstance()->insert(Tree::getInstance(), stat, money, item_name);
-		items = items->insert(items, stat, money, item_name);
-	//	items->inorder(items);
-		dog = items;
-	//	Tree::setInstance(items);
+		items = items->insert(items, stat, has_item, money, item_name);
 		items->setInstance(items);
+		number_of_items++;
 	}
 	Unit_Height_Space += 5;
 	Unit_Width_Space = 0;

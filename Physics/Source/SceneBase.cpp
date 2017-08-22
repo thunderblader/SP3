@@ -127,11 +127,13 @@ void SceneBase::Init()
 	meshList[GEO_BOOM] = MeshBuilder::GenerateQuad("boom", Color(0.f, 0.f, 0.f), 1.f);
 	meshList[GEO_BOOM]->textureID = LoadTGA("Image//boom.tga");
 
-	meshList[GEO_PARTICLE_SPARK] = MeshBuilder::GenerateQuad("GEO_PARTICLE_SPARK", Color(1, 1, 1), 1.f);
-	meshList[GEO_PARTICLE_SPARK]->textureID = LoadTGA("Image//spark.tga");
-
 	meshList[GEO_SPRITE_YETI] = MeshBuilder::GenerateSpriteAnimation("yeti", 4, 4, 1.f);
 	meshList[GEO_SPRITE_YETI]->textureID = LoadTGA("Image//Sprite_YetiLeft.tga");
+
+	meshList[GEO_PARTICLE_SPARK] = MeshBuilder::GenerateQuad("GEO_PARTICLE_SPARK", Color(1, 1, 1), 1.f);
+	meshList[GEO_PARTICLE_SPARK]->textureID = LoadTGA("Image//spark.tga");
+	meshList[GEO_PARTICLE_RAIN] = MeshBuilder::GenerateQuad("GEO_PARTICLE_RAIN", Color(1, 1, 1), 1.f);
+	meshList[GEO_PARTICLE_RAIN]->textureID = LoadTGA("Image//rain.tga");
 
 	//CSoundEngine::GetInstance()->Init();
 	//CSoundEngine::GetInstance()->AddSound("Jump", "Image//Mario-jump-sound.mp3");
@@ -323,14 +325,14 @@ void SceneBase::RenderParticles(ParticleObject * particle)
 		RenderMesh(meshList[GEO_PARTICLE_SPARK], false);
 		modelStack.PopMatrix();
 		break;
-	//case ParticleObject_TYPE::P_SMOKE:
-	//	modelStack.PushMatrix();
-	//	modelStack.Translate(particle->pos.x, particle->pos.y, particle->pos.z);
-	//	modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - particle->pos.x, camera.position.z - particle->pos.z)), 0.0f, 1.0f, 0.0f);
-	//	modelStack.Scale(particle->scale.x, particle->scale.y, particle->scale.z);
-	//	RenderMesh(meshList[GEO_PARTICLE_SMOKE], false);
-	//	modelStack.PopMatrix();
-	//	break;
+	case ParticleObject_TYPE::P_RAIN:
+		modelStack.PushMatrix();
+		modelStack.Translate(particle->pos.x, particle->pos.y, particle->pos.z);
+		modelStack.Rotate(particle->rotation, 0.0f, 0.0f, 1.0f);
+		modelStack.Scale(particle->scale.x, particle->scale.y, particle->scale.z);
+		RenderMesh(meshList[GEO_PARTICLE_RAIN], false);
+		modelStack.PopMatrix();
+		break;
 	default:
 		break;
 	}
