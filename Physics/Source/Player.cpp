@@ -31,14 +31,6 @@ void Player::Update(double dt)
 	if (!playerObj)
 		return;
 
-	
-	//item_node = item_node->retreve_item(item_node, 2);
-	//if (item_node->root.has_item)
-	//{
-	//	
-
-	//}
-
 	// Player Physics can be done here
 	if (playerObj->pos.x >= -playerObj->scale.x*2 && !launched)
 	{
@@ -142,18 +134,22 @@ void Player::Jump(const double dt)
 }
 
 void Player::Upgrade(int id)
-{
+{	//size=2, mass=1.5
 	if (id == 1)
 	{
-		playerObj->scale.x *= 10;
+		playerObj->scale.Set(10, 10, 1);
+		playerObj->mass = 1.5f;
+		//m_speed = 20;
 	}
 	else if (id == 2)
 	{
-		playerObj->scale.x *= 5;
+		playerObj->scale.Set(7.5, 7.5, 1);
+		playerObj->mass = 1.5f;
 	}
 	else if (id == 3)
 	{
-		playerObj->scale.x *= 2;
+		playerObj->scale.Set(2.5, 2.5, 1);
+		playerObj->mass = 0.5f;
 	}
 }
 
