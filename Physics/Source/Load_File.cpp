@@ -65,7 +65,7 @@ void Load_File::Process(bool checker, string content)
 			{
 				Unit_Width_Space += 5;
 				processed_value = atoi(processor.c_str());
-				blocks.Spawn(processed_value, Unit_Width_Space, Unit_Height_Space, Gameobject_List);
+				blocks.Spawn(processed_value, Unit_Width_Space - 50, Unit_Height_Space, Gameobject_List);
 			}
 			else if (checker == true)
 			{

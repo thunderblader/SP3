@@ -56,7 +56,7 @@ void Scene01::Init()
 	in_shop = false;
 	purchased = false;
 	file.Init(&m_goList);
-	file.Load(false, "Image//Test_Level.csv");
+	file.Load(false, "Image//Level01.csv");
 
 	file.Load(true, "Image//shop_data.csv");
 
