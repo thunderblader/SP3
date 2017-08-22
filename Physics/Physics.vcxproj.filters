@@ -89,6 +89,9 @@
     <ClCompile Include="Source\Particle\Particle.cpp">
       <Filter>Particle</Filter>
     </ClCompile>
+    <ClCompile Include="Source\ShopUpdate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">

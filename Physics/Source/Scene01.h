@@ -37,6 +37,7 @@ public:
 	void BombCollision(GameObject * go1, GameObject * go2);
 	void Camera_Control(double dt);
 	void UpdateParticles(double dt);
+	void Shop_Update(double dt);
 
 protected:
 	vector<GameObject *> m_goList;
@@ -68,15 +69,12 @@ protected:
 	Load_File file;
 	Shop shop;
 	Tree* item_node;
-
-	int id;
-
+	float time_limit;
 	int Unit_Height_Space;
 	int Unit_Width_Space;
 	int Level;
 	int Score;
 	int Gold;
-	float time_limit;
 	int item_id;
 
 	// Physics Parameters
