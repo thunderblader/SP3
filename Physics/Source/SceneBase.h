@@ -58,6 +58,7 @@ public:
 		GEO_BOMB,
 		GEO_BOOM,
 		GEO_PARTICLE_SPARK,
+		GEO_SPRITE_YETI,
 		NUM_GEOMETRY,
 	};
 public:

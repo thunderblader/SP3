@@ -5,6 +5,8 @@
 #include "Mesh.h"
 #include "Vertex.h"
 
+class SpriteAnimation;
+
 /******************************************************************************/
 /*!
 		Class MeshBuilder:
@@ -23,6 +25,7 @@ public:
 	static Mesh* GenerateOBJ(const std::string &meshName, const std::string &file_path);
 	static Mesh* GenerateText(const std::string &meshName, unsigned row, unsigned col);
 	static Mesh* GenerateTerrain(const std::string &meshName, const std::string &file_path, std::vector<unsigned char> &heightMap);
+	static SpriteAnimation* GenerateSpriteAnimation(const std::string &meshName, unsigned numRow, unsigned numCol, float alpha);
 };
 
 #endif

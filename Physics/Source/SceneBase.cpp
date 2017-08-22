@@ -9,6 +9,7 @@
 #include "KeyboardController.h"
 #include "SoundEngine.h"
 #include "Particle\Particle.h"
+#include "SpriteAnimation.h"
 
 #include <sstream>
 
@@ -128,6 +129,9 @@ void SceneBase::Init()
 
 	meshList[GEO_PARTICLE_SPARK] = MeshBuilder::GenerateQuad("GEO_PARTICLE_SPARK", Color(1, 1, 1), 1.f);
 	meshList[GEO_PARTICLE_SPARK]->textureID = LoadTGA("Image//spark.tga");
+
+	meshList[GEO_SPRITE_YETI] = MeshBuilder::GenerateSpriteAnimation("yeti", 4, 4, 1.f);
+	meshList[GEO_SPRITE_YETI]->textureID = LoadTGA("Image//Sprite_YetiLeft.tga");
 
 	//CSoundEngine::GetInstance()->Init();
 	//CSoundEngine::GetInstance()->AddSound("Jump", "Image//Mario-jump-sound.mp3");

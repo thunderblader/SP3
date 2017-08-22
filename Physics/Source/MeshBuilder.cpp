@@ -5,6 +5,7 @@
 #include "MyMath.h"
 #include "LoadOBJ.h"
 #include "Terrain\LoadHmap.h"
+#include "SpriteAnimation.h"
 /******************************************************************************/
 /*!
 \brief
@@ -521,6 +522,66 @@ Mesh* MeshBuilder::GenerateTerrain(const std::string &meshName, const std::strin
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_buffer_data.size() * sizeof(GLuint), &index_buffer_data[0], GL_STATIC_DRAW);
 
 	mesh->indexSize = index_buffer_data.size();
+
+	return mesh;
+}
+
+SpriteAnimation * MeshBuilder::GenerateSpriteAnimation(const std::string & meshName, unsigned numRow, unsigned numCol, float alpha)
+{
+	Vertex v;
+	std::vector<Vertex> vertex_buffer_data;
+	std::vector<GLuint> index_buffer_data;
+
+	float width = 1.f / numCol;
+	float height = 1.f / numRow;
+	int offset = 0;
+
+	for (unsigned i = 0; i < numRow; ++i)
+	{
+		for (unsigned j = 0; j < numCol; ++j)
+		{
+			float ul = j * width;
+			float vl = 1.f - height - i * height;
+
+			v.pos.Set(-0.5f, -0.5f, 0.f);
+			v.color.Set(1.f, 1.f, 1.f, alpha);
+			v.texCoord.Set(ul, vl);
+			vertex_buffer_data.push_back(v);
+
+			v.pos.Set(0.5f, -0.5f, 0.f);
+			v.color.Set(1.f, 1.f, 1.f, alpha);
+			v.texCoord.Set(ul + width, vl);
+			vertex_buffer_data.push_back(v);
+
+			v.pos.Set(0.5f, 0.5f, 0.f);
+			v.color.Set(1.f, 1.f, 1.f, alpha);
+			v.texCoord.Set(ul + width, vl + height);
+			vertex_buffer_data.push_back(v);
+
+			v.pos.Set(-0.5f, 0.5f, 0.f);
+			v.color.Set(1.f, 1.f, 1.f, alpha);
+			v.texCoord.Set(ul, vl + height);
+			vertex_buffer_data.push_back(v);
+
+			index_buffer_data.push_back(offset + 0);
+			index_buffer_data.push_back(offset + 1);
+			index_buffer_data.push_back(offset + 2);
+			index_buffer_data.push_back(offset + 0);
+			index_buffer_data.push_back(offset + 2);
+			index_buffer_data.push_back(offset + 3);
+			offset += 4;
+		}
+	}
+
+	SpriteAnimation *mesh = new SpriteAnimation(meshName, numRow, numCol);
+
+	glBindBuffer(GL_ARRAY_BUFFER, mesh->vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, vertex_buffer_data.size() * sizeof(Vertex), &vertex_buffer_data[0], GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->indexBuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_buffer_data.size() * sizeof(GLuint), &index_buffer_data[0], GL_STATIC_DRAW);
+
+	mesh->indexSize = index_buffer_data.size();
+	mesh->mode = Mesh::DRAW_TRIANGLES;
 
 	return mesh;
 }

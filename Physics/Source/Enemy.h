@@ -2,6 +2,7 @@
 #ifndef ENEMY_H
 #define ENEMY_H
 #include "GameObject.h"
+#include "SpriteAnimation.h"
 
 #include <vector>
 
@@ -18,9 +19,12 @@ public:
 	void Exit();
 	void Reset();
 
-	void SetPlayerObj(GameObject* _playerObj);
+	int GetCurAnimFrame() const;
 
-	void PushProjectile(GameObject* _projObj, Vector3 _target, Vector3 _scale, float _spd);
+	void SetPlayerObj(GameObject* _playerObj);
+	void SetSpriteAnim(Mesh* _sprite);
+
+	void PushProjectile(GameObject* _projObj, Vector3 _scale, float _spd);
 
 protected:
 	enum ENEMY_STATE
@@ -35,6 +39,7 @@ private:
 	GameObject* enemyObj;
 	Vector3 defaultPos;
 	ENEMY_STATE curState;
+	SpriteAnimation* spriteAnim;
 
 	vector<GameObject*> projList;
 };

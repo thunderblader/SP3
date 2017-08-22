@@ -52,8 +52,6 @@ void Scene01::Init()
 //	file.Init(&m_goList);
 //	file.Load(false, "Image//Test_Level.csv");
 
-
-
 	file.Load(true, "Image//shop_data.csv");
 
 	shop.Load_Shop();
@@ -70,7 +68,8 @@ void Scene01::Init()
 	m_control->LoadConfig("Data//Config.ini", param_physics);
 	Enemy* enemy = new Enemy();
 	enemy->SetPlayerObj(playerObj);
-	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(0.f, 40.f, 0.f), Vector3(5.f, 5.f, 5.f));
+	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(0.f, 40.f, 0.f), Vector3(10.f, 10.f, 1.f));
+	enemy->SetSpriteAnim(meshList[GEO_SPRITE_YETI]);
 	enemyList.push_back(enemy);
 	
 	for (int i = 0; i < 7; i++)
@@ -325,13 +324,14 @@ void Scene01::Update(double dt)
 		m_speed += 0.1f;
 	}
 
-	static float projDelay = 0.f;
-	projDelay += (float)dt;
-	if (projDelay > 0.5f) // Debug key snow yeti shooting
+	static bool enemyFired = false;
+	if (enemyList[0]->GetCurAnimFrame() == 11 && !enemyFired) // Debug key snow yeti shooting
 	{
-		enemyList[0]->PushProjectile(FetchGO(), m_player->GetPlayerPos(), Vector3(1.f, 1.f, 1.f), 1.f);
-		projDelay = 0.f;
+		enemyList[0]->PushProjectile(FetchGO(), Vector3(1.f, 1.f, 1.f), 1.f);
+		enemyFired = true;
 	}
+	else if (enemyList[0]->GetCurAnimFrame() == 12)
+		enemyFired = false;
 
 	m_player->Update(dt);
 	m_control->Update(dt);
@@ -604,7 +604,7 @@ void Scene01::RenderGO(GameObject *go)
 	case GameObject::GO_ENEMY_SNOWYETI:
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
-		RenderMesh(meshList[GEO_CUBE], false);
+		RenderMesh(meshList[GEO_SPRITE_YETI], false);
 		break;
 
 	case GameObject::GO_PROJ_SNOWBALL:
