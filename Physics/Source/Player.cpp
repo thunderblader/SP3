@@ -4,7 +4,7 @@
 
 void Player::Init(GameObject * _playerObj, GameObject * _playerBomb
 	, GameObject::GAMEOBJECT_TYPE _type
-	, Vector3 _pos, Vector3 _scale, float _mass, float _spd)
+	, Vector3 _pos, Vector3 _scale, float _mass, float _spd, float _jump_boost)
 {
 	playerObj = _playerObj;
 	playerObj->type = _type;
@@ -25,6 +25,7 @@ void Player::Init(GameObject * _playerObj, GameObject * _playerBomb
 
 	defaultPos = _pos;
 	m_speed = _spd;
+	jump_boost = _jump_boost;
 }
 
 void Player::Update(double dt)
@@ -130,29 +131,32 @@ void Player::Jump(const double dt)
 		playerObj->pos.y > (m_TerrainHeight * ReadHeightMap(*m_heightmap, (playerObj->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + playerObj->scale.y * 0.5f)
 		return;
 
-	playerObj->vel += Vector3(0.f, 300.f, 0.f) * (float)dt * (1.f / playerObj->mass);
+	playerObj->vel += Vector3(0.f, 300.f + jump_boost, 0.f) * (float)dt * (1.f / playerObj->mass);
 }
 
 void Player::Upgrade(Tree::avl_node &node)
 {	//size=2, mass=1.5
-	if (node.data == 2)
+	if (node.id == 1)
 	{
-		playerObj->scale.Set(10, 10, 1);
-		playerObj->mass = 1.5f;
-		playerObj->scale.Set(playerObj->scale.x+ node.price * 1, playerObj->scale.y + node.price * 1, 1);
-		playerObj->mass += node.price * 1;
+//		playerObj->scale.Set(10, 10, 1);
+//		playerObj->mass = 1.5f;
+		playerObj->scale.Set(playerObj->scale.x + (node.item_count * 1), playerObj->scale.y + (node.item_count * 1), 1);
+		playerObj->mass = 1 + (node.item_count * 0.1);
 		//m_speed = 20;
 	}
-	//else if (id == 2)
-	//{
-	//	playerObj->scale.Set(7.5, 7.5, 1);
-	//	playerObj->mass = 1.5f;
-	//}
-	//else if (id == 3)
-	//{
-	//	playerObj->scale.Set(2.5, 2.5, 1);
-	//	playerObj->mass = 0.5f;
-	//}
+	else if (node.id == 2)
+	{
+		m_speed = 10 + (node.item_count * 1);
+	}
+	else if (node.id == 3)
+	{
+		jump_boost = (node.item_count * 30);
+	}
+	else if (node.id == 4)
+	{
+		playerObj->vel.x += 5;
+	}
+
 }
 
 Player::Player()

@@ -22,7 +22,7 @@ public:
 		GameObject::GAMEOBJECT_TYPE _type,
 		Vector3 _pos = Vector3(0.f, 0.f, 0.f),
 		Vector3 _scale = Vector3(1.f, 1.f, 1.f),
-		float _mass = 1.f, float _spd = 1.f);
+		float _mass = 1.f, float _spd = 1.f, float jump_boost = 0.f);
 	void Update(double dt);
 	void Reset();
 
@@ -51,6 +51,7 @@ private:
 
 	float m_speed;
 	bool launched;
+	float jump_boost;
 };
 
 #endif // !PLAYER_H

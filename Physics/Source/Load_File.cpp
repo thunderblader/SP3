@@ -53,6 +53,8 @@ void Load_File::Process(bool checker, string content)
 	string processor, item_name;
 	int processed_value;
 	int count = 0;
+	int id = 0;
+	int item_count = 0;
 	int current = 0;
 	int money = 0;
 	int stat = 0;
@@ -83,7 +85,17 @@ void Load_File::Process(bool checker, string content)
 					}
 					case 2:
 					{
-						has_item = (processor.c_str()) ? true : false;
+						has_item = (atoi(processor.c_str())) ? true : false;
+						break;
+					}
+					case 3:
+					{
+						stat = atoi(processor.c_str());
+						break;
+					}
+					case 4:
+					{
+						item_count = atoi(processor.c_str());
 						break;
 					}
 				}
@@ -96,10 +108,10 @@ void Load_File::Process(bool checker, string content)
 			processor.push_back(content.at(i));
 		}
 	}
-	stat = atoi(processor.c_str());
+	id = atoi(processor.c_str());
 	if (checker == true)
 	{
-		items = items->insert(items, stat, has_item, money, item_name);
+		items = items->insert(items, id, item_count, stat, has_item, money, item_name);
 		items->setInstance(items);
 		number_of_items++;
 	}

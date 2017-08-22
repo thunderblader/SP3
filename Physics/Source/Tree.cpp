@@ -3,7 +3,7 @@
 Tree::Tree()
 {
 	check = false;
-	root.data = NULL;
+	root.id = NULL;
 	curr = NULL;
 }
 
@@ -106,18 +106,20 @@ Tree *Tree::balance(Tree *temp)
 	return temp;
 }
 
-Tree* Tree::insert(Tree *oak, int value, bool has_item, int price, string name)
+Tree* Tree::insert(Tree *oak, int value, int item_count, int stat, bool has_item, int price, string name)
 {
 	curr = oak;
 	bool check = false;
 	create = new Tree;
 	create->root.name = name;
-	create->root.data = value;
+	create->root.id = value;
+	create->root.data = stat;
+	create->root.item_count = item_count;
 	create->root.has_item = has_item;
 	create->root.price = price;
 	while (check == false)
 	{
-		if (curr->root.data == NULL)
+		if (curr->root.id == NULL)
 		{
 			curr = create;
 			curr->left = NULL;
@@ -127,7 +129,7 @@ Tree* Tree::insert(Tree *oak, int value, bool has_item, int price, string name)
 
 			return oak;
 		}
-		else if (value < curr->root.data)
+		else if (value < curr->root.id)
 		{
 			if (oak->left == NULL)
 			{
@@ -154,7 +156,7 @@ Tree* Tree::insert(Tree *oak, int value, bool has_item, int price, string name)
 			}
 			oak = balance(oak);
 		}
-		else if (value >= curr->root.data)
+		else if (value >= curr->root.id)
 		{
 			if (oak->right == NULL)
 			{
@@ -191,9 +193,9 @@ void Tree::inorder(Tree *tree)
 		return;
 	}
 	inorder(tree->left);
-	cout << tree->root.name << ", ";
-	cout << tree->root.price << ", ";
-	cout << tree->root.data << endl;
+//	cout << tree->root.name << ", ";
+//	cout << tree->root.price << ", ";
+//	cout << tree->root.id << endl;
 	inorder(tree->right);
 }
 int Tree::search(Tree *tree, int value)
@@ -212,9 +214,9 @@ int Tree::search(Tree *tree, int value)
 	else
 	{
 		search(tree->left, value);
-		if (value == tree->root.data)
+		if (value == tree->root.id)
 		{
-			cout << tree->root.name << endl;
+		//	cout << tree->root.name << endl;
 			new_gold = tree->root.price;
 			check = true;
 			return tree->root.price;
@@ -230,7 +232,7 @@ Tree* Tree::retreve_item(Tree *tree, int value)
 		return temp;
 	}
 	retreve_item(tree->left, value);
-	if (value == tree->root.data)
+	if (value == tree->root.id)
 	{
 		temp = tree;
 		return temp;
@@ -245,7 +247,7 @@ void Tree::set_item(int id)
 		return;
 	}
 	inorder(node->left);
-	if (id == node->root.data)
+	if (id == node->root.id)
 	{
 		node->root.has_item = true;
 	}
