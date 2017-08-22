@@ -54,7 +54,7 @@ protected:
 	GameObject *spawner;
 	GameObject *screen;
 	int m_ballCount;
-	int m_objectCount;
+	int* m_objectCount;
 
 	float m1, m2;
 	Vector3 u1, u2, v1, v2, u1N, u2N;

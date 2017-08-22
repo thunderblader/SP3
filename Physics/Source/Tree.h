@@ -17,6 +17,8 @@ public:
 	struct avl_node
 	{
 		string name;	//name of item
+		int id;
+		int item_count;
 		int data;	//data,price,stats
 		int price;
 		bool has_item;	//check if player has item
@@ -31,7 +33,7 @@ public:
 	Tree *lr_rotation(Tree *);
 	Tree *rl_rotation(Tree *);
 	Tree* balance(Tree *);
-	Tree* insert(Tree *, int data, bool has_item, int price, string name);
+	Tree* insert(Tree *, int data, int item_count, int stat, bool has_item, int price, string name);
 	void inorder(Tree *);
 	int search(Tree *, int value);
 	Tree* retreve_item(Tree*, int value);
