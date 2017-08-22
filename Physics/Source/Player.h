@@ -5,6 +5,8 @@
 #include "Vector3.h"
 #include "GameObject.h"
 #include "Physics\Collision.h"
+#include "Tree.h"
+#include "Shop.h"
 
 #include <vector>
 
@@ -34,6 +36,7 @@ public:
 
 	void Move_LeftRight(const double dt, const bool dLeft);
 	void Jump(const double dt);
+	void Upgrade(int id);
 
 private:
 	Player();
@@ -43,6 +46,8 @@ private:
 	Vector3 defaultPos;
 	vector<unsigned char>* m_heightmap;
 	float m_TerrainWidth, m_TerrainHeight;
+//	Tree* item_node;
+//	int id;
 
 	float m_speed;
 	bool launched;

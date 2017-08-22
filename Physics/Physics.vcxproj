@@ -168,6 +168,7 @@
     <ClCompile Include="Source\SceneBase.cpp" />
     <ClCompile Include="Source\shader.cpp" />
     <ClCompile Include="Source\Shop.cpp" />
+    <ClCompile Include="Source\ShopUpdate.cpp" />
     <ClCompile Include="Source\SoundEngine.cpp" />
     <ClCompile Include="Source\Spawner.cpp" />
     <ClCompile Include="Source\Terrain\LoadHmap.cpp" />

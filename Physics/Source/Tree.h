@@ -19,7 +19,7 @@ public:
 		string name;	//name of item
 		int data;	//data,price,stats
 		int price;
-		//bool check;	//check if player has item
+		bool has_item;	//check if player has item
 	};
 	
 	~Tree();
@@ -31,10 +31,11 @@ public:
 	Tree *lr_rotation(Tree *);
 	Tree *rl_rotation(Tree *);
 	Tree* balance(Tree *);
-	Tree* insert(Tree *, int data, int price, string name);
+	Tree* insert(Tree *, int data, bool has_item, int price, string name);
 	void inorder(Tree *);
 	int search(Tree *, int value);
 	Tree* retreve_item(Tree*, int value);
+	void set_item(int id);
 
 	static Tree *getInstance();
 	void setInstance(Tree *);

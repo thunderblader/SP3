@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "Terrain\LoadHmap.h"
+#include "Physics\Physics.h"
 
 void Player::Init(GameObject * _playerObj, GameObject * _playerBomb
 	, GameObject::GAMEOBJECT_TYPE _type
@@ -13,6 +14,7 @@ void Player::Init(GameObject * _playerObj, GameObject * _playerBomb
 	playerObj->vel = Vector3(0.f, 0.f, 0.f);
 	playerObj->dir = Vector3(1.f, 0.f, 0.f);
 	playerObj->normal = Vector3(0.f, 1.f, 0.f);
+//	item_node = Tree::getInstance();
 	playerBomb = _playerBomb;
 	playerBomb->type = GameObject::GO_BOMB;
 	playerBomb->pos = _pos;
@@ -31,15 +33,17 @@ void Player::Update(double dt)
 
 	// Player Physics can be done here
 	if (playerObj->pos.x >= -playerObj->scale.x / 2 - 1 && !launched)
-	{
-		
-		playerBomb->active = true;
+	{		playerBomb->active = true;
 		playerBomb->vel.x = playerObj->vel.x;
 		if (playerObj->vel.y < 0)
 		{
-			playerBomb->vel = playerObj->vel.Cross(Vector3(0, 0, -1));
-			playerBomb->vel.x *= 50;
+			playerObj->vel = playerObj->vel.Cross(Vector3(0, 0, -1));
+			playerObj->vel.x *= 50;
 		}
+		playerBomb->active = true;
+		playerBomb->type = GameObject::GO_BOMB;
+		playerBomb->vel = playerObj->vel*1.5;
+		playerBomb->vel.y = 5;
 		playerBomb->pos = GetPlayerPos();
 		playerObj->vel.SetZero();
 		playerObj->active = false;
@@ -48,7 +52,8 @@ void Player::Update(double dt)
 
 	if (playerBomb->active)
 	{
-		playerBomb->pos += playerBomb->vel * dt;
+		Physics::K1(playerBomb->vel, Vector3(0.f, -9.8f, 0.f), (float)dt, playerBomb->vel);
+		playerBomb->pos += playerBomb->vel * (float)dt * 40.f;
 
 		if (playerBomb->pos.y < 0)
 		{
@@ -126,6 +131,26 @@ void Player::Jump(const double dt)
 		return;
 
 	playerObj->vel.y += 300.f * (float)dt * (1.f / playerObj->mass);
+}
+
+void Player::Upgrade(int id)
+{	//size=2, mass=1.5
+	if (id == 1)
+	{
+		playerObj->scale.Set(10, 10, 1);
+		playerObj->mass = 1.5f;
+		//m_speed = 20;
+	}
+	else if (id == 2)
+	{
+		playerObj->scale.Set(7.5, 7.5, 1);
+		playerObj->mass = 1.5f;
+	}
+	else if (id == 3)
+	{
+		playerObj->scale.Set(2.5, 2.5, 1);
+		playerObj->mass = 0.5f;
+	}
 }
 
 Player::Player()

@@ -39,6 +39,7 @@ protected:
 	int Level;
 	int Score;
 	int Gold;
+	bool has_item;
 
 	Tree *items = Tree::getInstance();
 	Tree *dog;
