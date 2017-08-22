@@ -41,7 +41,7 @@ void Scene01::Init()
 
 	Math::InitRNG();
 
-	m_objectCount = 0;
+	//m_objectCount = 0;
 	m_ballCount = 0;
 
 	time_limit = 0;
@@ -50,14 +50,13 @@ void Scene01::Init()
 	
 
 	screen = FetchGO();
+	screen->type = GameObject::GO_SCREEN;
 
 	free_look = false;
 	in_shop = false;
 	purchased = false;
 	file.Init(&m_goList);
-	file.Load(false, "Image//Test_Level.csv");
-
-
+	file.Load(false, "Image//Level01.csv");
 
 	file.Load(true, "Image//shop_data.csv");
 
@@ -69,18 +68,20 @@ void Scene01::Init()
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
 	GameObject* playerObj = FetchGO();
+	GameObject* bombObj = FetchGO();
 	m_player = Player::GetInstance();
-
-	m_player->Init(FetchGO(), FetchGO(), GameObject::GO_BLOCK, Vector3(-50, 25, 0), Vector3(5, 4, 1), 1.f, 10.f);
+	m_player->Init(playerObj, bombObj, GameObject::GO_BLOCK, Vector3(-50, 25, 0), Vector3(5, 4, 1), 1.f, 10.f);
 	m_player->SetHeightmap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
 	m_control = new Controller(m_player);
 	m_control->LoadConfig("Data//Config.ini", param_physics);
 	Enemy* enemy = new Enemy();
 	enemy->SetPlayerObj(playerObj);
-	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(0.f, 40.f, 0.f), Vector3(5.f, 5.f, 5.f));
+	enemy->SetBombObj(bombObj);
+	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(-20.f, 40.f, 0.f), Vector3(10.f, 10.f, 1.f));
+	enemy->SetSpriteAnim(meshList[GEO_SPRITE_YETI]);
 	enemyList.push_back(enemy);
 	
-	for (int i = 0; i < 7; i++)
+	/*for (int i = 0; i < 7; i++)
 	{
 		for (int j = 0; j < 5; j++)
 		{
@@ -94,10 +95,12 @@ void Scene01::Init()
 				bricks->scale.Set(5, 5, 1);
 			}
 		}
-	}
+	}*/
 
 	m_particleCount = 0;
 	MAX_PARTICLE = 1000;
+
+	m_objectCount = &playerObj->m_totalGameObjects;
 }
 
 GameObject* Scene01::FetchGO()
@@ -106,10 +109,11 @@ GameObject* Scene01::FetchGO()
 	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;
-		if (!go->active && go->type != GameObject::GO_BLOCK && go->type != GameObject::GO_BOMB)
+		if (!go->GetActive() && go->type != GameObject::GO_BLOCK
+			&& go->type != GameObject::GO_BOMB && go->type != GameObject::GO_SCREEN)
 		{
-			go->active = true;
-			++m_objectCount;
+			go->SetActive(true);
+			//++m_objectCount;
 			return go;
 		}
 	}
@@ -120,8 +124,8 @@ GameObject* Scene01::FetchGO()
 		m_goList.push_back(new GameObject(GameObject::GO_BALL));
 	}
 
-	m_goList[m_goList.size() - 1]->active = true;
-	++m_objectCount;
+	m_goList[m_goList.size() - 1]->SetActive(true);
+	//++m_objectCount;
 
 	return m_goList[m_goList.size() - 1];
 }
@@ -229,14 +233,14 @@ void Scene01::BombCollision(GameObject * go1, GameObject * go2)
 			go1->vel.SetZero();
 			go1->boom = true;
 
-			go2->active = false;
+			go2->SetActive(false);
 		}
 	}
 }
 
 void Scene01::UpdateParticles(double dt)
 {
-	if (m_particleCount < MAX_PARTICLE)
+	if (m_particleCount < (int)MAX_PARTICLE)
 	{	
 		if (m_player->GetVel().Length() > 5)
 		{
@@ -253,10 +257,21 @@ void Scene01::UpdateParticles(double dt)
 			ParticleObject* particle = GetParticle();
 			particle->type = ParticleObject_TYPE::P_RAIN;
 			particle->scale.Set(1, 3, 1);
-			particle->vel.Set(Math::RandFloatMinMax(-5, -4), -9.8, 0);
+			particle->vel.Set(Math::RandFloatMinMax(-5.f, -4.f), -9.8f, 0.f);
 			particle->rotationSpeed = 0;
 			particle->rotation = Math::RadianToDegree(atan2(particle->vel.Normalized().y, particle->vel.Normalized().x)) - 270;
-			particle->pos.Set(Math::RandFloatMinMax(-m_TerrainWidth*1.5, m_TerrainWidth*1.5), m_worldHeight*1.5, 0);
+			particle->pos.Set(Math::RandFloatMinMax(-m_TerrainWidth*1.5f, m_TerrainWidth*1.5f), m_worldHeight*1.5f, 0);
+		}
+		//if(go->boom)
+		for (int i = 0; i < 5; ++i)
+		{
+			ParticleObject* particle = GetParticle();
+			particle->type = ParticleObject_TYPE::P_EXPLOSION;
+			particle->scale.Set(1, 1, 1);
+			particle->vel.Set(Math::RandFloatMinMax(-5, 5), Math::RandFloatMinMax(-5, 5), 0);
+			particle->rotationSpeed = 0;
+			particle->rotation = Math::RadianToDegree(atan2(particle->vel.Normalized().y, particle->vel.Normalized().x)) - 270;
+			particle->pos = m_player->GetPlayerPos();
 		}
 		
 	}
@@ -268,17 +283,19 @@ void Scene01::UpdateParticles(double dt)
 		ParticleObject* particle = (ParticleObject*)*it;
 		if (!particle->isActive)
 			continue;
+		particle->vel.y += -9.8f * (float)dt;
+		particle->pos += particle->vel * (float)dt * 10.0f;
 		if (particle->type == ParticleObject_TYPE::P_SPARK)
 		{
-			particle->vel.y += -9.8f * (float)dt;
-			particle->pos += particle->vel * (float)dt * 10.0f;
 			particle->rotation += particle->rotationSpeed * (float)dt;
 		}
 		else if (particle->type == ParticleObject_TYPE::P_RAIN)
 		{
-			particle->vel.y -= 9.8f * (float)dt;
-			particle->pos += particle->vel * (float)dt * 10.0f;
-			//particle->rotation += particle->rotationSpeed * (float)dt;
+
+		}
+		else if (particle->type == ParticleObject_TYPE::P_EXPLOSION)
+		{
+			
 		}
 		if (particle->pos.y <= 1)
 		{
@@ -329,20 +346,30 @@ void Scene01::Update(double dt)
 		m_speed += 0.1f;
 	}
 
-	static float projDelay = 0.f;
-	projDelay += (float)dt;
-	if (projDelay > 0.5f) // Debug key snow yeti shooting
-	{
-		//enemyList[0]->PushProjectile(FetchGO(), m_player->GetPlayerPos(), Vector3(1.f, 1.f, 1.f), 10.f);
-		projDelay = 0.f;
-	}
-
 	m_player->Update(dt);
 	m_control->Update(dt);
 
+	static bool enemyFired = false;
+	if (enemyList[0]->GetCurAnimFrame() == 11 && !enemyFired) // Debug key snow yeti shooting
+	{
+		enemyList[0]->PushProjectile(FetchGO(), Vector3(1.f, 1.f, 1.f), 40.f);
+		enemyFired = true;
+	}
+	else if (enemyList[0]->GetCurAnimFrame() == 12)
+		enemyFired = false;
+
 	vector<Enemy*>::iterator it, end;
 	end = enemyList.end();
-	for (it = enemyList.begin(); it != end; ++it) (*it)->Update(dt);
+	for (it = enemyList.begin(); it != end; ++it)
+	{
+		(*it)->Update(dt);
+
+		if (!(*it)->GetActive())
+		{
+			delete *it;
+			enemyList.erase(it);
+		}
+	}
 
 	//Mouse Section
 	if (MouseController::GetInstance()->IsButtonPressed(MouseController::LMB))
@@ -407,7 +434,7 @@ void Scene01::Update(double dt)
 	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;
-		if (go->active)
+		if (go->GetActive())
 		{
 			//Exercise 7: handle out of bound game objects
 			if (go->type == GameObject::GO_BRICK)
@@ -517,7 +544,7 @@ void Scene01::Update(double dt)
 				{
 					GameObject *go2 = (GameObject *)*it2;
 
-					if (!go2->active || (go->type != GameObject::GO_BALL && go2->type != GameObject::GO_BALL))
+					if (!go2->GetActive() || (go->type != GameObject::GO_BALL && go2->type != GameObject::GO_BALL))
 						continue;
 
 					GameObject *goA, *goB;
@@ -559,7 +586,7 @@ void Scene01::Update(double dt)
 			if (go->type == GameObject::GO_BOMB)
 			{
 				go->pos += go->vel * static_cast<float>(dt);
-				go->vel += Vector3(0, -9.8, 0) * dt;
+				go->vel += Vector3(0.f, -9.8f, 0.f) * (float)dt;
 				if (go->boom)
 				{
 					if (go->scale.x < 10)
@@ -567,13 +594,13 @@ void Scene01::Update(double dt)
 					if (go->scale.x > 10)
 					{
 						go->boom = false;
-						go->active = false;
+						go->SetActive(false);
 					}
 
 					for (std::vector<GameObject *>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
 					{
 						GameObject *go2 = static_cast<GameObject *>(*it2);
-						if (!go2->active)
+						if (go2->GetActive())
 							continue;
 
 						if (go2->type == GameObject::GO_BRICK)
@@ -598,7 +625,7 @@ void Scene01::Update(double dt)
 					for (std::vector<GameObject *>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
 					{
 						GameObject *go2 = (GameObject *)*it2;
-						if (go2->active)
+						if (go2->GetActive())
 						{
 							if (go2->type == GameObject::GO_BRICK)
 							{
@@ -640,7 +667,7 @@ void Scene01::RenderGO(GameObject *go)
 	case GameObject::GO_ENEMY_SNOWYETI:
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
-		RenderMesh(meshList[GEO_CUBE], false);
+		RenderMesh(meshList[GEO_SPRITE_YETI], false);
 		break;
 
 	case GameObject::GO_PROJ_SNOWBALL:
@@ -706,7 +733,7 @@ void Scene01::Render()
 	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;
-		if (go->active)
+		if (go->GetActive())
 		{
 			RenderGO(go);
 		}
@@ -726,7 +753,7 @@ void Scene01::Render()
 	if (in_shop == false)
 	{
 		ss.str("");
-		ss << "Objects: " << m_objectCount;
+		ss << "Objects: " << *m_objectCount;
 		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 9);
 
 		//Exercise 8c: Render initial and final momentum
@@ -757,12 +784,12 @@ void Scene01::Render()
 		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 3);
 
 		RenderTextOnScreen(meshList[GEO_TEXT], "Collision", Color(0, 1, 0), 3, 0, 0);
-		screen->active = false;
+		screen->SetActive(false);
 	}
 	else
 	{
 		
-		screen->active = true;
+		screen->SetActive(true);
 		screen->type = GameObject::GO_SCREEN;
 		screen->dir.Set(0, 1, 0);
 		screen->pos.Set(camera.position.x + 65, camera.position.y + 50, 1);

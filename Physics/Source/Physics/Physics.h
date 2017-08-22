@@ -45,7 +45,8 @@ public:
 	static void K3(T _initialVel, T _acceleration, float _time, T& _distance);
 	template<typename T>
 	static T K3_CalcInitialVel();
-	static void K3_CalcInitialVel();
+	template<typename T>
+	static void K3_CalcInitialVel(T _distance, T _acceleration, float _time, T& _initialVel);
 	template<typename T>
 	static T K3_CalcAcceleration();
 	static void K3_CalcAcceleration();
@@ -142,6 +143,12 @@ template<typename T>
 inline void Physics::K3(T _initialVel, T _acceleration, float _time, T & _distance)
 {
 	_distance = (_initialVel * _time) + (0.5f * _acceleration * (_time * _time));
+}
+
+template<typename T>
+inline void Physics::K3_CalcInitialVel(T _distance, T _acceleration, float _time, T & _initialVel)
+{
+	_initialVel = (_distance - 0.5f * _acceleration * (_time * _time)) * (1 / _time);
 }
 
 template<typename T>

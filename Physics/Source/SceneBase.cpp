@@ -9,6 +9,7 @@
 #include "KeyboardController.h"
 #include "SoundEngine.h"
 #include "Particle\Particle.h"
+#include "SpriteAnimation.h"
 
 #include <sstream>
 
@@ -126,11 +127,16 @@ void SceneBase::Init()
 	meshList[GEO_BOOM] = MeshBuilder::GenerateQuad("boom", Color(0.f, 0.f, 0.f), 1.f);
 	meshList[GEO_BOOM]->textureID = LoadTGA("Image//boom.tga");
 
+	meshList[GEO_SPRITE_YETI] = MeshBuilder::GenerateSpriteAnimation("yeti", 4, 4, 1.f);
+	meshList[GEO_SPRITE_YETI]->textureID = LoadTGA("Image//Sprite_YetiLeft.tga");
+
 	meshList[GEO_PARTICLE_SPARK] = MeshBuilder::GenerateQuad("GEO_PARTICLE_SPARK", Color(1, 1, 1), 1.f);
 	meshList[GEO_PARTICLE_SPARK]->textureID = LoadTGA("Image//spark.tga");
-
 	meshList[GEO_PARTICLE_RAIN] = MeshBuilder::GenerateQuad("GEO_PARTICLE_RAIN", Color(1, 1, 1), 1.f);
 	meshList[GEO_PARTICLE_RAIN]->textureID = LoadTGA("Image//rain.tga");
+
+	meshList[GEO_PARTICLE_EXPLOSION] = MeshBuilder::GenerateQuad("GEO_PARTICLE_EXPLOSION", Color(1, 1, 1), 1.f);
+	meshList[GEO_PARTICLE_EXPLOSION]->textureID = LoadTGA("Image//explosion.tga");
 
 	//CSoundEngine::GetInstance()->Init();
 	//CSoundEngine::GetInstance()->AddSound("Jump", "Image//Mario-jump-sound.mp3");
@@ -328,6 +334,14 @@ void SceneBase::RenderParticles(ParticleObject * particle)
 		modelStack.Rotate(particle->rotation, 0.0f, 0.0f, 1.0f);
 		modelStack.Scale(particle->scale.x, particle->scale.y, particle->scale.z);
 		RenderMesh(meshList[GEO_PARTICLE_RAIN], false);
+		modelStack.PopMatrix();
+		break;
+	case ParticleObject_TYPE::P_EXPLOSION:
+		modelStack.PushMatrix();
+		modelStack.Translate(particle->pos.x, particle->pos.y, particle->pos.z);
+		modelStack.Rotate(particle->rotation, 0.0f, 0.0f, 1.0f);
+		modelStack.Scale(particle->scale.x, particle->scale.y, particle->scale.z);
+		RenderMesh(meshList[GEO_PARTICLE_EXPLOSION], false);
 		modelStack.PopMatrix();
 		break;
 	default:

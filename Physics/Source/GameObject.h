@@ -15,6 +15,8 @@ public:
 		GO_PLAYER,
 		GO_ENEMY,
 		GO_ENEMY_SNOWYETI,
+		GO_ENEMY_KING,
+		GO_ENEMY_KNIGHT,
 		GO_PROJ_SNOWBALL,
 		GO_WALL,
 		GO_BLOCK,
@@ -24,14 +26,16 @@ public:
 		GO_SCREEN,
 		GO_TOTAL //must be last
 	};
+
+	static int m_totalGameObjects;
+
 	GAMEOBJECT_TYPE type;
-	ColliderType::COLLIDER_TYPE colType;
+	Collider::TYPE colType;
 	Vector3 pos;
 	Vector3 vel;
 	Vector3 scale;
 	Vector3 dir;
 	Vector3 normal;
-	bool active;
 	bool boom;
 	float mass;
 	float momentOfInertia;
@@ -39,6 +43,12 @@ public:
 
 	GameObject(GAMEOBJECT_TYPE typeValue = GO_BALL);
 	~GameObject();
+
+	void SetActive(bool _input);
+	bool GetActive() const;
+
+private:
+	bool active;
 };
 
 #endif
