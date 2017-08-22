@@ -45,7 +45,9 @@ void Player::Update(double dt)
 		}
 		playerBomb->SetActive(true);
 		playerBomb->type = GameObject::GO_BOMB;
-		playerBomb->vel = playerObj->vel*3;
+		playerBomb->vel = playerObj->vel;
+		playerBomb->vel *= 3.5;
+		playerBomb->vel.y = 5;
 		playerBomb->pos = GetPlayerPos();
 		playerBomb->scale.Set(5, 5, 1);
 		exploded = false;

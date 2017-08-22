@@ -56,7 +56,7 @@ void Scene01::Init()
 	in_shop = false;
 	purchased = false;
 	file.Init(&m_goList);
-	file.Load(false, "Image//Test_Level.csv");
+	file.Load(false, "Image//Level01.csv");
 
 	file.Load(true, "Image//shop_data.csv");
 
@@ -235,9 +235,61 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 		N = go2->dir;
 		go1->vel = go1->vel - (2 * go1->vel.Dot(N)) * N;
 		break;
+
 	case GameObject::GO_BRICK:
 		m_player->SetExploded(true);
-		go2->SetActive(false);
+		Vector3 w0 = go2->pos;
+		Vector3 b1 = go1->pos;
+		Vector3 N = go2->dir;
+		Vector3 NP = N.Cross(Vector3(0, 0, 1));
+		float l = go2->scale.y;
+		float r = go1->scale.x;
+		float h = go2->scale.x;
+		if ((w0 - b1).Dot(N) < 0)
+			N = -N;
+
+		Vector3 detect(Math::Clamp((b1 - w0).x, 0.f, h / 2), Math::Clamp((b1 - w0).y, 0.f, l / 2), 0);
+		detect += w0;
+
+		if ((detect - b1).Length() < r)
+		{
+			if (!m_player->GetExploded())
+			{
+				go1->vel.SetZero();
+				m_player->SetExploded(true);
+				go2->SetActive(false);
+			}
+		}
+
+		for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
+		{
+			GameObject *go3 = static_cast<GameObject *>(*it);
+			if (!go3->GetActive())
+				continue;
+
+			if (go3->type == GameObject::GO_BRICK)
+			{
+				Vector3 pos = go1->pos - go3->pos;
+				pos.x = Math::Clamp(pos.x, 0.f, go3->scale.x);
+				pos.y = Math::Clamp(pos.y, 0.f, go3->scale.y);
+
+				pos += go3->pos;
+				if ((pos - go1->pos).Length() > 1 && (pos - go1->pos).Length() < 30)
+				{
+					float test = (pos - go1->pos).Length();
+					test;
+					float energy = (30 - (pos - go1->pos).Length()) / 30 * 10;
+
+					if ((pos - go1->pos).Length() > 5 && (pos - go1->pos).Length() < 100)
+					{
+						float energy = (30 - (pos - go1->pos).Length()) / 30 * 10;
+
+						Vector3 explosion = (go1->pos - pos).Normalized() * energy;
+						go3->vel -= explosion;
+					}
+				}
+			}
+		}
 		break;
 	}
 }
