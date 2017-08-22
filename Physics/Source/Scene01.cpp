@@ -596,10 +596,11 @@ void Scene01::Update(double dt)
 				go->vel += Vector3(0, -9.8, 0) * dt;
 				if (go->boom)
 				{
-					if (go->scale.x < 5)
+					if (go->scale.x < 10)
 						go->scale *= 1.2;
-					if (go->scale.x > 5)
+					if (go->scale.x > 10)
 					{
+						go->scale.Set(5, 5, 1);
 						go->boom = false;
 						go->active = false;
 					}
@@ -626,7 +627,6 @@ void Scene01::Update(double dt)
 								if ((pos - go->pos).Length() > 5 && (pos - go->pos).Length() < 100)
 								{
 									float energy = (30 - (pos - go->pos).Length()) / 30 * 10;
-
 									Vector3 explosion = (go->pos - pos).Normalized() * energy;
 									go2->vel -= explosion;
 								}

@@ -30,19 +30,19 @@ void Player::Update(double dt)
 		return;
 
 	// Player Physics can be done here
-	if (playerObj->pos.x >= -playerObj->scale.x/2 && !launched)
+	if (playerObj->pos.x >= -playerObj->scale.x / 2 - 1 && !launched)
 	{
+		
+		playerBomb->active = true;
+		playerBomb->vel.x = playerObj->vel.x;
 		if (playerObj->vel.y < 0)
 		{
-			playerObj->vel = playerObj->vel.Cross(Vector3(0, 0, -1));
-			playerObj->vel.x *= 5;
+			playerBomb->vel = playerObj->vel.Cross(Vector3(0, 0, -1));
+			playerBomb->vel.x *= 50;
 		}
-		playerBomb->active = true;
-		playerBomb->type = GameObject::GO_BOMB;
-		playerBomb->vel = playerObj->vel * 5;
 		playerBomb->pos = GetPlayerPos();
-		playerBomb->scale.Set(2, 2, 1);
-		//playerObj->active = false;
+		playerObj->vel.SetZero();
+		playerObj->active = false;
 		launched = true;
 	}
 
@@ -62,7 +62,6 @@ void Player::Update(double dt)
 		{
 			playerObj->active = true;
 			launched = false;
-			playerObj->vel.SetZero();
 			Reset();
 		}
 	}
@@ -112,9 +111,9 @@ void Player::CollisionResponse()
 
 void Player::Move_LeftRight(const double dt, const bool dLeft)
 {
-	if (!m_heightmap || !playerObj || playerObj->vel.Length() > 10 ||
+	if ((!m_heightmap || !playerObj || playerObj->vel.Length() > 10 ||
 		playerObj->pos.y > (m_TerrainHeight * ReadHeightMap(*m_heightmap,
-		(playerObj->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + playerObj->scale.y * 0.5f)
+		(playerObj->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + playerObj->scale.y * 0.5f))
 		return;
 
 	playerObj->vel += Vector3(dLeft ? -m_speed : m_speed, 0.f, 0.f) * (float)dt * (1 / playerObj->mass);
@@ -126,7 +125,7 @@ void Player::Jump(const double dt)
 		playerObj->pos.y > (m_TerrainHeight * ReadHeightMap(*m_heightmap, (playerObj->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + playerObj->scale.y * 0.5f)
 		return;
 
-	playerObj->vel += Vector3(0.f, 300.f, 0.f) * (float)dt * (1.f / playerObj->mass);
+	playerObj->vel.y += 300.f * (float)dt * (1.f / playerObj->mass);
 }
 
 Player::Player()
