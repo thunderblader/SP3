@@ -21,7 +21,7 @@ void Player::Init(GameObject * _playerObj, GameObject * _playerBomb
 	playerBomb->pos = _pos;
 	playerBomb->scale = _scale;
 	playerBomb->mass = _mass;
-	playerBomb->active = false;
+	playerBomb->SetActive(false);
 
 	defaultPos = _pos;
 	m_speed = _spd;
@@ -40,7 +40,7 @@ void Player::Update(double dt)
 			//playerObj->vel = playerObj->vel.Cross(Vector3(0, 0, -1));
 			//playerObj->vel.x *= 5;
 		}
-		playerBomb->active = true;
+		playerBomb->SetActive(true);
 		playerBomb->type = GameObject::GO_BOMB;
 		playerBomb->vel = playerObj->vel*1.5;
 		playerBomb->vel.y = 5;
@@ -50,22 +50,22 @@ void Player::Update(double dt)
 		launched = true;
 	}
 
-	if (playerBomb->active)
+	if (playerBomb->GetActive())
 	{
 		Physics::K1(playerBomb->vel, Vector3(0.f, -9.8f, 0.f), (float)dt, playerBomb->vel);
 		playerBomb->pos += playerBomb->vel * (float)dt * 40.f;
 
 		if (playerBomb->pos.y < 0)
 		{
-			playerBomb->active = false;
+			playerBomb->SetActive(false);
 		}
 	}
-	if (!playerBomb->active)
+	if (!playerBomb->GetActive())
 	{
 		playerBomb->pos.Set(0, playerObj->pos.y, 0);
 		if (launched)
 		{
-			playerObj->active = true;
+			playerObj->SetActive(true);
 			launched = false;
 			playerObj->vel.SetZero();
 			Reset();

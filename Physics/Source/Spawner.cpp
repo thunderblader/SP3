@@ -19,9 +19,9 @@ GameObject* Spawner::FetchGO(vector<GameObject *>* Gameobject_List)
 	for (std::vector<GameObject *>::iterator it = Gameobject_List->begin(); it != Gameobject_List->end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;
-		if (!go->active)
+		if (!go->GetActive())
 		{
-			go->active = true;
+			go->SetActive(true);
 			return go;
 		}
 	}
@@ -29,7 +29,7 @@ GameObject* Spawner::FetchGO(vector<GameObject *>* Gameobject_List)
 	{
 		Gameobject_List->push_back(new GameObject(GameObject::GO_BALL));
 	}
-	Gameobject_List->at(Gameobject_List->size() - 1)->active = true;
+	Gameobject_List->at(Gameobject_List->size() - 1)->SetActive(true);
 	return Gameobject_List->at(Gameobject_List->size() - 1);
 }
 
@@ -39,7 +39,7 @@ void Spawner::Spawn(int value, int Width_Space, int Height_Space, vector<GameObj
 	{
 		spawner = FetchGO(Gameobject_List);
 		spawner->type = GameObject::GO_BRICK;
-		spawner->active = true;
+		spawner->SetActive(true);
 		spawner->dir.Set(0, 1, 0);
 		spawner->pos = Vector3(m_worldWidth - Width_Space-40, m_worldHeight - Height_Space, 0);
 		spawner->vel.Set(0, 0, 0);
