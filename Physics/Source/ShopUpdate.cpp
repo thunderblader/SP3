@@ -36,7 +36,7 @@ void Scene01::Shop_Update(double dt)
 			{
 				item_node->root.has_item = true;
 				item_node->set_item(item_id);
-				m_player->Upgrade(item_id);
+				m_player->Upgrade(item_node->root);
 			}
 		}
 	}

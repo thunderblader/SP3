@@ -36,7 +36,7 @@ public:
 
 	void Move_LeftRight(const double dt, const bool dLeft);
 	void Jump(const double dt);
-	void Upgrade(int id);
+	void Upgrade(Tree::avl_node &node);
 
 private:
 	Player();

@@ -260,6 +260,17 @@ void Scene01::UpdateParticles(double dt)
 			particle->rotation = Math::RadianToDegree(atan2(particle->vel.Normalized().y, particle->vel.Normalized().x)) - 270;
 			particle->pos.Set(Math::RandFloatMinMax(-m_TerrainWidth*1.5, m_TerrainWidth*1.5), m_worldHeight*1.5, 0);
 		}
+		//if(go->boom)
+		for (int i = 0; i < 5; ++i)
+		{
+			ParticleObject* particle = GetParticle();
+			particle->type = ParticleObject_TYPE::P_EXPLOSION;
+			particle->scale.Set(1, 1, 1);
+			particle->vel.Set(Math::RandFloatMinMax(-5, 5), Math::RandFloatMinMax(-5, 5), 0);
+			particle->rotationSpeed = 0;
+			particle->rotation = Math::RadianToDegree(atan2(particle->vel.Normalized().y, particle->vel.Normalized().x)) - 270;
+			particle->pos = m_player->GetPlayerPos();
+		}
 		
 	}
 
@@ -270,17 +281,19 @@ void Scene01::UpdateParticles(double dt)
 		ParticleObject* particle = (ParticleObject*)*it;
 		if (!particle->isActive)
 			continue;
+		particle->vel.y += -9.8f * (float)dt;
+		particle->pos += particle->vel * (float)dt * 10.0f;
 		if (particle->type == ParticleObject_TYPE::P_SPARK)
 		{
-			particle->vel.y += -9.8f * (float)dt;
-			particle->pos += particle->vel * (float)dt * 10.0f;
 			particle->rotation += particle->rotationSpeed * (float)dt;
 		}
 		else if (particle->type == ParticleObject_TYPE::P_RAIN)
 		{
-			particle->vel.y -= 9.8f * (float)dt;
-			particle->pos += particle->vel * (float)dt * 10.0f;
-			//particle->rotation += particle->rotationSpeed * (float)dt;
+
+		}
+		else if (particle->type == ParticleObject_TYPE::P_EXPLOSION)
+		{
+			
 		}
 		if (particle->pos.y <= 1)
 		{
