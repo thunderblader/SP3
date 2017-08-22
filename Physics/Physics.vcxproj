@@ -171,6 +171,7 @@
     <ClCompile Include="Source\ShopUpdate.cpp" />
     <ClCompile Include="Source\SoundEngine.cpp" />
     <ClCompile Include="Source\Spawner.cpp" />
+    <ClCompile Include="Source\SpriteAnimation.cpp" />
     <ClCompile Include="Source\Terrain\LoadHmap.cpp" />
     <ClCompile Include="Source\Tree.cpp" />
   </ItemGroup>
@@ -194,6 +195,7 @@
     <ClInclude Include="Source\Shop.h" />
     <ClInclude Include="Source\SoundEngine.h" />
     <ClInclude Include="Source\Spawner.h" />
+    <ClInclude Include="Source\SpriteAnimation.h" />
     <ClInclude Include="Source\Terrain\LoadHmap.h" />
     <ClInclude Include="Source\Tree.h" />
   </ItemGroup>

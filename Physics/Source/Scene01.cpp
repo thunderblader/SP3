@@ -50,14 +50,13 @@ void Scene01::Init()
 	
 
 	screen = FetchGO();
+	screen->type = GameObject::GO_SCREEN;
 
 	free_look = false;
 	in_shop = false;
 	purchased = false;
 	file.Init(&m_goList);
 	file.Load(false, "Image//Test_Level.csv");
-
-
 
 	file.Load(true, "Image//shop_data.csv");
 
@@ -69,32 +68,34 @@ void Scene01::Init()
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
 	GameObject* playerObj = FetchGO();
+	GameObject* bombObj = FetchGO();
 	m_player = Player::GetInstance();
-
-	m_player->Init(FetchGO(), FetchGO(), GameObject::GO_BLOCK, Vector3(-50, 25, 0), Vector3(5, 4, 1), 1.f, 10.f);
+	m_player->Init(playerObj, bombObj, GameObject::GO_BLOCK, Vector3(-50, 25, 0), Vector3(5, 4, 1), 1.f, 10.f);
 	m_player->SetHeightmap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
 	m_control = new Controller(m_player);
 	m_control->LoadConfig("Data//Config.ini", param_physics);
 	Enemy* enemy = new Enemy();
 	enemy->SetPlayerObj(playerObj);
-	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(0.f, 40.f, 0.f), Vector3(5.f, 5.f, 5.f));
+	enemy->SetBombObj(bombObj);
+	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(0.f, 40.f, 0.f), Vector3(10.f, 10.f, 1.f));
+	enemy->SetSpriteAnim(meshList[GEO_SPRITE_YETI]);
 	enemyList.push_back(enemy);
 	
-	//for (int i = 0; i < 7; i++)
-	//{
-	//	for (int j = 0; j < 5; j++)
-	//	{
-	//		if (i % 2 == 1 || j % 2 == 1)
-	//		{
-	//			GameObject *bricks = FetchGO();
-	//			bricks->active = true;
-	//			bricks->type = GameObject::GO_BRICK;
-	//			bricks->dir.Set(0, 1, 0);
-	//			bricks->pos.Set(40 + j * 10, 2.5 + 5 * i, 0);
-	//			bricks->scale.Set(5, 5, 1);
-	//		}
-	//	}
-	//}
+	/*for (int i = 0; i < 7; i++)
+	{
+		for (int j = 0; j < 5; j++)
+		{
+			if (i % 2 == 1 || j % 2 == 1)
+			{
+				GameObject *bricks = FetchGO();
+				bricks->active = true;
+				bricks->type = GameObject::GO_BRICK;
+				bricks->dir.Set(0, 1, 0);
+				bricks->pos.Set(40 + j * 10, 2.5 + 5 * i, 0);
+				bricks->scale.Set(5, 5, 1);
+			}
+		}
+	}*/
 
 	m_particleCount = 0;
 	MAX_PARTICLE = 1000;
@@ -106,7 +107,8 @@ GameObject* Scene01::FetchGO()
 	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;
-		if (!go->active && go->type != GameObject::GO_BLOCK && go->type != GameObject::GO_BOMB)
+		if (!go->active && go->type != GameObject::GO_BLOCK
+			&& go->type != GameObject::GO_BOMB && go->type != GameObject::GO_SCREEN)
 		{
 			go->active = true;
 			++m_objectCount;
@@ -342,20 +344,30 @@ void Scene01::Update(double dt)
 		m_speed += 0.1f;
 	}
 
-	static float projDelay = 0.f;
-	projDelay += (float)dt;
-	if (projDelay > 0.5f) // Debug key snow yeti shooting
-	{
-		//enemyList[0]->PushProjectile(FetchGO(), m_player->GetPlayerPos(), Vector3(1.f, 1.f, 1.f), 10.f);
-		projDelay = 0.f;
-	}
-
 	m_player->Update(dt);
 	m_control->Update(dt);
 
+	static bool enemyFired = false;
+	if (enemyList[0]->GetCurAnimFrame() == 11 && !enemyFired) // Debug key snow yeti shooting
+	{
+		enemyList[0]->PushProjectile(FetchGO(), Vector3(1.f, 1.f, 1.f), 40.f);
+		enemyFired = true;
+	}
+	else if (enemyList[0]->GetCurAnimFrame() == 12)
+		enemyFired = false;
+
 	vector<Enemy*>::iterator it, end;
 	end = enemyList.end();
-	for (it = enemyList.begin(); it != end; ++it) (*it)->Update(dt);
+	for (it = enemyList.begin(); it != end; ++it)
+	{
+		(*it)->Update(dt);
+
+		if (!(*it)->GetActive())
+		{
+			delete *it;
+			enemyList.erase(it);
+		}
+	}
 
 	//Mouse Section
 	if (MouseController::GetInstance()->IsButtonPressed(MouseController::LMB))
@@ -661,7 +673,7 @@ void Scene01::RenderGO(GameObject *go)
 	case GameObject::GO_ENEMY_SNOWYETI:
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
-		RenderMesh(meshList[GEO_CUBE], false);
+		RenderMesh(meshList[GEO_SPRITE_YETI], false);
 		break;
 
 	case GameObject::GO_PROJ_SNOWBALL:

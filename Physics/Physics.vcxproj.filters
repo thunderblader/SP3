@@ -89,6 +89,9 @@
     <ClCompile Include="Source\Particle\Particle.cpp">
       <Filter>Particle</Filter>
     </ClCompile>
+    <ClCompile Include="Source\SpriteAnimation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Source\ShopUpdate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -156,6 +159,9 @@
     </ClInclude>
     <ClInclude Include="Source\Particle\Particle.h">
       <Filter>Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SpriteAnimation.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
