@@ -15,6 +15,7 @@ void Player::Init(GameObject * _playerObj, GameObject * _playerBomb
 	playerObj->dir = Vector3(1.f, 0.f, 0.f);
 	playerObj->normal = Vector3(0.f, 1.f, 0.f);
 //	item_node = Tree::getInstance();
+
 	playerBomb = _playerBomb;
 	playerBomb->type = GameObject::GO_BOMB;
 	playerBomb->pos = _pos;

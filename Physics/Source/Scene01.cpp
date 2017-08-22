@@ -68,19 +68,20 @@ void Scene01::Init()
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
 	GameObject* playerObj = FetchGO();
+	GameObject* bombObj = FetchGO();
 	m_player = Player::GetInstance();
-
-	m_player->Init(playerObj, FetchGO(), GameObject::GO_BLOCK, Vector3(-50, 25, 0), Vector3(5, 4, 1), 1.f, 10.f);
+	m_player->Init(playerObj, bombObj, GameObject::GO_BLOCK, Vector3(-50, 25, 0), Vector3(5, 4, 1), 1.f, 10.f);
 	m_player->SetHeightmap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
 	m_control = new Controller(m_player);
 	m_control->LoadConfig("Data//Config.ini", param_physics);
 	Enemy* enemy = new Enemy();
 	enemy->SetPlayerObj(playerObj);
+	enemy->SetBombObj(bombObj);
 	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(0.f, 40.f, 0.f), Vector3(10.f, 10.f, 1.f));
 	enemy->SetSpriteAnim(meshList[GEO_SPRITE_YETI]);
 	enemyList.push_back(enemy);
 	
-	for (int i = 0; i < 7; i++)
+	/*for (int i = 0; i < 7; i++)
 	{
 		for (int j = 0; j < 5; j++)
 		{
@@ -94,7 +95,7 @@ void Scene01::Init()
 				bricks->scale.Set(5, 5, 1);
 			}
 		}
-	}
+	}*/
 
 	m_particleCount = 0;
 	MAX_PARTICLE = 1000;
@@ -330,21 +331,30 @@ void Scene01::Update(double dt)
 		m_speed += 0.1f;
 	}
 
+	m_player->Update(dt);
+	m_control->Update(dt);
+
 	static bool enemyFired = false;
 	if (enemyList[0]->GetCurAnimFrame() == 11 && !enemyFired) // Debug key snow yeti shooting
 	{
-		enemyList[0]->PushProjectile(FetchGO(), Vector3(2.f, 2.f, 2.f), 40.f);
+		enemyList[0]->PushProjectile(FetchGO(), Vector3(1.f, 1.f, 1.f), 40.f);
 		enemyFired = true;
 	}
 	else if (enemyList[0]->GetCurAnimFrame() == 12)
 		enemyFired = false;
 
-	m_player->Update(dt);
-	m_control->Update(dt);
-
 	vector<Enemy*>::iterator it, end;
 	end = enemyList.end();
-	for (it = enemyList.begin(); it != end; ++it) (*it)->Update(dt);
+	for (it = enemyList.begin(); it != end; ++it)
+	{
+		(*it)->Update(dt);
+
+		if (!(*it)->GetActive())
+		{
+			delete *it;
+			enemyList.erase(it);
+		}
+	}
 
 	//Mouse Section
 	if (MouseController::GetInstance()->IsButtonPressed(MouseController::LMB))

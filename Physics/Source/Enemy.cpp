@@ -5,6 +5,7 @@
 #include <iostream>
 
 GameObject* Enemy::playerObj = 0;
+GameObject* Enemy::bombObj = 0;
 
 Enemy::Enemy()
 	: enemyObj(nullptr)
@@ -64,9 +65,21 @@ int Enemy::GetCurAnimFrame() const
 	return spriteAnim->m_currentFrame;
 }
 
+bool Enemy::GetActive() const
+{
+	return enemyObj->active;
+}
+
 void Enemy::SetPlayerObj(GameObject * _playerObj)
 {
-	playerObj = _playerObj;
+	if (_playerObj->type == GameObject::GO_BLOCK)
+		playerObj = _playerObj;
+}
+
+void Enemy::SetBombObj(GameObject * _bombObj)
+{
+	if (_bombObj->type == GameObject::GO_BOMB)
+		bombObj = _bombObj;
 }
 
 void Enemy::SetSpriteAnim(Mesh * _sprite)
@@ -118,9 +131,14 @@ void Enemy::RunYeti(double dt)
 
 void Enemy::RunKing(double dt)
 {
-
+	if ((bombObj->pos - enemyObj->pos).LengthSquared()
+		<= (bombObj->scale.x + enemyObj->scale.x) * (bombObj->scale.x + enemyObj->scale.x))
+		enemyObj->active = false;
 }
 
 void Enemy::RunKnight(double dt)
 {
+	if ((bombObj->pos - enemyObj->pos).LengthSquared()
+		<= (bombObj->scale.x + enemyObj->scale.x) * (bombObj->scale.x + enemyObj->scale.x))
+		enemyObj->active = false;
 }

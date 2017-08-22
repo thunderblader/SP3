@@ -20,8 +20,10 @@ public:
 	void Reset();
 
 	int GetCurAnimFrame() const;
+	bool GetActive() const;
 
 	void SetPlayerObj(GameObject* _playerObj);
+	void SetBombObj(GameObject* _bombObj);
 	void SetSpriteAnim(Mesh* _sprite);
 
 	void PushProjectile(GameObject* _projObj, Vector3 _scale, float _spd);
@@ -40,6 +42,7 @@ protected:
 
 private:
 	static GameObject* playerObj;
+	static GameObject* bombObj;
 	GameObject* enemyObj;
 	Vector3 defaultPos;
 	ENEMY_STATE curState;
