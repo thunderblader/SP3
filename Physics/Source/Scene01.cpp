@@ -56,7 +56,7 @@ void Scene01::Init()
 	in_shop = false;
 	purchased = false;
 	file.Init(&m_goList);
-	file.Load(false, "Image//Level01.csv");
+	file.Load(false, "Image//Test_Level.csv");
 
 	file.Load(true, "Image//shop_data.csv");
 
@@ -177,6 +177,33 @@ bool Scene01::CheckCollision(GameObject * go1, GameObject * go2, float dt)
 			abs((w0 - b1).Dot(N)) < r + h * 0.5f) &&
 			(abs((w0 - b1).Dot(NP)) < r + l * 0.5f);
 	}
+	case GameObject::GO_BRICK:
+	{
+		Vector3 w0 = go2->pos;
+		Vector3 b1 = go1->pos;
+		Vector3 N = go2->dir.Normalized();
+		Vector3 NP = go2->dir.Cross(Vector3(0, 0, 1));
+		float r = go1->scale.x;
+		float h = go2->scale.x;
+		float l = go2->scale.y;
+		if ((w0 - b1).Dot(N) < 0)
+			N = -N;
+
+		return go1->vel.Dot(N) > 0 && (abs((w0 - b1).Dot(N)) < (r + h * 0.5f)) && (abs((w0 - b1).Dot(NP)) < (r + l * 0.5f));
+		//Vector3 detect(Math::Clamp((b1 - w0).x, 0.f, h / 2), Math::Clamp((b1 - w0).y, 0.f, l / 2), 0);
+		//detect += w0;
+
+		//return ((detect - b1).Length() < r);
+		//{
+		//	if (!m_player->GetExploded())
+		//	{
+		//		go1->vel.SetZero();
+		//		m_player->SetExploded(true);
+
+		//		go2->active = false; // set response for brick
+		//	}
+		//}
+	}
 	}
 
 	return 0;
@@ -206,35 +233,39 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 		N = go2->dir;
 		go1->vel = go1->vel - (2 * go1->vel.Dot(N)) * N;
 		break;
+	case GameObject::GO_BRICK:
+		m_player->SetExploded(true);
+		go2->active = false;
+		break;
 	}
 }
 
-void Scene01::BombCollision(GameObject * go1, GameObject * go2)
-{
-	Vector3 w0 = go2->pos;
-	Vector3 b1 = go1->pos;
-	Vector3 N = go2->dir;
-	Vector3 NP = N.Cross(Vector3(0, 0, 1));
-	float l = go2->scale.y;
-	float r = go1->scale.x;
-	float h = go2->scale.x;
-	if ((w0 - b1).Dot(N) < 0)
-		N = -N;
-
-	Vector3 detect(Math::Clamp((b1 - w0).x, 0.f, h / 2), Math::Clamp((b1 - w0).y, 0.f, l / 2), 0);
-	detect += w0;
-
-	if ((detect - b1).Length() < r)
-	{
-		if (!go1->boom)
-		{
-			go1->vel.SetZero();
-			go1->boom = true;
-
-			go2->active = false;
-		}
-	}
-}
+//void Scene01::BombCollision(GameObject * go1, GameObject * go2)
+//{
+//	Vector3 w0 = go2->pos;
+//	Vector3 b1 = go1->pos;
+//	Vector3 N = go2->dir;
+//	Vector3 NP = N.Cross(Vector3(0, 0, 1));
+//	float l = go2->scale.y;
+//	float r = go1->scale.x;
+//	float h = go2->scale.x;
+//	if ((w0 - b1).Dot(N) < 0)
+//		N = -N;
+//
+//	Vector3 detect(Math::Clamp((b1 - w0).x, 0.f, h / 2), Math::Clamp((b1 - w0).y, 0.f, l / 2), 0);
+//	detect += w0;
+//
+//	if ((detect - b1).Length() < r)
+//	{
+//		if (!go1->boom)
+//		{
+//			go1->vel.SetZero();
+//			go1->boom = true;
+//
+//			go2->active = false;
+//		}
+//	}
+//}
 
 void Scene01::UpdateParticles(double dt)
 {
@@ -260,16 +291,18 @@ void Scene01::UpdateParticles(double dt)
 			particle->rotation = Math::RadianToDegree(atan2(particle->vel.Normalized().y, particle->vel.Normalized().x)) - 270;
 			particle->pos.Set(Math::RandFloatMinMax(-m_TerrainWidth*1.5f, m_TerrainWidth*1.5f), m_worldHeight*1.5f, 0);
 		}
-		//if(go->boom)
-		for (int i = 0; i < 5; ++i)
+		if (m_player->GetExploded())
 		{
-			ParticleObject* particle = GetParticle();
-			particle->type = ParticleObject_TYPE::P_EXPLOSION;
-			particle->scale.Set(1, 1, 1);
-			particle->vel.Set(Math::RandFloatMinMax(-5, 5), Math::RandFloatMinMax(-5, 5), 0);
-			particle->rotationSpeed = 0;
-			particle->rotation = Math::RadianToDegree(atan2(particle->vel.Normalized().y, particle->vel.Normalized().x)) - 270;
-			particle->pos = m_player->GetPlayerPos();
+			for (int i = 0; i < 5; ++i)
+			{
+				ParticleObject* particle = GetParticle();
+				particle->type = ParticleObject_TYPE::P_EXPLOSION;
+				particle->scale.Set(1, 1, 1);
+				particle->vel.Set(Math::RandFloatMinMax(-5, 5), Math::RandFloatMinMax(-5, 5), 0);
+				particle->rotationSpeed = 0;
+				particle->rotation = Math::RadianToDegree(atan2(particle->vel.Normalized().y, particle->vel.Normalized().x)) - 270;
+				particle->pos = m_player->GetPlayerPos();
+			}
 		}
 		
 	}
@@ -418,7 +451,7 @@ void Scene01::Update(double dt)
 		GameObject *go = FetchGO();
 		go->pos = m_ghost->pos;
 		go->type = GameObject::GO_BOMB;
-		go->boom = false;
+		//go->boom = false;
 		go->scale.Set(2, 2, 2);
 		go->mass = 1.5f * 1.5f * 1.5f;
 
@@ -441,7 +474,7 @@ void Scene01::Update(double dt)
 				//if (!go->vel.IsZero())
 				//	go->vel += (Vector3(0, 0, 0) - go->vel) * dt;
 			}
-			if (go->type == GameObject::GO_BALL || go->type == GameObject::GO_BLOCK)
+			if ((go->type == GameObject::GO_BOMB && !m_player->GetExploded()) || go->type == GameObject::GO_BLOCK)
 			{
 				go->vel.x = go->vel.x - go->vel.x * 1.f * (float)dt;
 				if (go->vel.Length() < 3)
@@ -449,7 +482,7 @@ void Scene01::Update(double dt)
 				Physics::K1(go->vel.y, (-9.8f * go->mass * 2.f), (float)dt, go->vel.y);
 				//go->vel.y = go->vel.y - 9.8f * go->mass  * (float)dt;
 				go->pos += go->vel * (float)dt * m_speed;
-				if (go->pos.y <= (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + go->scale.y * 0.5f)
+				if (go->pos.y <= (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + go->scale.y * 0.5f && go->pos.x < 0 && go->pos.x > -m_TerrainWidth)
 				{
 					go->pos.y = (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + go->scale.y * 0.5f;
 					float backCart = ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth * 0.5f) - go->scale.x * 0.5f) / m_TerrainWidth, 0.f);
@@ -537,15 +570,14 @@ void Scene01::Update(double dt)
 					//	go->vel.y = -go->vel.y;
 					//}
 
-				for (std::vector<GameObject *>::iterator it2 = it + 1; it2 != m_goList.end(); ++it2)
+				for (std::vector<GameObject *>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
 				{
 					GameObject *go2 = (GameObject *)*it2;
-
-					if (!go2->active || (go->type != GameObject::GO_BALL && go2->type != GameObject::GO_BALL))
+					if (!go2->active || (go->type != GameObject::GO_BOMB && go2->type != GameObject::GO_BOMB) || (go->type != GameObject::GO_BRICK && go2->type != GameObject::GO_BRICK))
 						continue;
 
 					GameObject *goA, *goB;
-					if (go->type == GameObject::GO_BALL)
+					if (go->type == GameObject::GO_BOMB)
 					{
 						goA = go;
 						goB = go2;
@@ -556,7 +588,7 @@ void Scene01::Update(double dt)
 						goB = go;
 					}
 
-					if (CheckCollision(goA, goB, (float)dt))
+ 					if (CheckCollision(goA, goB, (float)dt))
 					{
 						m1 = goA->mass;
 						m2 = goB->mass;
@@ -580,66 +612,66 @@ void Scene01::Update(double dt)
 				}
 			}
 
-			if (go->type == GameObject::GO_BOMB)
-			{
-				go->pos += go->vel * static_cast<float>(dt);
-				go->vel += Vector3(0.f, -9.8f, 0.f) * (float)dt;
-				if (go->boom)
-				{
-					if (go->scale.x < 5)
-						go->scale *= 1.2f;
-					if (go->scale.x > 5)
-					{
-						go->boom = false;
-						go->active = false;
-					}
+			//if (go->type == GameObject::GO_BOMB)
+			//{
+			//	go->pos += go->vel * static_cast<float>(dt);
+			//	go->vel += Vector3(0.f, -9.8f, 0.f) * (float)dt;
+			//	if (go->boom)
+			//	{
+			//		if (go->scale.x < 5)
+			//			go->scale *= 1.2f;
+			//		if (go->scale.x > 5)
+			//		{
+			//			go->boom = false;
+			//			go->active = false;
+			//		}
 
-					for (std::vector<GameObject *>::iterator it2 = it + 1; it2 != m_goList.end(); ++it2)
-					{
-						GameObject *go2 = static_cast<GameObject *>(*it2);
-						if (go2->active)
-							continue;
+			//		for (std::vector<GameObject *>::iterator it2 = it + 1; it2 != m_goList.end(); ++it2)
+			//		{
+			//			GameObject *go2 = static_cast<GameObject *>(*it2);
+			//			if (go2->active)
+			//				continue;
 
-						if (go2->type == GameObject::GO_BRICK)
-						{
-							Vector3 pos = go->pos - go2->pos;
-							pos.x = Math::Clamp(pos.x, 0.f, go2->scale.x);
-							pos.y = Math::Clamp(pos.y, 0.f, go2->scale.y);
+			//			if (go2->type == GameObject::GO_BRICK)
+			//			{
+			//				Vector3 pos = go->pos - go2->pos;
+			//				pos.x = Math::Clamp(pos.x, 0.f, go2->scale.x);
+			//				pos.y = Math::Clamp(pos.y, 0.f, go2->scale.y);
 
-							pos += go2->pos;
-							if ((pos - go->pos).Length() > 1 && (pos - go->pos).Length() < 30)
-							{
-								float test = (pos - go->pos).Length();
-								test;
-								float energy = (30 - (pos - go->pos).Length()) / 30 * 10;
+			//				pos += go2->pos;
+			//				if ((pos - go->pos).Length() > 1 && (pos - go->pos).Length() < 30)
+			//				{
+			//					float test = (pos - go->pos).Length();
+			//					test;
+			//					float energy = (30 - (pos - go->pos).Length()) / 30 * 10;
 
-								if ((pos - go->pos).Length() > 5 && (pos - go->pos).Length() < 100)
-								{
-									float energy = (30 - (pos - go->pos).Length()) / 30 * 10;
+			//					if ((pos - go->pos).Length() > 5 && (pos - go->pos).Length() < 100)
+			//					{
+			//						float energy = (30 - (pos - go->pos).Length()) / 30 * 10;
 
-									Vector3 explosion = (go->pos - pos).Normalized() * energy;
-									go2->vel -= explosion;
-								}
-							}
-						}
-					}
-				}
-				else
-					for (std::vector<GameObject *>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
-					{
-						GameObject *go2 = (GameObject *)*it2;
-						if (go2->active)
-						{
-							if (go2->type == GameObject::GO_BRICK)
-							{
-								go2->pos += go2->vel * static_cast<float>(dt);
-								if (!go2->vel.IsZero())
-									go2->vel += (Vector3(0, 0, 0) - go2->vel) * (float)dt;
-								BombCollision(go, go2);
-							}
-						}
-					}
-			}
+			//						Vector3 explosion = (go->pos - pos).Normalized() * energy;
+			//						go2->vel -= explosion;
+			//					}
+			//				}
+			//			}
+			//		}
+			//	}
+			//	else
+			//		for (std::vector<GameObject *>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
+			//		{
+			//			GameObject *go2 = (GameObject *)*it2;
+			//			if (go2->active)
+			//			{
+			//				if (go2->type == GameObject::GO_BRICK)
+			//				{
+			//					go2->pos += go2->vel * static_cast<float>(dt);
+			//					if (!go2->vel.IsZero())
+			//						go2->vel += (Vector3(0, 0, 0) - go2->vel) * (float)dt;
+			//					BombCollision(go, go2);
+			//				}
+			//			}
+			//		}
+			//}
 		}
 	}
 }
@@ -697,9 +729,9 @@ void Scene01::RenderGO(GameObject *go)
 	case GameObject::GO_BOMB:
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
-		if (!go->boom)
+		if (!m_player->GetExploded())
 			RenderMesh(meshList[GEO_BOMB], false);
-		if (go->boom)
+		if (m_player->GetExploded())
 			RenderMesh(meshList[GEO_BOOM], false);
 		break;
 	case GameObject::GO_SCREEN:

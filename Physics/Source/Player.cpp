@@ -19,12 +19,13 @@ void Player::Init(GameObject * _playerObj, GameObject * _playerBomb
 	playerBomb = _playerBomb;
 	playerBomb->type = GameObject::GO_BOMB;
 	playerBomb->pos = _pos;
-	playerBomb->scale = _scale;
+	playerBomb->scale = Vector3(5,5,1);
 	playerBomb->mass = _mass;
 	playerBomb->active = false;
 
 	defaultPos = _pos;
 	m_speed = _spd;
+	exploded = false;
 }
 
 void Player::Update(double dt)
@@ -42,33 +43,44 @@ void Player::Update(double dt)
 		}
 		playerBomb->active = true;
 		playerBomb->type = GameObject::GO_BOMB;
-		playerBomb->vel = playerObj->vel*1.5;
+		playerBomb->vel = playerObj->vel*3;
 		playerBomb->vel.y = 5;
 		playerBomb->pos = GetPlayerPos();
-		playerBomb->scale.Set(2, 2, 1);
+		playerBomb->scale.Set(5, 5, 1);
+		exploded = false;
 		//playerObj->active = false;
 		launched = true;
 	}
 
 	if (playerBomb->active)
 	{
-		Physics::K1(playerBomb->vel, Vector3(0.f, -9.8f, 0.f), (float)dt, playerBomb->vel);
-		playerBomb->pos += playerBomb->vel * (float)dt * 40.f;
-
+		//Physics::K1(playerBomb->vel, Vector3(0.f, -9.8f, 0.f), (float)dt, playerBomb->vel);
+		//playerBomb->pos += playerBomb->vel * (float)dt * 40.f;
 		if (playerBomb->pos.y < 0)
 		{
 			playerBomb->active = false;
+			Reset();
+		}
+		else if (exploded && playerBomb->scale.x < 10)
+		{
+			playerBomb->scale = Vector3(playerBomb->scale.x+10*dt, playerBomb->scale.y + 10 * dt,1);
+			if (playerBomb->scale.x > 10)
+			{
+				playerBomb->active = false;
+				launched = false;
+				playerObj->vel.SetZero();
+				Reset();
+			}
 		}
 	}
 	if (!playerBomb->active)
 	{
 		playerBomb->pos.Set(0, playerObj->pos.y, 0);
-		if (launched)
+		if (launched && !exploded)
 		{
-			playerObj->active = true;
-			launched = false;
-			playerObj->vel.SetZero();
-			Reset();
+			//playerObj->active = true;
+			//launched = false;
+			
 		}
 	}
 		
@@ -78,6 +90,8 @@ void Player::Reset()
 {
 	// Resets player values
 	playerObj->pos = defaultPos;
+	exploded = false;
+	launched = false;
 }
 
 GameObject Player::GetPlayerObj() const
@@ -101,6 +115,16 @@ Vector3 Player::GetPlayerPos()
 Vector3 Player::GetVel()
 {
 	return playerObj->vel;
+}
+
+void Player::SetExploded(bool In)
+{
+	exploded = In;
+}
+
+bool Player::GetExploded()
+{
+	return exploded;
 }
 
 void Player::SetHeightmap(vector<unsigned char>* _heightmap, float _worldWidth, float _worldHeight)

@@ -34,7 +34,6 @@ public:
 	Vector3 dir;
 	Vector3 normal;
 	bool active;
-	bool boom;
 	float mass;
 	float momentOfInertia;
 	float angularVelocity;
