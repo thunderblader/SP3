@@ -67,7 +67,7 @@ int Enemy::GetCurAnimFrame() const
 
 bool Enemy::GetActive() const
 {
-	return enemyObj->active;
+	return enemyObj->GetActive();
 }
 
 void Enemy::SetPlayerObj(GameObject * _playerObj)
@@ -118,13 +118,13 @@ void Enemy::RunYeti(double dt)
 			<= (playerObj->scale.x + projList[i]->scale.x) * (playerObj->scale.x + projList[i]->scale.x))
 		{
 			playerObj->vel *= 0.5f;
-			projList[i]->active = false;
+			projList[i]->SetActive(false);
 		}
 
 		if (projList[i]->pos.y < 0)
-			projList[i]->active = false;
+			projList[i]->SetActive(false);
 
-		if (!projList[i]->active)
+		if (!projList[i]->GetActive())
 			projList.erase(projList.begin() + i);
 	}
 }
@@ -132,11 +132,11 @@ void Enemy::RunYeti(double dt)
 void Enemy::RunKing(double dt)
 {
 	if (Collider::CheckCollision(enemyObj, bombObj))
-		enemyObj->active = false;
+		enemyObj->SetActive(false);
 }
 
 void Enemy::RunKnight(double dt)
 {
 	if (Collider::CheckCollision(enemyObj, bombObj))
-		enemyObj->active = false;
+		enemyObj->SetActive(false);
 }

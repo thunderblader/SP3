@@ -41,7 +41,7 @@ void Scene01::Init()
 
 	Math::InitRNG();
 
-	m_objectCount = 0;
+	//m_objectCount = 0;
 	m_ballCount = 0;
 
 	time_limit = 0;
@@ -77,7 +77,7 @@ void Scene01::Init()
 	Enemy* enemy = new Enemy();
 	enemy->SetPlayerObj(playerObj);
 	enemy->SetBombObj(bombObj);
-	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(0.f, 40.f, 0.f), Vector3(10.f, 10.f, 1.f));
+	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(-20.f, 40.f, 0.f), Vector3(10.f, 10.f, 1.f));
 	enemy->SetSpriteAnim(meshList[GEO_SPRITE_YETI]);
 	enemyList.push_back(enemy);
 	
@@ -99,6 +99,8 @@ void Scene01::Init()
 
 	m_particleCount = 0;
 	MAX_PARTICLE = 1000;
+
+	m_objectCount = &playerObj->m_totalGameObjects;
 }
 
 GameObject* Scene01::FetchGO()
@@ -107,11 +109,11 @@ GameObject* Scene01::FetchGO()
 	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;
-		if (!go->active && go->type != GameObject::GO_BLOCK
+		if (!go->GetActive() && go->type != GameObject::GO_BLOCK
 			&& go->type != GameObject::GO_BOMB && go->type != GameObject::GO_SCREEN)
 		{
-			go->active = true;
-			++m_objectCount;
+			go->SetActive(true);
+			//++m_objectCount;
 			return go;
 		}
 	}
@@ -122,8 +124,8 @@ GameObject* Scene01::FetchGO()
 		m_goList.push_back(new GameObject(GameObject::GO_BALL));
 	}
 
-	m_goList[m_goList.size() - 1]->active = true;
-	++m_objectCount;
+	m_goList[m_goList.size() - 1]->SetActive(true);
+	//++m_objectCount;
 
 	return m_goList[m_goList.size() - 1];
 }
@@ -231,7 +233,7 @@ void Scene01::BombCollision(GameObject * go1, GameObject * go2)
 			go1->vel.SetZero();
 			go1->boom = true;
 
-			go2->active = false;
+			go2->SetActive(false);
 		}
 	}
 }
@@ -432,7 +434,7 @@ void Scene01::Update(double dt)
 	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;
-		if (go->active)
+		if (go->GetActive())
 		{
 			//Exercise 7: handle out of bound game objects
 			if (go->type == GameObject::GO_BRICK)
@@ -541,7 +543,7 @@ void Scene01::Update(double dt)
 				{
 					GameObject *go2 = (GameObject *)*it2;
 
-					if (!go2->active || (go->type != GameObject::GO_BALL && go2->type != GameObject::GO_BALL))
+					if (!go2->GetActive() || (go->type != GameObject::GO_BALL && go2->type != GameObject::GO_BALL))
 						continue;
 
 					GameObject *goA, *goB;
@@ -591,13 +593,13 @@ void Scene01::Update(double dt)
 					if (go->scale.x > 5)
 					{
 						go->boom = false;
-						go->active = false;
+						go->SetActive(false);
 					}
 
 					for (std::vector<GameObject *>::iterator it2 = it + 1; it2 != m_goList.end(); ++it2)
 					{
 						GameObject *go2 = static_cast<GameObject *>(*it2);
-						if (go2->active)
+						if (go2->GetActive())
 							continue;
 
 						if (go2->type == GameObject::GO_BRICK)
@@ -628,7 +630,7 @@ void Scene01::Update(double dt)
 					for (std::vector<GameObject *>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
 					{
 						GameObject *go2 = (GameObject *)*it2;
-						if (go2->active)
+						if (go2->GetActive())
 						{
 							if (go2->type == GameObject::GO_BRICK)
 							{
@@ -739,7 +741,7 @@ void Scene01::Render()
 	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;
-		if (go->active)
+		if (go->GetActive())
 		{
 			RenderGO(go);
 		}
@@ -759,7 +761,7 @@ void Scene01::Render()
 	if (in_shop == false)
 	{
 		ss.str("");
-		ss << "Objects: " << m_objectCount;
+		ss << "Objects: " << *m_objectCount;
 		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 9);
 
 		//Exercise 8c: Render initial and final momentum
@@ -790,12 +792,12 @@ void Scene01::Render()
 		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 3);
 
 		RenderTextOnScreen(meshList[GEO_TEXT], "Collision", Color(0, 1, 0), 3, 0, 0);
-		screen->active = false;
+		screen->SetActive(false);
 	}
 	else
 	{
 		
-		screen->active = true;
+		screen->SetActive(true);
 		screen->type = GameObject::GO_SCREEN;
 		screen->dir.Set(0, 1, 0);
 		screen->pos.Set(camera.position.x + 65, camera.position.y + 50, 1);

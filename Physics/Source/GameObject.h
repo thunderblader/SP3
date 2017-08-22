@@ -26,6 +26,9 @@ public:
 		GO_SCREEN,
 		GO_TOTAL //must be last
 	};
+
+	static int m_totalGameObjects;
+
 	GAMEOBJECT_TYPE type;
 	Collider::TYPE colType;
 	Vector3 pos;
@@ -33,7 +36,6 @@ public:
 	Vector3 scale;
 	Vector3 dir;
 	Vector3 normal;
-	bool active;
 	bool boom;
 	float mass;
 	float momentOfInertia;
@@ -41,6 +43,12 @@ public:
 
 	GameObject(GAMEOBJECT_TYPE typeValue = GO_BALL);
 	~GameObject();
+
+	void SetActive(bool _input);
+	bool GetActive() const;
+
+private:
+	bool active;
 };
 
 #endif

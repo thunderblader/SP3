@@ -1,6 +1,8 @@
 
 #include "GameObject.h"
 
+int GameObject::m_totalGameObjects = 0;
+
 GameObject::GameObject(GAMEOBJECT_TYPE typeValue)
 	: type(typeValue),
 	scale(1, 1, 1),
@@ -14,4 +16,18 @@ GameObject::GameObject(GAMEOBJECT_TYPE typeValue)
 
 GameObject::~GameObject()
 {
+}
+
+void GameObject::SetActive(bool _input)
+{
+	if (active != _input)
+	{
+		active = _input;
+		(_input) ? ++m_totalGameObjects : --m_totalGameObjects;
+	}
+}
+
+bool GameObject::GetActive() const
+{
+	return active;
 }
