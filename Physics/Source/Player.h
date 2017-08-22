@@ -30,6 +30,8 @@ public:
 	GameObject GetPlayerBomb() const;
 	Vector3 GetPlayerPos();
 	Vector3 GetVel();
+	void SetExploded(bool In);
+	bool GetExploded();
 	void SetHeightmap(vector<unsigned char>* _heightmap, float _worldWidth, float _worldHeight);
 
 	virtual void CollisionResponse();
@@ -52,6 +54,7 @@ private:
 	float m_speed;
 	bool launched;
 	float jump_boost;
+	bool exploded;
 };
 
 #endif // !PLAYER_H
