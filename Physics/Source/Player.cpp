@@ -11,9 +11,9 @@ void Player::Init(GameObject * _playerObj, GameObject * _playerBomb
 	playerObj->pos = _pos;
 	playerObj->scale = _scale;
 	playerObj->mass = _mass;
-	playerObj->vel = Vector3(0.f, 0.f, 0.f);
-	playerObj->dir = Vector3(1.f, 0.f, 0.f);
-	playerObj->normal = Vector3(0.f, 1.f, 0.f);
+	playerObj->vel.Set(0.f, 0.f, 0.f);
+	playerObj->dir.Set(1.f, 0.f, 0.f);
+	playerObj->normal.Set(0.f, 1.f, 0.f);
 //	item_node = Tree::getInstance();
 	playerBomb = _playerBomb;
 	playerBomb->type = GameObject::GO_BOMB;
@@ -32,18 +32,14 @@ void Player::Update(double dt)
 		return;
 
 	// Player Physics can be done here
-	if (playerObj->pos.x >= -playerObj->scale.x / 2 - 1 && !launched)
-	{		playerBomb->active = true;
-		playerBomb->vel.x = playerObj->vel.x;
-		if (playerObj->vel.y < 0)
-		{
-			playerObj->vel = playerObj->vel.Cross(Vector3(0, 0, -1));
-			playerObj->vel.x *= 50;
-		}
+	if (playerObj->pos.x >= -playerObj->scale.x / 2 && !launched)
+	{		
+		playerBomb->vel = playerObj->vel;
+		//if (playerObj->vel.y < 0)
+		//{
+		//	playerBomb->vel.y = -playerObj->vel.y;
+		//}
 		playerBomb->active = true;
-		playerBomb->type = GameObject::GO_BOMB;
-		playerBomb->vel = playerObj->vel*1.5;
-		playerBomb->vel.y = 5;
 		playerBomb->pos = GetPlayerPos();
 		playerObj->vel.SetZero();
 		playerObj->active = false;
@@ -63,6 +59,7 @@ void Player::Update(double dt)
 	if (!playerBomb->active)
 	{
 		playerBomb->pos.Set(0, playerObj->pos.y, 0);
+		playerBomb->scale.Set(5, 5, 1);
 		if (launched)
 		{
 			playerObj->active = true;

@@ -39,7 +39,7 @@ void Spawner::Spawn(int value, int Width_Space, int Height_Space, vector<GameObj
 	{
 		spawner = FetchGO(Gameobject_List);
 		spawner->type = GameObject::GO_BRICK;
-		spawner->active = true;
+		spawner->active = false;
 		spawner->dir.Set(0, 1, 0);
 		spawner->pos = Vector3(m_worldWidth - Width_Space-40, m_worldHeight - Height_Space, 0);
 		spawner->vel.Set(0, 0, 0);

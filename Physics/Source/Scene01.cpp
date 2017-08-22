@@ -412,7 +412,8 @@ void Scene01::Update(double dt)
 			//Exercise 7: handle out of bound game objects
 			if (go->type == GameObject::GO_BRICK)
 			{
-				go->pos += go->vel * static_cast<float>(dt);
+				if (!go->vel.IsZero())
+					go->pos += go->vel * static_cast<float>(dt);
 				//if (!go->vel.IsZero())
 				//	go->vel += (Vector3(0, 0, 0) - go->vel) * dt;
 			}
@@ -565,36 +566,30 @@ void Scene01::Update(double dt)
 						go->scale *= 1.2;
 					if (go->scale.x > 10)
 					{
-						go->scale.Set(5, 5, 1);
 						go->boom = false;
 						go->active = false;
 					}
 
-					for (std::vector<GameObject *>::iterator it2 = it + 1; it2 != m_goList.end(); ++it2)
+					for (std::vector<GameObject *>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
 					{
 						GameObject *go2 = static_cast<GameObject *>(*it2);
-						if (go2->active)
+						if (!go2->active)
 							continue;
 
 						if (go2->type == GameObject::GO_BRICK)
-						{
+						{	
 							Vector3 pos = go->pos - go2->pos;
 							pos.x = Math::Clamp(pos.x, 0.f, go2->scale.x);
 							pos.y = Math::Clamp(pos.y, 0.f, go2->scale.y);
-
+							
 							pos += go2->pos;
-							if ((pos - go->pos).Length() > 1 && (pos - go->pos).Length() < 30)
+							
+							if ((pos - go->pos).Length() < 30 && (pos - go->pos).Length() > 0)
 							{
-								float test = (pos - go->pos).Length();
-								test;
 								float energy = (30 - (pos - go->pos).Length()) / 30 * 10;
-
-								if ((pos - go->pos).Length() > 5 && (pos - go->pos).Length() < 100)
-								{
-									float energy = (30 - (pos - go->pos).Length()) / 30 * 10;
-									Vector3 explosion = (go->pos - pos).Normalized() * energy;
-									go2->vel -= explosion;
-								}
+							
+								Vector3 explosion = (go->pos - pos).Normalized() * energy;
+							go2->vel -= explosion;
 							}
 						}
 					}
@@ -607,9 +602,6 @@ void Scene01::Update(double dt)
 						{
 							if (go2->type == GameObject::GO_BRICK)
 							{
-								go2->pos += go2->vel * static_cast<float>(dt);
-								if (!go2->vel.IsZero())
-									go2->vel += (Vector3(0, 0, 0) - go2->vel) * dt;
 								BombCollision(go, go2);
 							}
 						}
