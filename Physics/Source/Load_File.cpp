@@ -83,7 +83,7 @@ void Load_File::Process(bool checker, string content)
 					}
 					case 2:
 					{
-						has_item = atoi(processor.c_str());
+						has_item = (processor.c_str()) ? true : false;
 						break;
 					}
 				}

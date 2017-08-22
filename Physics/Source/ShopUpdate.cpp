@@ -5,7 +5,7 @@ void Scene01::Shop_Update(double dt)
 {
 	if (time_limit < 3)
 	{
-		time_limit += dt;
+		time_limit += (float)dt;
 	}
 	if (time_limit >= 3)
 	{

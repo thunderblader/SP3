@@ -27,7 +27,7 @@ public:
 		GO_TOTAL //must be last
 	};
 	GAMEOBJECT_TYPE type;
-	ColliderType::COLLIDER_TYPE colType;
+	Collider::TYPE colType;
 	Vector3 pos;
 	Vector3 vel;
 	Vector3 scale;
