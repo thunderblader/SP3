@@ -133,24 +133,26 @@ void Player::Jump(const double dt)
 	playerObj->vel += Vector3(0.f, 300.f, 0.f) * (float)dt * (1.f / playerObj->mass);
 }
 
-void Player::Upgrade(int id)
+void Player::Upgrade(Tree::avl_node &node)
 {	//size=2, mass=1.5
-	if (id == 1)
+	if (node.data == 2)
 	{
 		playerObj->scale.Set(10, 10, 1);
 		playerObj->mass = 1.5f;
+		playerObj->scale.Set(playerObj->scale.x+ node.price * 1, playerObj->scale.y + node.price * 1, 1);
+		playerObj->mass += node.price * 1;
 		//m_speed = 20;
 	}
-	else if (id == 2)
-	{
-		playerObj->scale.Set(7.5, 7.5, 1);
-		playerObj->mass = 1.5f;
-	}
-	else if (id == 3)
-	{
-		playerObj->scale.Set(2.5, 2.5, 1);
-		playerObj->mass = 0.5f;
-	}
+	//else if (id == 2)
+	//{
+	//	playerObj->scale.Set(7.5, 7.5, 1);
+	//	playerObj->mass = 1.5f;
+	//}
+	//else if (id == 3)
+	//{
+	//	playerObj->scale.Set(2.5, 2.5, 1);
+	//	playerObj->mass = 0.5f;
+	//}
 }
 
 Player::Player()
