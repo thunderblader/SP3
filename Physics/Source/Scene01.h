@@ -52,7 +52,6 @@ protected:
 	GameObject *m_ghost;
 	GameObject *test;
 	GameObject *spawner;
-	GameObject *screen;
 	int m_ballCount;
 	int* m_objectCount;
 
