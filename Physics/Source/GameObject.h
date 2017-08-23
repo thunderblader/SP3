@@ -23,6 +23,7 @@ public:
 		GO_TEMP,
 		GO_BRICK,
 		GO_BOMB,
+		GO_BOSS,
 		GO_SCREEN,
 		GO_TOTAL //must be last
 	};

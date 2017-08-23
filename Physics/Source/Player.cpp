@@ -4,7 +4,7 @@
 
 void Player::Init(GameObject * _playerObj, GameObject * _playerBomb
 	, GameObject::GAMEOBJECT_TYPE _type
-	, Vector3 _pos, Vector3 _scale, float _mass, float _spd, float _jump_boost)
+	, Vector3 _pos, Vector3 _scale, float _mass, float _spd, float _jump_boost, float _blast)
 {
 	playerObj = _playerObj;
 	playerObj->type = _type;
@@ -26,6 +26,7 @@ void Player::Init(GameObject * _playerObj, GameObject * _playerBomb
 	defaultPos = _pos;
 	m_speed = _spd;
 	jump_boost = _jump_boost;
+	blast_strength = _blast;
 	exploded = false;
 
 }
@@ -36,13 +37,8 @@ void Player::Update(double dt)
 		return;
 
 	// Player Physics can be done here
-	if (playerObj->pos.x >= -playerObj->scale.x*2 && !launched)
+	if (playerObj->pos.x >= -playerObj->scale.x * 2 && !launched)
 	{
-		if (playerObj->vel.y < 0)
-		{
-			//playerObj->vel = playerObj->vel.Cross(Vector3(0, 0, -1));
-			//playerObj->vel.x *= 5;
-		}
 		playerBomb->SetActive(true);
 		playerBomb->type = GameObject::GO_BOMB;
 		playerBomb->vel = playerObj->vel;
@@ -51,7 +47,6 @@ void Player::Update(double dt)
 		playerBomb->pos = GetPlayerPos();
 		playerBomb->scale.Set(5, 5, 1);
 		exploded = false;
-		//playerObj->active = false;
 		launched = true;
 	}
 
@@ -66,7 +61,7 @@ void Player::Update(double dt)
 		}
 		else if (exploded && playerBomb->scale.x < 10)
 		{
-			playerBomb->scale = Vector3(playerBomb->scale.x+10*dt, playerBomb->scale.y + 10 * dt,1);
+			playerBomb->scale = Vector3(playerBomb->scale.x + 10 * dt, playerBomb->scale.y + 10 * dt,1);
 			if (playerBomb->scale.x > 10)
 			{
 				playerBomb->SetActive(false);

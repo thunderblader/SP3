@@ -191,7 +191,9 @@ bool Scene01::CheckCollision(GameObject * go1, GameObject * go2, float dt)
 		if ((w0 - b1).Dot(N) < 0)
 			N = -N;
 
-		return go1->vel.Dot(N) > 0 && (abs((w0 - b1).Dot(N)) < (r + h * 0.5f)) && (abs((w0 - b1).Dot(NP)) < (r + l * 0.5f));
+		return go1->vel.Dot(N) > 0 && 
+			(abs((w0 - b1).Dot(N)) < (r + h * 0.5f)) && 
+			(abs((w0 - b1).Dot(NP)) < (r + l * 0.5f));
 		//Vector3 detect(Math::Clamp((b1 - w0).x, 0.f, h / 2), Math::Clamp((b1 - w0).y, 0.f, l / 2), 0);
 		//detect += w0;
 
@@ -237,7 +239,6 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 		break;
 
 	case GameObject::GO_BRICK:
-		m_player->SetExploded(true);
 		Vector3 w0 = go2->pos;
 		Vector3 b1 = go1->pos;
 		Vector3 N = go2->dir;
@@ -274,11 +275,11 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 				pos.y = Math::Clamp(pos.y, 0.f, go3->scale.y);
 
 				pos += go3->pos;
-				if ((pos - go1->pos).Length() > 1 && (pos - go1->pos).Length() < 30)
+				if ((pos - go1->pos).Length() > 2.5 && (pos - go1->pos).Length() < 10)
 				{
 					float test = (pos - go1->pos).Length();
 					test;
-					float energy = (30 - (pos - go1->pos).Length()) / 30 * 10;
+					float energy = (30 - (pos - go1->pos).Length()) / 30 * 2;
 
 					if ((pos - go1->pos).Length() > 5 && (pos - go1->pos).Length() < 100)
 					{
@@ -498,7 +499,7 @@ void Scene01::Update(double dt)
 		int h = Application::GetWindowHeight();
 
 		m_ghost->pos.Set((float)(x / w * m_worldWidth) + camera.position.x, (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
-		//m_ghost->pos.Set((float)(x / w * m_worldWidth), m_worldHeight * 0.5f, 0.f);
+		//m_ghost->pos.Set((float)(x / w * _worldWidth), m_worldHeight * 0.5f, 0.f);
 	}
 	else if (MouseController::GetInstance()->IsButtonReleased(MouseController::RMB))
 	{
@@ -527,10 +528,61 @@ void Scene01::Update(double dt)
 			if (go->type == GameObject::GO_BRICK)
 			{
 				if (!go->vel.IsZero())
+				{
 					go->pos += go->vel * static_cast<float>(dt);
-				//if (!go->vel.IsZero())
-				//	go->vel += (Vector3(0, 0, 0) - go->vel) * dt;
+					go->vel += Vector3(0, -9.8f, 0) * dt;
+					if (go->vel.Length() < 0.1)
+						go->vel.SetZero();
+					//
+					//for (std::vector<GameObject *>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
+					//{
+					//	GameObject *go2 = (GameObject *)*it2;
+					//	if (go2->GetActive())
+					//	{
+					//		if (go2->type == GameObject::GO_BRICK)
+					//		{
+					//			//if (abs(go->pos.x - go2->pos.x) <= go->scale.x && go->pos.y > go2->pos.y)
+					//			//{
+					//			//	if (go->pos.y - go2->pos.y <= go->scale.y)
+					//			//	{
+					//			//		go->vel.y = 0;
+					//			//		go->vel.x = 0 - go->vel.x * dt;
+					//			//	}
+					//			//}
+					//			
+					//			Vector3 pos(Math::Clamp((go2->pos - go->pos).x, -go->scale.x / 2, go->scale.x / 2), Math::Clamp((go2->pos - go->pos).y, -go->scale.x / 2, go->scale.y / 2), 0);
+					//			Vector3 pos2(Math::Clamp((go->pos - go2->pos).x, -go2->scale.x / 2, go2->scale.x / 2), Math::Clamp((go->pos - go2->pos).y, -go2->scale.y / 2, go2->scale.y / /2), /0);
+					//			pos += go->pos;
+					//
+					//			if ((pos - go2->pos).Length() < pos2.Length())
+					//			{
+					//				Vector3 N(0, 1, 0);
+					//				Vector3 right = N.Cross(Vector3(0, 0, 1));
+					//				if (abs(pos.x) < abs(pos.y))
+					//				{
+					//					if (pos.Dot(right) > 0)
+					//					{
+					//						N = N.Cross(Vector3(0, 0, 1));
+					//						N = -N;
+					//					}
+					//					if (pos.Dot(right) < 0)
+					//					{
+					//						N = N.Cross(Vector3(0, 0, 1));
+					//					}
+					//				}
+					//				
+					//				if (pos.y < 0)
+					//					N = -N;
+					//
+					//				go->vel = go->vel - (2.f * go->vel.Dot(N)) * N;
+					//				go->vel *= 0.65;
+					//			}
+					//		}
+					//	}
+					//}
+				}
 			}
+
 			if ((go->type == GameObject::GO_BOMB && !m_player->GetExploded()) || go->type == GameObject::GO_BLOCK)
 			{
 				go->vel.x = go->vel.x - go->vel.x * 1.f * (float)dt;
