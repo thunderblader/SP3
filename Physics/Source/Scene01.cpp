@@ -73,7 +73,7 @@ void Scene01::Init()
 	GameObject* playerObj = FetchGO();
 	GameObject* bombObj = FetchGO();
 	m_player = Player::GetInstance();
-	m_player->Init(playerObj, bombObj, GameObject::GO_BLOCK, Vector3(-50, 25, 0), Vector3(5, 4, 1), 5.f, 500.f);
+	m_player->Init(playerObj, bombObj, GameObject::GO_BLOCK, Vector3(-m_TerrainWidth+ 10, 1, 0), Vector3(5, 4, 1), 5.f, 500.f);
 	m_player->SetHeightmap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
 	m_control = new Controller(m_player);
 	m_control->LoadConfig("Data//Config.ini", param_physics);
@@ -637,7 +637,7 @@ void Scene01::Update(double dt)
 					tempnormal = Vector3(sin(-theta), cos(-theta), 0).Normalize();
 					go->dir = tempnormal;
 					go->vel = go->vel - (1.1*go->vel.Dot(tempnormal) * tempnormal);
-					//go->vel.x = go->vel.x - 2.f * (float)dt; // friction
+					go->vel.x = go->vel.x - go->vel.x * 0.2 * (float)dt; // friction
 				}
 				/*if ((go->pos.x < 0 + go->scale.x && go->vel.x < 0) || (go->pos.x > m_worldWidth - go->scale.x && go->vel.x > 0))
 				{
@@ -816,6 +816,7 @@ void Scene01::Update(double dt)
 			//}
 		}
 	}
+
 }
 
 
