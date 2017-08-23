@@ -47,9 +47,6 @@ void Scene01::Init()
 	time_limit = 0;
 	item_id = 0;
 
-	screen = FetchGO();
-	screen->type = GameObject::GO_SCREEN;
-
 	free_look = false;
 	in_shop = false;
 	purchased = false;
@@ -247,7 +244,7 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 			go1->vel.SetZero();
 			m_player->SetExploded(true);
 			go2->SetActive(false);
-			//++newlevel;
+			++newlevel;
 		}
 
 		for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
@@ -375,6 +372,7 @@ void Scene01::Update(double dt)
 			if (go->GetActive() && go->type == GameObject::GO_BRICK)
 			{
 				go->SetActive(false);
+				go->type = GameObject::GO_BALL;
 			}
 		}
 		std::string leveltext = "Image//Level0";
@@ -847,12 +845,6 @@ void Scene01::RenderGO(GameObject *go)
 			RenderMesh(meshList[GEO_BOOM], false);
 		
 		break;
-	case GameObject::GO_SCREEN:
-		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
-		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
-		RenderMesh(meshList[GEO_CUBE], false);
-		break;
-
 	case GameObject::GO_BOSS:
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
@@ -913,23 +905,6 @@ void Scene01::Render()
 		ss << "Objects: " << *m_objectCount;
 		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 9);
 
-		//Exercise 8c: Render initial and final momentum
-		/*ss.str("");
-		ss << "Initial momentum: " << initialMomentum;
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 15);
-
-		ss.str("");
-		ss << "Final momentum: " << finalMomentum;
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 12);
-
-		ss.str("");
-		ss << "Initial KE: " << initialKE;
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 18);
-
-		ss.str("");
-		ss << "Final KE: " << finalKE;
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 21);*/
-
 		ss.precision(3);
 		ss.str("");
 		ss << "Speed: " << m_player->GetVel().Length();
@@ -941,16 +916,13 @@ void Scene01::Render()
 		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 3);
 
 		RenderTextOnScreen(meshList[GEO_TEXT], "Collision", Color(0, 1, 0), 3, 0, 0);
-		screen->SetActive(false);
 	}
 	else
 	{
 		
-		screen->SetActive(true);
-		screen->type = GameObject::GO_SCREEN;
-		screen->dir.Set(0, 1, 0);
-		screen->pos.Set(camera.position.x + 65, camera.position.y + 50, 1);
-		screen->scale.Set((float)Application::GetWindowWidth(), 85, 1);
+		modelStack.Translate(camera.position.x + 65, camera.position.y + 50, 1);
+		modelStack.Scale((float)Application::GetWindowWidth(), 85, 1);
+		RenderMesh(meshList[GEO_CUBE], false);
 
 		ss.str("");
 		ss << "Shop";
