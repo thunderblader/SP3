@@ -53,8 +53,8 @@ void Scene01::Init()
 	file.Init(&m_goList);
 	currlevel = 1;
 	newlevel = 1;
-	std::string leveltext = "Image//Test_Level_2";
-	//leveltext += to_string(currlevel);
+	std::string leveltext = "Image//Level0";
+	leveltext += to_string(currlevel);
 	leveltext += ".csv";
 	file.Load(false, leveltext);
 
@@ -203,7 +203,7 @@ bool Scene01::CheckCollision(GameObject * go1, GameObject * go2, float dt)
 	{
 		Vector3 dis = go1->pos - go2->pos;
 		Vector3 rel = go1->vel - go2->vel;
-		float combinedRadiusSq = (go1->scale.x + go2->scale.x) * (go1->scale.x + go2->scale.x);
+		float combinedRadiusSq = (go1->scale.x + go2->scale.x / 2) * (go1->scale.x + go2->scale.x / 2);
 
 		return (rel.Dot(dis) < 0 &&
 			dis.LengthSquared() <= combinedRadiusSq);
@@ -244,7 +244,7 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 			go1->vel.SetZero();
 			m_player->SetExploded(true);
 			go2->SetActive(false);
-			++newlevel;
+			//++newlevel;
 		}
 
 		for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
@@ -535,39 +535,36 @@ void Scene01::Update(double dt)
 										go->vel += Vector3(0, -9.8f, 0) * dt;
 									}
 								}
+								//Vector3 pos(Math::Clamp((go2->pos - go->pos).x, -go->scale.x / 2, go->scale.x / 2), Math::Clamp((go2->pos - go->pos).y, -go->scale.x / 2, go->scale.y / 2), 0);
+								//Vector3 pos2(Math::Clamp((go->pos - go2->pos).x, -go2->scale.x / 2, go2->scale.x / 2), Math::Clamp((go->pos - go2->pos).y, -go2->scale.y / 2, go2->scale.y / /2), /0);
+								//pos += go->pos;
+								//
+								//if ((pos - go2->pos).Length() < pos2.Length())
+								//{
+								//	Vector3 N(0, 1, 0);
+								//	Vector3 right = N.Cross(Vector3(0, 0, 1));
+								//	if (abs(pos.x) < abs(pos.y))
+								//	{
+								//		if (pos.Dot(right) > 0)
+								//		{
+								//			N = N.Cross(Vector3(0, 0, 1));
+								//			N = -N;
+								//		}
+								//		if (pos.Dot(right) < 0)
+								//		{
+								//			N = N.Cross(Vector3(0, 0, 1));
+								//		}
+								//	}
+								//	
+								//	if (pos.y < 0)
+								//		N = -N;
+								//
+								//	go->vel = go->vel - (2.f * go->vel.Dot(N)) * N;
+								//	go->vel *= 0.65;
+								//}
 							}
 						}
 					}
-					//			Vector3 pos(Math::Clamp((go2->pos - go->pos).x, -go->scale.x / 2, go->scale.x / 2), Math::Clamp((go2->pos - go->pos).y, -go->scale.x / 2, go->scale.y / 2), 0);
-					//			Vector3 pos2(Math::Clamp((go->pos - go2->pos).x, -go2->scale.x / 2, go2->scale.x / 2), Math::Clamp((go->pos - go2->pos).y, -go2->scale.y / 2, go2->scale.y / /2), /0);
-					//			pos += go->pos;
-					//
-					//			if ((pos - go2->pos).Length() < pos2.Length())
-					//			{
-					//				Vector3 N(0, 1, 0);
-					//				Vector3 right = N.Cross(Vector3(0, 0, 1));
-					//				if (abs(pos.x) < abs(pos.y))
-					//				{
-					//					if (pos.Dot(right) > 0)
-					//					{
-					//						N = N.Cross(Vector3(0, 0, 1));
-					//						N = -N;
-					//					}
-					//					if (pos.Dot(right) < 0)
-					//					{
-					//						N = N.Cross(Vector3(0, 0, 1));
-					//					}
-					//				}
-					//				
-					//				if (pos.y < 0)
-					//					N = -N;
-					//
-					//				go->vel = go->vel - (2.f * go->vel.Dot(N)) * N;
-					//				go->vel *= 0.65;
-					//			}
-					//		}
-					//	}
-					//}
 				}
 			}
 
