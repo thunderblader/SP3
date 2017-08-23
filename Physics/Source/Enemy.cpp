@@ -72,7 +72,7 @@ bool Enemy::GetActive() const
 
 void Enemy::SetPlayerObj(GameObject * _playerObj)
 {
-	if (_playerObj->type == GameObject::GO_BLOCK)
+	if (_playerObj->type == GameObject::GO_PLAYER)
 		playerObj = _playerObj;
 }
 
