@@ -801,7 +801,7 @@ void Scene01::RenderGO(GameObject *go)
 		{
 			RenderMesh(meshList[GEO_BOMB], false);
 		}
-		else if (m_player->GetExploded())
+		else if (m_player->GetExploded() && go->scale.x < 10)
 			RenderMesh(meshList[GEO_BOOM], false);
 		
 		break;
