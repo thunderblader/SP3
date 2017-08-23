@@ -141,6 +141,41 @@ void SceneBase::Init()
 	meshList[GEO_PARTICLE_EXPLOSION] = MeshBuilder::GenerateQuad("GEO_PARTICLE_EXPLOSION", Color(1, 1, 1), 1.f);
 	meshList[GEO_PARTICLE_EXPLOSION]->textureID = LoadTGA("Image//explosion.tga");
 
+	meshList[GEO_MENU] = MeshBuilder::GenerateQuad("MENU", Color(1, 1, 1), 1.f);
+	meshList[GEO_MENU]->textureID = LoadTGA("Image//menu1.tga");
+	meshList[GEO_MENU2] = MeshBuilder::GenerateQuad("MENU2", Color(1, 1, 1), 1.f);
+	meshList[GEO_MENU2]->textureID = LoadTGA("Image//menu2.tga");
+	meshList[GEO_MENU3] = MeshBuilder::GenerateQuad("MENU3", Color(1, 1, 1), 1.f);
+	meshList[GEO_MENU3]->textureID = LoadTGA("Image//menu3.tga");
+	meshList[GEO_MENU4] = MeshBuilder::GenerateQuad("MENU4", Color(1, 1, 1), 1.f);
+	meshList[GEO_MENU4]->textureID = LoadTGA("Image//menu4.tga");
+	meshList[GEO_MENU5] = MeshBuilder::GenerateQuad("MENU5", Color(1, 1, 1), 1.f);
+	meshList[GEO_MENU5]->textureID = LoadTGA("Image//menu5.tga");
+
+	//meshList[GEO_START] = MeshBuilder::GenerateQuad("GEO_PARTICLE_EXPLOSION", Color(1, 1, 1), 1.f);
+	//meshList[GEO_START]->textureID = LoadTGA("Image//explosion.tga");
+	//meshList[GEO_START2] = MeshBuilder::GenerateQuad("GEO_PARTICLE_EXPLOSION", Color(1, 1, 1), 1.f);
+	//meshList[GEO_START2]->textureID = LoadTGA("Image//explosion.tga");
+	//
+	//
+	//meshList[GEO_LS] = MeshBuilder::GenerateQuad("GEO_PARTICLE_EXPLOSION", Color(1, 1, 1), 1.f);
+	//meshList[GEO_LS]->textureID = LoadTGA("Image//explosion.tga");
+	//meshList[GEO_LS2] = MeshBuilder::GenerateQuad("GEO_PARTICLE_EXPLOSION", Color(1, 1, 1), 1.f);
+	//meshList[GEO_LS2]->textureID = LoadTGA("Image//explosion.tga");
+	//meshList[GEO_LS3] = MeshBuilder::GenerateQuad("GEO_PARTICLE_EXPLOSION", Color(1, 1, 1), 1.f);
+	//meshList[GEO_LS3]->textureID = LoadTGA("Image//explosion.tga");
+	//
+	//meshList[GEO_OPTIONS] = MeshBuilder::GenerateQuad("GEO_PARTICLE_EXPLOSION", Color(1, 1, 1), 1.f);
+	//meshList[GEO_OPTIONS]->textureID = LoadTGA("Image//explosion.tga");
+	//meshList[GEO_OPTIONS2] = MeshBuilder::GenerateQuad("GEO_PARTICLE_EXPLOSION", Color(1, 1, 1), 1.f);
+	//meshList[GEO_OPTIONS2]->textureID = LoadTGA("Image//explosion.tga");
+	//
+	//meshList[GEO_INSTRUCTIONS] = MeshBuilder::GenerateQuad("GEO_PARTICLE_EXPLOSION", Color(1, 1, 1), 1.f);
+	//meshList[GEO_INSTRUCTIONS]->textureID = LoadTGA("Image//explosion.tga");
+	//
+	//meshList[GEO_EXIT] = MeshBuilder::GenerateQuad("GEO_PARTICLE_EXPLOSION", Color(1, 1, 1), 1.f);
+	//meshList[GEO_EXIT]->textureID = LoadTGA("Image//explosion.tga");
+
 	//CSoundEngine::GetInstance()->Init();
 	//CSoundEngine::GetInstance()->AddSound("Jump", "Image//Mario-jump-sound.mp3");
 

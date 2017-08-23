@@ -160,6 +160,7 @@
     <ClCompile Include="Source\GameObject.cpp" />
     <ClCompile Include="Source\Load_File.cpp" />
     <ClCompile Include="Source\main.cpp" />
+    <ClCompile Include="Source\Menu.cpp" />
     <ClCompile Include="Source\MeshBuilder.cpp" />
     <ClCompile Include="Source\Particle\Particle.cpp" />
     <ClCompile Include="Source\Physics\Collision.cpp" />

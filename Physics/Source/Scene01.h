@@ -34,10 +34,11 @@ public:
 
 	bool CheckCollision(GameObject *go1, GameObject *go2, float dt);
 	void CollisionResponse(GameObject *go1, GameObject *go2);
-	//void BombCollision(GameObject * go1, GameObject * go2);
 	void Camera_Control(double dt);
 	void UpdateParticles(double dt);
 	void Shop_Update(double dt);
+	void Menu(double dt);
+	void RenderMenu();
 
 protected:
 	vector<GameObject *> m_goList;
@@ -76,6 +77,29 @@ protected:
 	int Gold;
 	int item_id;
 	float wind;
+
+	enum MENU {
+		MENU = 1,
+		MENU2,
+		MENU3,
+		MENU4,
+		MENU5,
+
+		START,
+		START2,
+
+		LS,
+		LS2,
+		LS3,
+
+		OPTIONS,
+		OPTIONS2,
+
+		INSTRUCTIONS
+	} menustate;
+	float menuBounce;
+	bool display;
+
 	// Physics Parameters
 	ParamPhysics param_physics;
 };
