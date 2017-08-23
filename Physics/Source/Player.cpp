@@ -46,7 +46,7 @@ void Player::Update(double dt)
 		playerBomb->SetActive(true);
 		playerBomb->type = GameObject::GO_BOMB;
 		playerBomb->vel.x = playerObj->vel.x * 5.0f;
-		playerBomb->vel.y = 100;
+		playerBomb->vel.y = 200;
 		playerBomb->pos = GetPlayerPos();
 		playerBomb->scale.Set(5, 5, 1);
 		playerBomb->mass = 5;
@@ -60,7 +60,7 @@ void Player::Update(double dt)
 		//Physics::K1(playerBomb->vel, Vector3(0.f, -9.8f, 0.f), (float)dt, playerBomb->vel);
 		//playerBomb->pos += playerBomb->vel * (float)dt * 40.f;
 		if (launched && !exploded)
-			bombspin += 50*dt;
+			bombspin -= 50*dt;
 		if (playerBomb->pos.y < 0)
 		{
 			playerBomb->SetActive(false);
@@ -96,6 +96,7 @@ void Player::Reset()
 	playerObj->pos = defaultPos;
 	exploded = false;
 	launched = false;
+	bombspin = 0;
 	playerObj->vel.SetZero();
 }
 
@@ -155,7 +156,7 @@ void Player::CollisionResponse()
 
 void Player::Move_LeftRight(const double dt, const bool dLeft)
 {
-	if ((!m_heightmap || !playerObj || playerObj->vel.Length() > 150 ||
+	if ((!m_heightmap || !playerObj || playerObj->vel.Length() > 100 ||
 		playerObj->pos.y > (m_TerrainHeight * ReadHeightMap(*m_heightmap,
 		(playerObj->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + playerObj->scale.y * 0.5f))
 		return;

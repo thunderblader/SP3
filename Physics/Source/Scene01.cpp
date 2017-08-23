@@ -56,7 +56,12 @@ void Scene01::Init()
 	in_shop = false;
 	purchased = false;
 	file.Init(&m_goList);
-	file.Load(false, "Image//Level01.csv");
+	currlevel = 1;
+	newlevel = 1;
+	std::string leveltext = "Image//Level0";
+	leveltext += to_string(currlevel);
+	leveltext += ".csv";
+	file.Load(false, leveltext);
 
 	file.Load(true, "Image//shop_data.csv");
 
@@ -105,6 +110,7 @@ void Scene01::Init()
 	MAX_PARTICLE = 1000;
 
 	m_objectCount = &playerObj->m_totalGameObjects;
+	wind = -10;
 }
 
 GameObject* Scene01::FetchGO()
@@ -294,6 +300,7 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 				}
 			}
 		}
+		++newlevel;
 		break;
 	}
 }
@@ -331,7 +338,7 @@ void Scene01::UpdateParticles(double dt)
 {
 	if (m_particleCount < (int)MAX_PARTICLE)
 	{	
-		if (m_player->GetVel().Length() > 140 && !m_player->GetLaunched())
+		if (m_player->GetVel().Length() > 90 && !m_player->GetLaunched())
 		{
 			ParticleObject* particle = GetParticle();
 			particle->type = ParticleObject_TYPE::P_SPARK;
@@ -407,6 +414,23 @@ void Scene01::UpdateParticles(double dt)
 
 void Scene01::Update(double dt)
 {
+	if (newlevel != currlevel)
+	{
+		currlevel = newlevel;
+		for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
+		{
+			GameObject *go = (GameObject *)*it;
+			if (go->GetActive() && go->type != GameObject::GO_BLOCK
+				&& go->type != GameObject::GO_BOMB && go->type != GameObject::GO_SCREEN)
+			{
+				go->SetActive(false);
+			}
+		}
+		std::string leveltext = "Image//Level0";
+		leveltext += to_string(currlevel);
+		leveltext += ".csv";
+		file.Load(false, leveltext);
+	}
 	SceneBase::Update(dt);
 	if (KeyboardController::GetInstance()->IsKeyPressed('I'))
 	{
@@ -553,14 +577,13 @@ void Scene01::Update(double dt)
 					go->vel.IsZero();
 				if (go->type == GameObject::GO_BOMB)
 				{
-					Physics::K1(go->vel.y, (-9.8f * go->mass * 2.f), (float)dt*0.2f, go->vel.y);
-					go->pos += go->vel * (float)dt*0.2f;
+					go->pos += go->vel * (float)dt * 0.2f;
 				}
 				else
 				{
-						Physics::K1(go->vel.y, (-9.8f * go->mass * 2.f), (float)dt, go->vel.y);
 					go->pos += go->vel * (float)dt;
 				}
+				Physics::K1(go->vel, Vector3(wind / go->mass, -9.8f * go->mass * 2.f, 0), (float)dt, go->vel);
 				if (go->pos.y <= (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + go->scale.y * 0.5f && go->pos.x < 0 && go->pos.x > -m_TerrainWidth)
 				{
 					go->pos.y = (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + go->scale.y * 0.5f;
@@ -771,6 +794,8 @@ void Scene01::RenderGO(GameObject *go)
 
 	case GameObject::GO_BLOCK:
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z+0.1f);
+		if (!m_player->GetExploded())
+			modelStack.Rotate(m_player->GetBombspin()*10 ,0, 0, 1);
 		modelStack.Rotate(Math::RadianToDegree(atan2(go->dir.y, go->dir.x)) + 90, 0.f, 0.f, 1.f);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
 		RenderMesh(meshList[GEO_CART], false);

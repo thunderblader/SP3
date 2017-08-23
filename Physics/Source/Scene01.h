@@ -72,11 +72,11 @@ protected:
 	float time_limit;
 	int Unit_Height_Space;
 	int Unit_Width_Space;
-	int Level;
+	int newlevel, currlevel;
 	int Score;
 	int Gold;
 	int item_id;
-
+	float wind;
 	// Physics Parameters
 	ParamPhysics param_physics;
 };
