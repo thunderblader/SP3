@@ -56,7 +56,12 @@ void Scene01::Init()
 	in_shop = false;
 	purchased = false;
 	file.Init(&m_goList);
-	file.Load(false, "Image//Level01.csv");
+	currlevel = 1;
+	newlevel = 1;
+	std::string leveltext = "Image//Level0";
+	leveltext += to_string(currlevel);
+	leveltext += ".csv";
+	file.Load(false, leveltext);
 
 	file.Load(true, "Image//shop_data.csv");
 
@@ -67,17 +72,21 @@ void Scene01::Init()
 
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
+	Enemy* enemy = new Enemy();
+	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(-200.f, 22.f, 0.f), Vector3(10.f, 10.f, 1.f));
+
 	GameObject* playerObj = FetchGO();
 	GameObject* bombObj = FetchGO();
 	m_player = Player::GetInstance();
-	m_player->Init(playerObj, bombObj, GameObject::GO_BLOCK, Vector3(-50, 25, 0), Vector3(5, 4, 1), 1.f, 10.f);
+	m_player->Init(playerObj, bombObj, GameObject::GO_BLOCK, Vector3(-50, 25, 0), Vector3(5, 4, 1), 5.f, 500.f);
 	m_player->SetHeightmap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
 	m_control = new Controller(m_player);
 	m_control->LoadConfig("Data//Config.ini", param_physics);
-	Enemy* enemy = new Enemy();
+
+	
 	enemy->SetPlayerObj(playerObj);
 	enemy->SetBombObj(bombObj);
-	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(-20.f, 40.f, 0.f), Vector3(10.f, 10.f, 1.f));
+	
 	enemy->SetSpriteAnim(meshList[GEO_SPRITE_YETI]);
 	enemyList.push_back(enemy);
 	
@@ -101,6 +110,7 @@ void Scene01::Init()
 	MAX_PARTICLE = 1000;
 
 	m_objectCount = &playerObj->m_totalGameObjects;
+	wind = -10;
 }
 
 GameObject* Scene01::FetchGO()
@@ -291,6 +301,7 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 				}
 			}
 		}
+		++newlevel;
 		break;
 	}
 }
@@ -328,15 +339,24 @@ void Scene01::UpdateParticles(double dt)
 {
 	if (m_particleCount < (int)MAX_PARTICLE)
 	{	
-		if (m_player->GetVel().Length() > 5)
+		if (m_player->GetVel().Length() > 90 && !m_player->GetLaunched())
 		{
 			ParticleObject* particle = GetParticle();
 			particle->type = ParticleObject_TYPE::P_SPARK;
 			particle->scale.Set(1, 1, 1);
-			particle->vel.Set(Math::RandFloatMinMax(-5, 0), Math::RandFloatMinMax(5, 0), 0);
+			particle->vel.Set(Math::RandFloatMinMax(-1, 1), Math::RandFloatMinMax(-1, 5), 0);
 			particle->rotationSpeed = Math::RandFloatMinMax(20, 40);
 			//particle->pos.Set(Math::RandFloatMinMax(-1700, 1700), 1200, Math::RandFloatMinMax(-1700, 1700));
 			particle->pos = m_player->GetPlayerPos();
+			particle->pos.y -= m_player->GetPlayerObj().scale.y*0.4f;
+			if (m_player->GetVel().x > 0)
+			{
+				particle->pos.x -= m_player->GetPlayerObj().scale.x*0.2f;
+			}
+			else
+			{
+				particle->pos.x += m_player->GetPlayerObj().scale.x*0.2f;
+			}
 		}
 		for (int i = 0; i < 5; ++i)
 		{
@@ -348,14 +368,14 @@ void Scene01::UpdateParticles(double dt)
 			particle->rotation = Math::RadianToDegree(atan2(particle->vel.Normalized().y, particle->vel.Normalized().x)) - 270;
 			particle->pos.Set(Math::RandFloatMinMax(-m_TerrainWidth*1.5f, m_TerrainWidth*1.5f), m_worldHeight*1.5f, 0);
 		}
-		if (m_player->GetExploded())
+		if (m_player->GetExploded() && m_player->GetPlayerBomb().scale.x == 5)
 		{
-			for (int i = 0; i < 5; ++i)
+			for (int i = 0; i < 10; ++i)
 			{
 				ParticleObject* particle = GetParticle();
 				particle->type = ParticleObject_TYPE::P_EXPLOSION;
 				particle->scale.Set(1, 1, 1);
-				particle->vel.Set(Math::RandFloatMinMax(-5, 5), Math::RandFloatMinMax(-5, 5), 0);
+				particle->vel.Set(Math::RandFloatMinMax(-1, 1), Math::RandFloatMinMax(-1, 5), 0);
 				particle->rotationSpeed = 0;
 				particle->rotation = Math::RadianToDegree(atan2(particle->vel.Normalized().y, particle->vel.Normalized().x)) - 270;
 				particle->pos = m_player->GetPlayerPos();
@@ -395,6 +415,23 @@ void Scene01::UpdateParticles(double dt)
 
 void Scene01::Update(double dt)
 {
+	if (newlevel != currlevel)
+	{
+		currlevel = newlevel;
+		for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
+		{
+			GameObject *go = (GameObject *)*it;
+			if (go->GetActive() && go->type != GameObject::GO_BLOCK
+				&& go->type != GameObject::GO_BOMB && go->type != GameObject::GO_SCREEN)
+			{
+				go->SetActive(false);
+			}
+		}
+		std::string leveltext = "Image//Level0";
+		leveltext += to_string(currlevel);
+		leveltext += ".csv";
+		file.Load(false, leveltext);
+	}
 	SceneBase::Update(dt);
 	if (KeyboardController::GetInstance()->IsKeyPressed('I'))
 	{
@@ -440,7 +477,7 @@ void Scene01::Update(double dt)
 	static bool enemyFired = false;
 	if (enemyList[0]->GetCurAnimFrame() == 11 && !enemyFired) // Debug key snow yeti shooting
 	{
-		enemyList[0]->PushProjectile(FetchGO(), Vector3(1.f, 1.f, 1.f), 40.f);
+		enemyList[0]->PushProjectile(FetchGO(), Vector3(1.f, 1.f, 1.f), 30.f);
 		enemyFired = true;
 	}
 	else if (enemyList[0]->GetCurAnimFrame() == 12)
@@ -584,12 +621,18 @@ void Scene01::Update(double dt)
 
 			if ((go->type == GameObject::GO_BOMB && !m_player->GetExploded()) || go->type == GameObject::GO_BLOCK)
 			{
-				go->vel.x = go->vel.x - go->vel.x * 1.f * (float)dt;
+				//go->vel.x = go->vel.x - go->vel.x * 1.f * (float)dt;
 				if (go->vel.Length() < 3)
 					go->vel.IsZero();
-				Physics::K1(go->vel.y, (-9.8f * go->mass * 2.f), (float)dt, go->vel.y);
-				//go->vel.y = go->vel.y - 9.8f * go->mass  * (float)dt;
-				go->pos += go->vel * (float)dt * m_speed;
+				if (go->type == GameObject::GO_BOMB)
+				{
+					go->pos += go->vel * (float)dt * 0.2f;
+				}
+				else
+				{
+					go->pos += go->vel * (float)dt;
+				}
+				Physics::K1(go->vel, Vector3(wind / go->mass, -9.8f * go->mass * 2.f, 0), (float)dt, go->vel);
 				if (go->pos.y <= (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + go->scale.y * 0.5f && go->pos.x < 0 && go->pos.x > -m_TerrainWidth)
 				{
 					go->pos.y = (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + go->scale.y * 0.5f;
@@ -603,8 +646,8 @@ void Scene01::Update(double dt)
 					//else
 					tempnormal = Vector3(sin(-theta), cos(-theta), 0).Normalize();
 					go->dir = tempnormal;
-					go->vel = go->vel - (go->vel.Dot(tempnormal) * tempnormal);
-					go->vel.x = go->vel.x - go->vel.x * 2.f * (float)dt;
+					go->vel = go->vel - (1.1*go->vel.Dot(tempnormal) * tempnormal);
+					//go->vel.x = go->vel.x - 2.f * (float)dt; // friction
 				}
 				/*if ((go->pos.x < 0 + go->scale.x && go->vel.x < 0) || (go->pos.x > m_worldWidth - go->scale.x && go->vel.x > 0))
 				{
@@ -799,7 +842,9 @@ void Scene01::RenderGO(GameObject *go)
 		break;
 
 	case GameObject::GO_BLOCK:
-		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
+		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z+0.1f);
+		if (!m_player->GetExploded())
+			modelStack.Rotate(m_player->GetBombspin()*10 ,0, 0, 1);
 		modelStack.Rotate(Math::RadianToDegree(atan2(go->dir.y, go->dir.x)) + 90, 0.f, 0.f, 1.f);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
 		RenderMesh(meshList[GEO_CART], false);
@@ -837,11 +882,16 @@ void Scene01::RenderGO(GameObject *go)
 
 	case GameObject::GO_BOMB:
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
+		if (!m_player->GetExploded())
+			modelStack.Rotate(m_player->GetBombspin() ,0, 0, 1);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
 		if (!m_player->GetExploded())
+		{
 			RenderMesh(meshList[GEO_BOMB], false);
-		if (m_player->GetExploded())
+		}
+		else if (m_player->GetExploded())
 			RenderMesh(meshList[GEO_BOOM], false);
+		
 		break;
 	case GameObject::GO_SCREEN:
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
@@ -922,7 +972,7 @@ void Scene01::Render()
 
 		ss.precision(3);
 		ss.str("");
-		ss << "Speed: " << m_speed;
+		ss << "Speed: " << m_player->GetVel().Length();
 		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 6);
 
 		ss.precision(5);
