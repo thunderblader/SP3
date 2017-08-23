@@ -88,7 +88,6 @@ void Scene01::Init()
 
 	enemy->SetPlayerObj(playerObj);
 	enemy->SetBombObj(bombObj);
-	
 	enemy->SetSpriteAnim(meshList[GEO_SPRITE_YETI]);
 	enemyList.push_back(enemy);
 
@@ -138,7 +137,7 @@ bool Scene01::CheckCollision(GameObject * go1, GameObject * go2, float dt)
 			dis.LengthSquared() <= combinedRadiusSq);
 	}
 
-	case GameObject::GO_PLAYER:
+	/*case GameObject::GO_PLAYER:
 	{
 		Vector3 w0 = go2->pos;
 		Vector3 b1 = go1->pos;
@@ -154,7 +153,11 @@ bool Scene01::CheckCollision(GameObject * go1, GameObject * go2, float dt)
 		return (go1->vel.Dot(N) > 0 &&
 			abs((w0 - b1).Dot(N)) < r + h * 0.5f) &&
 			(abs((w0 - b1).Dot(NP)) < r + l * 0.5f);
-	}
+	}*/
+
+	case GameObject::GO_ENEMY_KING:
+		
+		break;
 
 	case GameObject::GO_BRICK:
 	{
@@ -201,9 +204,13 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 		go2->vel = u2 + ((2.f * m1) / (m1 + m2)) * (u1N - u2N);
 		break;
 
-	case GameObject::GO_PLAYER:
+	/*case GameObject::GO_PLAYER:
 		N = go2->dir;
 		go1->vel = go1->vel - (2 * go1->vel.Dot(N)) * N;
+		break;*/
+
+	case GameObject::GO_ENEMY_KING:
+
 		break;
 
 	case GameObject::GO_BRICK:
@@ -413,35 +420,35 @@ void Scene01::Update(double dt)
 	}
 
 	//Mouse Section
-	if (MouseController::GetInstance()->IsButtonPressed(MouseController::LMB))
-	{
-		std::cout << "LBUTTON DOWN" << std::endl;
+	//if (MouseController::GetInstance()->IsButtonPressed(MouseController::LMB))
+	//{
+	//	std::cout << "LBUTTON DOWN" << std::endl;
 
-		double x, y;
-		MouseController::GetInstance()->GetMousePosition(x, y);
-		int w = Application::GetWindowWidth();
-		int h = Application::GetWindowHeight();
+	//	double x, y;
+	//	MouseController::GetInstance()->GetMousePosition(x, y);
+	//	int w = Application::GetWindowWidth();
+	//	int h = Application::GetWindowHeight();
 
-		m_ghost->pos.Set((float)(x / w * m_worldWidth) + camera.position.x, (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
-		//m_ghost->pos.Set((float)(x / w * m_worldWidth), m_worldHeight * 0.5f, 0.f);
-	}
-	else if (MouseController::GetInstance()->IsButtonReleased(MouseController::LMB))
-	{
-		std::cout << "LBUTTON UP" << std::endl;
+	//	m_ghost->pos.Set((float)(x / w * m_worldWidth) + camera.position.x, (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
+	//	//m_ghost->pos.Set((float)(x / w * m_worldWidth), m_worldHeight * 0.5f, 0.f);
+	//}
+	//else if (MouseController::GetInstance()->IsButtonReleased(MouseController::LMB))
+	//{
+	//	std::cout << "LBUTTON UP" << std::endl;
 
-		//Exercise 6: spawn small GO_BALL
-		GameObject *go = FetchGO();
-		go->pos = m_ghost->pos;
-		go->scale.Set(1.f, 1.f, 1.f);
-		go->mass = 1.f;
+	//	//Exercise 6: spawn small GO_BALL
+	//	GameObject *go = FetchGO();
+	//	go->pos = m_ghost->pos;
+	//	go->scale.Set(1.f, 1.f, 1.f);
+	//	go->mass = 1.f;
 
-		double x, y;
-		MouseController::GetInstance()->GetMousePosition(x, y);
-		int w = Application::GetWindowWidth();
-		int h = Application::GetWindowHeight();
-		go->vel.Set(m_ghost->pos.x - (float)(x / w * m_worldWidth) - camera.position.x, m_ghost->pos.y - (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
-		go->scale.Set(Math::Clamp(go->vel.Length(), 2.f, 10.f), Math::Clamp(go->vel.Length(), 2.f, 10.f), 0.f);
-	}
+	//	double x, y;
+	//	MouseController::GetInstance()->GetMousePosition(x, y);
+	//	int w = Application::GetWindowWidth();
+	//	int h = Application::GetWindowHeight();
+	//	go->vel.Set(m_ghost->pos.x - (float)(x / w * m_worldWidth) - camera.position.x, m_ghost->pos.y - (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
+	//	go->scale.Set(Math::Clamp(go->vel.Length(), 2.f, 10.f), Math::Clamp(go->vel.Length(), 2.f, 10.f), 0.f);
+	//}
 	if (MouseController::GetInstance()->IsButtonPressed(MouseController::RMB))
 	{
 		std::cout << "RBUTTON DOWN" << std::endl;
@@ -781,7 +788,7 @@ void Scene01::RenderGO(GameObject *go)
 		RenderMesh(meshList[GEO_SNOWBALL], false);
 		break;
 
-	case GameObject::GO_TEMP:
+	case GameObject::GO_ENEMY_KING:
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
 		RenderMesh(meshList[GEO_CUBE], false);

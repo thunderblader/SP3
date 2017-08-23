@@ -23,6 +23,8 @@ void Player::Init(GameObject * _playerObj, GameObject * _playerBomb
 	playerBomb->mass = 5;
 	playerBomb->SetActive(false);
 
+	pu_stats.power = 1.f;
+	pu_stats.speed = 1.f;
 	defaultPos = _pos;
 	m_speed = _spd;
 	jump_boost = _jump_boost;

@@ -7,6 +7,7 @@
 #include "Physics\Collision.h"
 #include "Tree.h"
 #include "Shop.h"
+#include "PowerUp.h"
 
 #include <vector>
 
@@ -53,6 +54,7 @@ private:
 //	Tree* item_node;
 //	int id;
 
+	PowerUpStats pu_stats;
 	float m_speed;
 	float jump_boost;
 	float blast_strength;
