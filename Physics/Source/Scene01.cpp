@@ -47,8 +47,6 @@ void Scene01::Init()
 	time_limit = 0;
 	item_id = 0;
 
-	
-
 	screen = FetchGO();
 	screen->type = GameObject::GO_SCREEN;
 
@@ -58,10 +56,18 @@ void Scene01::Init()
 	file.Init(&m_goList);
 	currlevel = 1;
 	newlevel = 1;
-	std::string leveltext = "Image//Level0";
-	leveltext += to_string(currlevel);
+	std::string leveltext = "Image//Test_Level_2";
+	//leveltext += to_string(currlevel);
 	leveltext += ".csv";
 	file.Load(false, leveltext);
+
+	GameObject* playerObj = FetchGO();
+	GameObject* bombObj = FetchGO();
+	m_player = Player::GetInstance();
+	m_player->Init(playerObj, bombObj, GameObject::GO_BLOCK, Vector3(-50, 25, 0), Vector3(5, 4, 1), 5.f, 500.f);
+	m_player->SetHeightmap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
+	m_control = new Controller(m_player);
+	m_control->LoadConfig("Data//Config.ini", param_physics);
 
 	file.Load(true, "Image//shop_data.csv");
 
@@ -75,15 +81,6 @@ void Scene01::Init()
 	Enemy* enemy = new Enemy();
 	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(-200.f, 22.f, 0.f), Vector3(10.f, 10.f, 1.f));
 
-	GameObject* playerObj = FetchGO();
-	GameObject* bombObj = FetchGO();
-	m_player = Player::GetInstance();
-	m_player->Init(playerObj, bombObj, GameObject::GO_BLOCK, Vector3(-50, 25, 0), Vector3(5, 4, 1), 5.f, 500.f);
-	m_player->SetHeightmap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
-	m_control = new Controller(m_player);
-	m_control->LoadConfig("Data//Config.ini", param_physics);
-
-	
 	enemy->SetPlayerObj(playerObj);
 	enemy->SetBombObj(bombObj);
 	
@@ -120,7 +117,7 @@ GameObject* Scene01::FetchGO()
 	{
 		GameObject *go = (GameObject *)*it;
 		if (!go->GetActive() && go->type != GameObject::GO_BLOCK
-			&& go->type != GameObject::GO_BOMB && go->type != GameObject::GO_SCREEN)
+			&& go->type != GameObject::GO_BOMB && go->type != GameObject::GO_SCREEN && go->type != GameObject::GO_BOSS)
 		{
 			go->SetActive(true);
 			//++m_objectCount;
@@ -204,19 +201,15 @@ bool Scene01::CheckCollision(GameObject * go1, GameObject * go2, float dt)
 		return go1->vel.Dot(N) > 0 && 
 			(abs((w0 - b1).Dot(N)) < (r + h * 0.5f)) && 
 			(abs((w0 - b1).Dot(NP)) < (r + l * 0.5f));
-		//Vector3 detect(Math::Clamp((b1 - w0).x, 0.f, h / 2), Math::Clamp((b1 - w0).y, 0.f, l / 2), 0);
-		//detect += w0;
+	}
+	case GameObject::GO_BOSS:
+	{
+		Vector3 dis = go1->pos - go2->pos;
+		Vector3 rel = go1->vel - go2->vel;
+		float combinedRadiusSq = (go1->scale.x + go2->scale.x) * (go1->scale.x + go2->scale.x);
 
-		//return ((detect - b1).Length() < r);
-		//{
-		//	if (!m_player->GetExploded())
-		//	{
-		//		go1->vel.SetZero();
-		//		m_player->SetExploded(true);
-
-		//		go2->active = false; // set response for brick
-		//	}
-		//}
+		return (rel.Dot(dis) < 0 &&
+			dis.LengthSquared() <= combinedRadiusSq);
 	}
 	}
 
@@ -254,48 +247,40 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 			go1->vel.SetZero();
 			m_player->SetExploded(true);
 			go2->SetActive(false);
-			++newlevel;
+			//++newlevel;
 		}
 
-		Vector3 w0 = go2->pos;
-		Vector3 b1 = go1->pos;
-		Vector3 N = go2->dir;
-		Vector3 NP = N.Cross(Vector3(0, 0, 1));
-		float l = go2->scale.y;
-		float r = go1->scale.x;
-		float h = go2->scale.x;
-		if ((w0 - b1).Dot(N) < 0)
-			N = -N;
-
-		Vector3 detect(Math::Clamp((b1 - w0).x, 0.f, h / 2), Math::Clamp((b1 - w0).y, 0.f, l / 2), 0);
-		detect += w0;
-		
-		if ((detect - b1).Length() < r)
+		for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 		{
-			
+			GameObject *go3 = static_cast<GameObject *>(*it);
+			if (!go3->GetActive())
+				continue;
 
-			for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
+			if (go3->type == GameObject::GO_BRICK)
 			{
-				GameObject *go3 = static_cast<GameObject *>(*it);
-				if (!go3->GetActive())
-					continue;
+				Vector3 pos = go1->pos - go3->pos;
+				pos.x = Math::Clamp(pos.x, 0.f, go3->scale.x);
+				pos.y = Math::Clamp(pos.y, 0.f, go3->scale.y);
 
-				if (go3->type == GameObject::GO_BRICK)
+				pos += go3->pos;
+				if ((pos - go1->pos).Length() > 2.5 && (pos - go1->pos).Length() < 10)
 				{
-					Vector3 pos = go1->pos - go3->pos;
-					pos.x = Math::Clamp(pos.x, 0.f, go3->scale.x);
-					pos.y = Math::Clamp(pos.y, 0.f, go3->scale.y);
+					float energy = (30 - (pos - go1->pos).Length()) / 30 * 10;
 
-					pos += go3->pos;
-					if ((pos - go1->pos).Length() > 2.5 && (pos - go1->pos).Length() < 10)
-					{
-						float energy = (30 - (pos - go1->pos).Length()) / 30 * 10;
-
-						Vector3 explosion = (go1->pos - pos).Normalized() * energy;
-						go3->vel -= explosion;
-					}
+					Vector3 explosion = (go1->pos - pos).Normalized() * energy;
+					go3->vel -= explosion;
 				}
 			}
+		}
+		break;
+
+	case GameObject::GO_BOSS:
+		if (!m_player->GetExploded())
+		{
+			go1->vel.SetZero();
+			m_player->SetExploded(true);
+			go2->SetActive(false);
+			//++newlevel;
 		}
 		break;
 	}
@@ -527,6 +512,10 @@ void Scene01::Update(double dt)
 		if (go->GetActive())
 		{
 			//Exercise 7: handle out of bound game objects
+			if (go->type == GameObject::GO_BOSS)
+			{
+				std::cout << "lmao" << std::endl;
+			}
 			if (go->type == GameObject::GO_BRICK)
 			{
 				if (!go->vel.IsZero())
@@ -690,7 +679,7 @@ void Scene01::Update(double dt)
 				{
 					GameObject *go2 = (GameObject *)*it2;
 
-					if (!go2->GetActive() || (go->type != GameObject::GO_BOMB && go2->type != GameObject::GO_BOMB) || (go->type != GameObject::GO_BRICK && go2->type != GameObject::GO_BRICK))
+					if (!go2->GetActive() || (go->type != GameObject::GO_BOMB && go2->type != GameObject::GO_BOMB))// || (go->type != GameObject::GO_BRICK && go2->type != GameObject::GO_BRICK))
 						continue;
 
 					GameObject *goA, *goB;
@@ -862,6 +851,12 @@ void Scene01::RenderGO(GameObject *go)
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
 		RenderMesh(meshList[GEO_CUBE], false);
+		break;
+
+	case GameObject::GO_BOSS:
+		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
+		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
+		RenderMesh(meshList[GEO_BOSS], false);
 		break;
 	}
 

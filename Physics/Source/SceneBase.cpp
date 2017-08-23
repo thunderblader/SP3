@@ -130,6 +130,9 @@ void SceneBase::Init()
 	meshList[GEO_SPRITE_YETI] = MeshBuilder::GenerateSpriteAnimation("yeti", 4, 4, 1.f);
 	meshList[GEO_SPRITE_YETI]->textureID = LoadTGA("Image//Sprite_YetiLeft.tga");
 
+	meshList[GEO_BOSS] = MeshBuilder::GenerateQuad("boss", Color(0.f, 0.f, 0.f), 1.f);
+	meshList[GEO_BOSS]->textureID = LoadTGA("Image//boss.tga");
+
 	meshList[GEO_PARTICLE_SPARK] = MeshBuilder::GenerateQuad("GEO_PARTICLE_SPARK", Color(1, 1, 1), 1.f);
 	meshList[GEO_PARTICLE_SPARK]->textureID = LoadTGA("Image//spark.tga");
 	meshList[GEO_PARTICLE_RAIN] = MeshBuilder::GenerateQuad("GEO_PARTICLE_RAIN", Color(1, 1, 1), 1.f);
