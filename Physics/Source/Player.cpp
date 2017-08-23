@@ -63,11 +63,11 @@ void Player::Update(double dt)
 		{
 			//playerBomb->SetActive(false);
 			//Reset();
-			wait += 1 * dt;
+			wait += 1 * (float)dt;
 		}
 		else if (exploded)
 		{
-			wait += 1 * dt;
+			wait += 1 * (float)dt;
 		}
 		if (exploded && playerBomb->scale.x < 10) // if bomb scale lesser than 10 increase its scale
 		{

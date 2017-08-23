@@ -83,6 +83,12 @@ void Scene01::Init()
 	enemy->SetSpriteAnim(meshList[GEO_SPRITE_YETI]);
 	enemyList.push_back(enemy);
 
+	GameObject* obj = FetchGO();
+	obj->type = GameObject::GO_PU_SPEED;
+	obj->SetActive(true);
+	obj->pos.Set(-100.f, ReadHeightMap(m_heightMap, (-100 + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f) + 20.f, 0.f);
+	obj->scale.Set(5.f, 5.f, 5.f);
+
 	m_particleCount = 0;
 	MAX_PARTICLE = 1000;
 
@@ -133,28 +139,6 @@ bool Scene01::CheckCollision(GameObject * go1, GameObject * go2, float dt)
 			dis.LengthSquared() <= combinedRadiusSq);
 	}
 
-	/*case GameObject::GO_PLAYER:
-	{
-		Vector3 w0 = go2->pos;
-		Vector3 b1 = go1->pos;
-		Vector3 N = go2->dir;
-		Vector3 NP = go2->dir.Cross(Vector3(0.f, 0.f, 1.f));
-		float r = go1->scale.x;
-		float h = go2->scale.y;
-		float l = go2->scale.x;
-
-		if ((w0 - b1).Dot(N) < 0)
-			N = -N;
-
-		return (go1->vel.Dot(N) > 0 &&
-			abs((w0 - b1).Dot(N)) < r + h * 0.5f) &&
-			(abs((w0 - b1).Dot(NP)) < r + l * 0.5f);
-	}*/
-
-	case GameObject::GO_ENEMY_KING:
-		
-		break;
-
 	case GameObject::GO_BRICK:
 	{
 		Vector3 w0 = go2->pos;
@@ -171,6 +155,37 @@ bool Scene01::CheckCollision(GameObject * go1, GameObject * go2, float dt)
 			(abs((w0 - b1).Dot(N)) < (r + h * 0.5f)) && 
 			(abs((w0 - b1).Dot(NP)) < (r + l * 0.5f));
 	}
+
+	case GameObject::GO_PU_SPEED:
+	{
+		Vector3 dis = go1->pos - go2->pos;
+		Vector3 rel = go1->vel - go2->vel;
+		float combinedRadiusSq = (go1->scale.x * 0.2f + go2->scale.x) * (go1->scale.x * 0.2f + go2->scale.x);
+
+		return (rel.Dot(dis) < 0 &&
+			dis.LengthSquared() <= combinedRadiusSq);
+	}
+
+	case GameObject::GO_PU_RANGE:
+	{
+		Vector3 dis = go1->pos - go2->pos;
+		Vector3 rel = go1->vel - go2->vel;
+		float combinedRadiusSq = (go1->scale.x * 0.2f + go2->scale.x) * (go1->scale.x * 0.2f + go2->scale.x);
+
+		return (rel.Dot(dis) < 0 &&
+			dis.LengthSquared() <= combinedRadiusSq);
+	}
+
+	case GameObject::GO_PU_POWER:
+	{
+		Vector3 dis = go1->pos - go2->pos;
+		Vector3 rel = go1->vel - go2->vel;
+		float combinedRadiusSq = (go1->scale.x * 0.2f + go2->scale.x) * (go1->scale.x * 0.2f + go2->scale.x);
+
+		return (rel.Dot(dis) < 0 &&
+			dis.LengthSquared() <= combinedRadiusSq);
+	}
+
 	case GameObject::GO_BOSS:
 	{
 		Vector3 dis = go1->pos - go2->pos;
@@ -198,15 +213,6 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 		u2N = u2.Dot(N) * N;
 		go1->vel = u1 + ((2.f * m2) / (m1 + m2)) * (u2N - u1N);
 		go2->vel = u2 + ((2.f * m1) / (m1 + m2)) * (u1N - u2N);
-		break;
-
-	/*case GameObject::GO_PLAYER:
-		N = go2->dir;
-		go1->vel = go1->vel - (2 * go1->vel.Dot(N)) * N;
-		break;*/
-
-	case GameObject::GO_ENEMY_KING:
-
 		break;
 
 	case GameObject::GO_BRICK:
@@ -240,6 +246,18 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 				}
 			}
 		}
+		break;
+
+	case GameObject::GO_PU_SPEED:
+		go2->SetActive(false);
+		break;
+
+	case GameObject::GO_PU_RANGE:
+		go2->SetActive(false);
+		break;
+
+	case GameObject::GO_PU_POWER:
+		go2->SetActive(false);
 		break;
 
 	case GameObject::GO_BOSS:
@@ -543,8 +561,8 @@ void Scene01::Update(double dt)
 						tempnormal = Vector3(sin(-theta), cos(-theta), 0).Normalize();
 						go->dir = tempnormal;
 
-						go->vel = go->vel - (1.1*go->vel.Dot(tempnormal) * tempnormal);
-						go->vel.x = go->vel.x - go->vel.x * 0.2 * (float)dt; // friction
+						go->vel = go->vel - (1.1f*go->vel.Dot(tempnormal) * tempnormal);
+						go->vel.x = go->vel.x - go->vel.x * 0.2f * (float)dt; // friction
 					}
 					/*if ((go->pos.x < 0 + go->scale.x && go->vel.x < 0) || (go->pos.x > m_worldWidth - go->scale.x && go->vel.x > 0))
 					{
@@ -622,11 +640,12 @@ void Scene01::Update(double dt)
 					{
 						GameObject *go2 = (GameObject *)*it2;
 
-						if (!go2->GetActive() || (go->type != GameObject::GO_BOMB && go2->type != GameObject::GO_BOMB))// || (go->type != GameObject::GO_BRICK && go2->type != GameObject::GO_BRICK))
+						if (!go2->GetActive() || ((go->type != GameObject::GO_BOMB && go2->type != GameObject::GO_BOMB)
+							&& (go->type != GameObject::GO_PLAYER && go2->type != GameObject::GO_PLAYER)))// || (go->type != GameObject::GO_BRICK && go2->type != GameObject::GO_BRICK))
 							continue;
 
 						GameObject *goA, *goB;
-						if (go->type == GameObject::GO_BOMB)
+						if (go->type == GameObject::GO_BOMB || go->type == GameObject::GO_PLAYER)
 						{
 							goA = go;
 							goB = go2;
@@ -699,12 +718,6 @@ void Scene01::RenderGO(GameObject *go)
 		RenderMesh(meshList[GEO_SNOWBALL], false);
 		break;
 
-	case GameObject::GO_ENEMY_KING:
-		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
-		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
-		RenderMesh(meshList[GEO_CUBE], false);
-		break;
-
 	case GameObject::GO_BRICK:
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
@@ -722,8 +735,26 @@ void Scene01::RenderGO(GameObject *go)
 		}
 		else if (m_player->GetExploded() && go->scale.x < 10)
 			RenderMesh(meshList[GEO_BOOM], false);
-		
 		break;
+
+	case GameObject::GO_PU_SPEED:
+		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
+		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
+		RenderMesh(meshList[GEO_PU_SPEED], false);
+		break;
+
+	case GameObject::GO_PU_RANGE:
+		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
+		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
+		RenderMesh(meshList[GEO_PU_RANGE], false);
+		break;
+
+	case GameObject::GO_PU_POWER:
+		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
+		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
+		RenderMesh(meshList[GEO_PU_POWER], false);
+		break;
+
 	case GameObject::GO_BOSS:
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
