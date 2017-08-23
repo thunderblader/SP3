@@ -294,41 +294,9 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 				}
 			}
 		}
-
-		
-		//++newlevel;
 		break;
 	}
 }
-
-
-//void Scene01::BombCollision(GameObject * go1, GameObject * go2)
-//{
-//	Vector3 w0 = go2->pos;
-//	Vector3 b1 = go1->pos;
-//	Vector3 N = go2->dir;
-//	Vector3 NP = N.Cross(Vector3(0, 0, 1));
-//	float l = go2->scale.y;
-//	float r = go1->scale.x;
-//	float h = go2->scale.x;
-//	if ((w0 - b1).Dot(N) < 0)
-//		N = -N;
-//
-//	Vector3 detect(Math::Clamp((b1 - w0).x, 0.f, h / 2), Math::Clamp((b1 - w0).y, 0.f, l / 2), 0);
-//	detect += w0;
-//
-//	if ((detect - b1).Length() < r)
-//	{
-//		if (!go1->boom)
-//		{
-//			go1->vel.SetZero();
-//			go1->boom = true;
-//
-//			go2->active = false;
-//		}
-//	}
-//}
-
 
 void Scene01::UpdateParticles(double dt)
 {
