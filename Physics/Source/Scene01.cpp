@@ -78,8 +78,6 @@ void Scene01::Init()
 	Enemy* enemy = new Enemy();
 	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(-200.f, 22.f, 0.f), Vector3(10.f, 10.f, 1.f));
 
-<<<<<<< HEAD
-=======
 	GameObject* playerObj = FetchGO();
 	GameObject* bombObj = FetchGO();
 	m_player = Player::GetInstance();
@@ -88,8 +86,6 @@ void Scene01::Init()
 	m_control = new Controller(m_player);
 	m_control->LoadConfig("Data//Config.ini", param_physics);
 
-	
->>>>>>> origin/master
 	enemy->SetPlayerObj(playerObj);
 	enemy->SetBombObj(bombObj);
 	
