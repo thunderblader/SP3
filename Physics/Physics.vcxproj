@@ -189,6 +189,7 @@
     <ClInclude Include="Source\Physics\Collision.h" />
     <ClInclude Include="Source\Physics\Physics.h" />
     <ClInclude Include="Source\Player.h" />
+    <ClInclude Include="Source\PowerUp.h" />
     <ClInclude Include="Source\Scene01.h" />
     <ClInclude Include="Source\SceneBase.h" />
     <ClInclude Include="Source\shader.hpp" />

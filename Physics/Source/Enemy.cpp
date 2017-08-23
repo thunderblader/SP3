@@ -115,7 +115,7 @@ void Enemy::RunYeti(double dt)
 		projList[i]->pos += projList[i]->vel * projSpd * (float)dt;
 
 		if ((playerObj->pos - projList[i]->pos).LengthSquared()
-			<= (playerObj->scale.x + projList[i]->scale.x) * (playerObj->scale.x + projList[i]->scale.x))
+			<= (playerObj->scale.x * 0.5f + projList[i]->scale.x) * (playerObj->scale.x * 0.5f + projList[i]->scale.x))
 		{
 			playerObj->vel *= 0.5f;
 			projList[i]->SetActive(false);
