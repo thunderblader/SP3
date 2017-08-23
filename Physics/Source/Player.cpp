@@ -20,14 +20,14 @@ void Player::Init(GameObject * _playerObj, GameObject * _playerBomb
 	playerBomb->type = GameObject::GO_BOMB;
 	playerBomb->pos = _pos;
 	playerBomb->scale = Vector3(5,5,1);
-	playerBomb->mass = _mass;
+	playerBomb->mass = 5;
 	playerBomb->SetActive(false);
 
 	defaultPos = _pos;
 	m_speed = _spd;
 	jump_boost = _jump_boost;
 	exploded = false;
-
+	bombspin = 0;
 }
 
 void Player::Update(double dt)
@@ -45,11 +45,11 @@ void Player::Update(double dt)
 		}
 		playerBomb->SetActive(true);
 		playerBomb->type = GameObject::GO_BOMB;
-		playerBomb->vel = playerObj->vel;
-		playerBomb->vel *= 3.5;
-		playerBomb->vel.y = 5;
+		playerBomb->vel.x = playerObj->vel.x * 5.0f;
+		playerBomb->vel.y = 100;
 		playerBomb->pos = GetPlayerPos();
 		playerBomb->scale.Set(5, 5, 1);
+		playerBomb->mass = 5;
 		exploded = false;
 		//playerObj->active = false;
 		launched = true;
@@ -59,6 +59,8 @@ void Player::Update(double dt)
 	{
 		//Physics::K1(playerBomb->vel, Vector3(0.f, -9.8f, 0.f), (float)dt, playerBomb->vel);
 		//playerBomb->pos += playerBomb->vel * (float)dt * 40.f;
+		if (launched && !exploded)
+			bombspin += 50*dt;
 		if (playerBomb->pos.y < 0)
 		{
 			playerBomb->SetActive(false);
@@ -71,7 +73,6 @@ void Player::Update(double dt)
 			{
 				playerBomb->SetActive(false);
 				launched = false;
-				playerObj->vel.SetZero();
 				Reset();
 			}
 		}
@@ -95,6 +96,7 @@ void Player::Reset()
 	playerObj->pos = defaultPos;
 	exploded = false;
 	launched = false;
+	playerObj->vel.SetZero();
 }
 
 GameObject Player::GetPlayerObj() const
@@ -130,6 +132,16 @@ bool Player::GetExploded()
 	return exploded;
 }
 
+bool Player::GetLaunched()
+{
+	return launched;
+}
+
+float Player::GetBombspin()
+{
+	return bombspin;
+}
+
 void Player::SetHeightmap(vector<unsigned char>* _heightmap, float _worldWidth, float _worldHeight)
 {
 	m_heightmap = _heightmap;
@@ -143,7 +155,7 @@ void Player::CollisionResponse()
 
 void Player::Move_LeftRight(const double dt, const bool dLeft)
 {
-	if ((!m_heightmap || !playerObj || playerObj->vel.Length() > 10 ||
+	if ((!m_heightmap || !playerObj || playerObj->vel.Length() > 150 ||
 		playerObj->pos.y > (m_TerrainHeight * ReadHeightMap(*m_heightmap,
 		(playerObj->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + playerObj->scale.y * 0.5f))
 		return;
@@ -157,7 +169,7 @@ void Player::Jump(const double dt)
 		playerObj->pos.y > (m_TerrainHeight * ReadHeightMap(*m_heightmap, (playerObj->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + playerObj->scale.y * 0.5f)
 		return;
 
-	playerObj->vel += Vector3(0.f, 300.f + jump_boost, 0.f) * (float)dt * (1.f / playerObj->mass);
+	playerObj->vel += Vector3(0.f, 50.f + jump_boost, 0.f);
 }
 
 void Player::Upgrade(Tree::avl_node &node)

@@ -32,6 +32,8 @@ public:
 	Vector3 GetVel();
 	void SetExploded(bool In);
 	bool GetExploded();
+	bool GetLaunched();
+	float GetBombspin();
 	void SetHeightmap(vector<unsigned char>* _heightmap, float _worldWidth, float _worldHeight);
 
 	virtual void CollisionResponse();
@@ -55,6 +57,7 @@ private:
 	bool launched;
 	float jump_boost;
 	bool exploded;
+	float bombspin;
 };
 
 #endif // !PLAYER_H
