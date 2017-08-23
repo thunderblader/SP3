@@ -61,6 +61,7 @@ private:
 	bool launched;
 	bool exploded;
 	float bombspin;
+	float wait;
 };
 
 #endif // !PLAYER_H
