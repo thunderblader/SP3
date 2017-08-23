@@ -61,7 +61,7 @@ void Scene01::Init()
 	GameObject* playerObj = FetchGO();
 	GameObject* bombObj = FetchGO();
 	m_player = Player::GetInstance();
-	m_player->Init(playerObj, bombObj, GameObject::GO_PLAYER, Vector3(-50, 25, 0), Vector3(5, 4, 1), 5.f, 500.f);
+	m_player->Init(playerObj, bombObj, GameObject::GO_PLAYER, Vector3(-m_TerrainWidth + 10, 1, 0), Vector3(5, 4, 1), 5.f, 500.f);
 	m_player->SetHeightmap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
 	m_control = new Controller(m_player);
 	m_control->LoadConfig("Data//Config.ini", param_physics);
@@ -77,14 +77,6 @@ void Scene01::Init()
 
 	Enemy* enemy = new Enemy();
 	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(-200.f, 22.f, 0.f), Vector3(10.f, 10.f, 1.f));
-
-	GameObject* playerObj = FetchGO();
-	GameObject* bombObj = FetchGO();
-	m_player = Player::GetInstance();
-	m_player->Init(playerObj, bombObj, GameObject::GO_PLAYER, Vector3(-m_TerrainWidth+ 10, 1, 0), Vector3(5, 4, 1), 5.f, 500.f);
-	m_player->SetHeightmap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
-	m_control = new Controller(m_player);
-	m_control->LoadConfig("Data//Config.ini", param_physics);
 
 	enemy->SetPlayerObj(playerObj);
 	enemy->SetBombObj(bombObj);
@@ -252,7 +244,7 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 			go1->vel.SetZero();
 			m_player->SetExploded(true);
 			go2->SetActive(false);
-			//++newlevel;
+			++newlevel;
 		}
 		break;
 	}
