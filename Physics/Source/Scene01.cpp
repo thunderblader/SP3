@@ -270,28 +270,21 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 				m_player->SetExploded(true);
 				go2->SetActive(false);
 			}
-		}
 
-		for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
-		{
-			GameObject *go3 = static_cast<GameObject *>(*it);
-			if (!go3->GetActive())
-				continue;
-
-			if (go3->type == GameObject::GO_BRICK)
+			for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 			{
-				Vector3 pos = go1->pos - go3->pos;
-				pos.x = Math::Clamp(pos.x, 0.f, go3->scale.x);
-				pos.y = Math::Clamp(pos.y, 0.f, go3->scale.y);
+				GameObject *go3 = static_cast<GameObject *>(*it);
+				if (!go3->GetActive())
+					continue;
 
-				pos += go3->pos;
-				if ((pos - go1->pos).Length() > 2.5 && (pos - go1->pos).Length() < 10)
+				if (go3->type == GameObject::GO_BRICK)
 				{
-					float test = (pos - go1->pos).Length();
-					test;
-					float energy = (30 - (pos - go1->pos).Length()) / 30 * 2;
+					Vector3 pos = go1->pos - go3->pos;
+					pos.x = Math::Clamp(pos.x, 0.f, go3->scale.x);
+					pos.y = Math::Clamp(pos.y, 0.f, go3->scale.y);
 
-					if ((pos - go1->pos).Length() > 5 && (pos - go1->pos).Length() < 100)
+					pos += go3->pos;
+					if ((pos - go1->pos).Length() > 2.5 && (pos - go1->pos).Length() < 10)
 					{
 						float energy = (30 - (pos - go1->pos).Length()) / 30 * 10;
 
@@ -301,7 +294,9 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 				}
 			}
 		}
-		++newlevel;
+
+		
+		//++newlevel;
 		break;
 	}
 }
