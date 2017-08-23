@@ -73,7 +73,11 @@ void Scene01::Init()
 	GameObject* playerObj = FetchGO();
 	GameObject* bombObj = FetchGO();
 	m_player = Player::GetInstance();
+<<<<<<< HEAD
 	m_player->Init(playerObj, bombObj, GameObject::GO_BLOCK, Vector3(-m_TerrainWidth+ 10, 1, 0), Vector3(5, 4, 1), 5.f, 500.f);
+=======
+	m_player->Init(playerObj, bombObj, GameObject::GO_PLAYER, Vector3(-50, 25, 0), Vector3(5, 4, 1), 5.f, 500.f);
+>>>>>>> f336ff47bddb494a528bdce3544c359481d532f5
 	m_player->SetHeightmap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
 	m_control = new Controller(m_player);
 	m_control->LoadConfig("Data//Config.ini", param_physics);
@@ -84,22 +88,6 @@ void Scene01::Init()
 	
 	enemy->SetSpriteAnim(meshList[GEO_SPRITE_YETI]);
 	enemyList.push_back(enemy);
-	
-	/*for (int i = 0; i < 7; i++)
-	{
-		for (int j = 0; j < 5; j++)
-		{
-			if (i % 2 == 1 || j % 2 == 1)
-			{
-				GameObject *bricks = FetchGO();
-				bricks->active = true;
-				bricks->type = GameObject::GO_BRICK;
-				bricks->dir.Set(0, 1, 0);
-				bricks->pos.Set(40 + j * 10, 2.5 + 5 * i, 0);
-				bricks->scale.Set(5, 5, 1);
-			}
-		}
-	}*/
 
 	m_particleCount = 0;
 	MAX_PARTICLE = 1000;
@@ -114,11 +102,10 @@ GameObject* Scene01::FetchGO()
 	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;
-		if (!go->GetActive() && go->type != GameObject::GO_BLOCK
+		if (!go->GetActive() && go->type != GameObject::GO_PLAYER
 			&& go->type != GameObject::GO_BOMB && go->type != GameObject::GO_SCREEN)
 		{
 			go->SetActive(true);
-			//++m_objectCount;
 			return go;
 		}
 	}
@@ -126,11 +113,10 @@ GameObject* Scene01::FetchGO()
 	//Exercise 2b: increase object count every time an object is set to active
 	for (unsigned i = 0; i < 10; ++i)
 	{
-		m_goList.push_back(new GameObject(GameObject::GO_BALL));
+		m_goList.push_back(new GameObject(GameObject::GO_NONE));
 	}
 
 	m_goList[m_goList.size() - 1]->SetActive(true);
-	//++m_objectCount;
 
 	return m_goList[m_goList.size() - 1];
 }
@@ -147,24 +133,6 @@ bool Scene01::CheckCollision(GameObject * go1, GameObject * go2, float dt)
 
 		return (rel.Dot(dis) < 0 &&
 			dis.LengthSquared() <= combinedRadiusSq);
-	}
-
-	case GameObject::GO_BLOCK:
-	{
-		Vector3 w0 = go2->pos;
-		Vector3 b1 = go1->pos;
-		Vector3 N = go2->dir;
-		Vector3 NP = go2->dir.Cross(Vector3(0.f, 0.f, 1.f));
-		float r = go1->scale.x;
-		float h = go2->scale.y;
-		float l = go2->scale.x;
-
-		if ((w0 - b1).Dot(N) < 0)
-			N = -N;
-
-		return (go1->vel.Dot(N) > 0 &&
-			abs((w0 - b1).Dot(N)) < r + h * 0.5f) &&
-			(abs((w0 - b1).Dot(NP)) < r + l * 0.5f);
 	}
 
 	case GameObject::GO_PLAYER:
@@ -184,6 +152,7 @@ bool Scene01::CheckCollision(GameObject * go1, GameObject * go2, float dt)
 			abs((w0 - b1).Dot(N)) < r + h * 0.5f) &&
 			(abs((w0 - b1).Dot(NP)) < r + l * 0.5f);
 	}
+
 	case GameObject::GO_BRICK:
 	{
 		Vector3 w0 = go2->pos;
@@ -231,11 +200,6 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 		u2N = u2.Dot(N) * N;
 		go1->vel = u1 + ((2.f * m2) / (m1 + m2)) * (u2N - u1N);
 		go2->vel = u2 + ((2.f * m1) / (m1 + m2)) * (u1N - u2N);
-		break;
-
-	case GameObject::GO_BLOCK:
-		N = go2->dir;
-		go1->vel = go1->vel - (2 * go1->vel.Dot(N)) * N;
 		break;
 
 	case GameObject::GO_PLAYER:
@@ -557,7 +521,7 @@ void Scene01::Update(double dt)
 				if (!go->vel.IsZero())
 				{
 					go->pos += go->vel * static_cast<float>(dt);
-					go->vel += Vector3(0, -9.8f, 0) * dt;
+					go->vel += Vector3(0, -9.8f, 0) * (float)dt;
 					
 					for (std::vector<GameObject *>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
 					{
@@ -570,7 +534,7 @@ void Scene01::Update(double dt)
 								{
 									if (go->pos.y - go2->pos.y <= go->scale.y)
 									{
-										go->vel += Vector3(0, -9.8f, 0) * dt;
+										go->vel += Vector3(0, -9.8f, 0) * (float)dt;
 									}
 								}
 							}
@@ -609,7 +573,7 @@ void Scene01::Update(double dt)
 				}
 			}
 
-			if ((go->type == GameObject::GO_BOMB && !m_player->GetExploded()) || go->type == GameObject::GO_BLOCK)
+			if ((go->type == GameObject::GO_BOMB && !m_player->GetExploded()) || go->type == GameObject::GO_PLAYER)
 			{
 				//go->vel.x = go->vel.x - go->vel.x * 1.f * (float)dt;
 				if (go->vel.Length() < 3)
@@ -636,8 +600,13 @@ void Scene01::Update(double dt)
 					//else
 					tempnormal = Vector3(sin(-theta), cos(-theta), 0).Normalize();
 					go->dir = tempnormal;
+<<<<<<< HEAD
 					go->vel = go->vel - (1.1*go->vel.Dot(tempnormal) * tempnormal);
 					go->vel.x = go->vel.x - go->vel.x * 0.2 * (float)dt; // friction
+=======
+					go->vel = go->vel - (1.1f*go->vel.Dot(tempnormal) * tempnormal);
+					//go->vel.x = go->vel.x - 2.f * (float)dt; // friction
+>>>>>>> f336ff47bddb494a528bdce3544c359481d532f5
 				}
 				/*if ((go->pos.x < 0 + go->scale.x && go->vel.x < 0) || (go->pos.x > m_worldWidth - go->scale.x && go->vel.x > 0))
 				{
@@ -832,19 +801,13 @@ void Scene01::RenderGO(GameObject *go)
 		RenderMesh(meshList[GEO_BALL], false);
 		break;
 
-	case GameObject::GO_BLOCK:
+	case GameObject::GO_PLAYER:
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z+0.1f);
 		if (!m_player->GetExploded())
 			modelStack.Rotate(m_player->GetBombspin()*10 ,0, 0, 1);
 		modelStack.Rotate(Math::RadianToDegree(atan2(go->dir.y, go->dir.x)) + 90, 0.f, 0.f, 1.f);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
 		RenderMesh(meshList[GEO_CART], false);
-		break;
-
-	case GameObject::GO_PLAYER:
-		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
-		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
-		RenderMesh(meshList[GEO_CUBE], false);
 		break;
 
 	case GameObject::GO_ENEMY_SNOWYETI:

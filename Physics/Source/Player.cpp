@@ -56,8 +56,8 @@ void Player::Update(double dt)
 		//Physics::K1(playerBomb->vel, Vector3(0.f, -9.8f, 0.f), (float)dt, playerBomb->vel);
 		//playerBomb->pos += playerBomb->vel * (float)dt * 40.f;
 		if (launched && !exploded)
-			bombspin -= 50*dt;
-		if (playerBomb->pos.y < 0) // if bomb falls of the screen
+			bombspin -= 50*(float)dt;
+		if (playerBomb->pos.y < 0)
 		{
 			//playerBomb->SetActive(false);
 			//Reset();
@@ -69,8 +69,8 @@ void Player::Update(double dt)
 		}
 		if (exploded && playerBomb->scale.x < 10) // if bomb scale lesser than 10 increase its scale
 		{
-			playerBomb->scale = Vector3(playerBomb->scale.x + 10 * dt, playerBomb->scale.y + 10 * dt,1);
-			if (playerBomb->scale.x > 10) // if explosion reachs scale 10
+			playerBomb->scale = Vector3(playerBomb->scale.x + 10 * (float)dt, playerBomb->scale.y + 10 * (float)dt,1);
+			if (playerBomb->scale.x > 10)
 			{
 				//playerObj->SetActive(true);
 				//playerBomb->SetActive(false);
@@ -189,16 +189,16 @@ void Player::Upgrade(Tree::avl_node &node)
 //		playerObj->scale.Set(10, 10, 1);
 //		playerObj->mass = 1.5f;
 		playerObj->scale.Set(playerObj->scale.x + (node.item_count * 1), playerObj->scale.y + (node.item_count * 1), 1);
-		playerObj->mass = 1 + (node.item_count * 0.1);
+		playerObj->mass = 1 + (node.item_count * 0.1f);
 		//m_speed = 20;
 	}
 	else if (node.id == 2)
 	{
-		m_speed = 10 + (node.item_count * 1);
+		m_speed = (float)(10 + (node.item_count * 1));
 	}
 	else if (node.id == 3)
 	{
-		jump_boost = (node.item_count * 30);
+		jump_boost = (float)(node.item_count * 30);
 	}
 	else if (node.id == 4)
 	{
