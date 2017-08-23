@@ -531,25 +531,24 @@ void Scene01::Update(double dt)
 				{
 					go->pos += go->vel * static_cast<float>(dt);
 					go->vel += Vector3(0, -9.8f, 0) * dt;
-					if (go->vel.Length() < 0.1)
-						go->vel.SetZero();
-					//
-					//for (std::vector<GameObject *>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
-					//{
-					//	GameObject *go2 = (GameObject *)*it2;
-					//	if (go2->GetActive())
-					//	{
-					//		if (go2->type == GameObject::GO_BRICK)
-					//		{
-					//			//if (abs(go->pos.x - go2->pos.x) <= go->scale.x && go->pos.y > go2->pos.y)
-					//			//{
-					//			//	if (go->pos.y - go2->pos.y <= go->scale.y)
-					//			//	{
-					//			//		go->vel.y = 0;
-					//			//		go->vel.x = 0 - go->vel.x * dt;
-					//			//	}
-					//			//}
-					//			
+					
+					for (std::vector<GameObject *>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
+					{
+						GameObject *go2 = (GameObject *)*it2;
+						if (go2->GetActive())
+						{
+							if (go2->type == GameObject::GO_BRICK)
+							{
+								if (abs(go->pos.x - go2->pos.x) <= go->scale.x && go->pos.y > go2->pos.y)
+								{
+									if (go->pos.y - go2->pos.y <= go->scale.y)
+									{
+										go->vel += Vector3(0, -9.8f, 0) * dt;
+									}
+								}
+							}
+						}
+					}
 					//			Vector3 pos(Math::Clamp((go2->pos - go->pos).x, -go->scale.x / 2, go->scale.x / 2), Math::Clamp((go2->pos - go->pos).y, -go->scale.x / 2, go->scale.y / 2), 0);
 					//			Vector3 pos2(Math::Clamp((go->pos - go2->pos).x, -go2->scale.x / 2, go2->scale.x / 2), Math::Clamp((go->pos - go2->pos).y, -go2->scale.y / 2, go2->scale.y / /2), /0);
 					//			pos += go->pos;
