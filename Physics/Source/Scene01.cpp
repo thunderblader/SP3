@@ -78,6 +78,22 @@ void Scene01::Init()
 	Enemy* enemy = new Enemy();
 	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(-200.f, 22.f, 0.f), Vector3(10.f, 10.f, 1.f));
 
+<<<<<<< HEAD
+=======
+	GameObject* playerObj = FetchGO();
+	GameObject* bombObj = FetchGO();
+	m_player = Player::GetInstance();
+<<<<<<< HEAD
+	m_player->Init(playerObj, bombObj, GameObject::GO_BLOCK, Vector3(-m_TerrainWidth+ 10, 1, 0), Vector3(5, 4, 1), 5.f, 500.f);
+=======
+	m_player->Init(playerObj, bombObj, GameObject::GO_PLAYER, Vector3(-50, 25, 0), Vector3(5, 4, 1), 5.f, 500.f);
+>>>>>>> f336ff47bddb494a528bdce3544c359481d532f5
+	m_player->SetHeightmap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
+	m_control = new Controller(m_player);
+	m_control->LoadConfig("Data//Config.ini", param_physics);
+
+	
+>>>>>>> origin/master
 	enemy->SetPlayerObj(playerObj);
 	enemy->SetBombObj(bombObj);
 	
@@ -555,8 +571,13 @@ void Scene01::Update(double dt)
 					//else
 					tempnormal = Vector3(sin(-theta), cos(-theta), 0).Normalize();
 					go->dir = tempnormal;
+<<<<<<< HEAD
+					go->vel = go->vel - (1.1*go->vel.Dot(tempnormal) * tempnormal);
+					go->vel.x = go->vel.x - go->vel.x * 0.2 * (float)dt; // friction
+=======
 					go->vel = go->vel - (1.1f*go->vel.Dot(tempnormal) * tempnormal);
 					//go->vel.x = go->vel.x - 2.f * (float)dt; // friction
+>>>>>>> f336ff47bddb494a528bdce3544c359481d532f5
 				}
 				/*if ((go->pos.x < 0 + go->scale.x && go->vel.x < 0) || (go->pos.x > m_worldWidth - go->scale.x && go->vel.x > 0))
 				{
@@ -735,6 +756,7 @@ void Scene01::Update(double dt)
 			//}
 		}
 	}
+
 }
 
 

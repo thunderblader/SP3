@@ -29,6 +29,7 @@ void Player::Init(GameObject * _playerObj, GameObject * _playerBomb
 	blast_strength = _blast;
 	exploded = false;
 	bombspin = 0;
+	wait = 0;
 }
 
 void Player::Update(double dt)
@@ -58,40 +59,52 @@ void Player::Update(double dt)
 			bombspin -= 50*(float)dt;
 		if (playerBomb->pos.y < 0)
 		{
-			playerBomb->SetActive(false);
-			Reset();
+			//playerBomb->SetActive(false);
+			//Reset();
+			wait += 1 * dt;
 		}
-		else if (exploded && playerBomb->scale.x < 10)
+		else if (exploded)
+		{
+			wait += 1 * dt;
+		}
+		if (exploded && playerBomb->scale.x < 10) // if bomb scale lesser than 10 increase its scale
 		{
 			playerBomb->scale = Vector3(playerBomb->scale.x + 10 * (float)dt, playerBomb->scale.y + 10 * (float)dt,1);
 			if (playerBomb->scale.x > 10)
 			{
-				playerBomb->SetActive(false);
-				launched = false;
-				Reset();
+				//playerObj->SetActive(true);
+				//playerBomb->SetActive(false);
+				//launched = false;
+				//Reset();
+				
 			}
 		}
 	}
-	if (!playerBomb->GetActive())
-	{
-		playerBomb->pos.Set(0, playerObj->pos.y, 0);
-		if (launched && !exploded)
-		{
-			playerObj->SetActive(true);
-			launched = false;
-			Reset();
-		}
-	}
+	if (wait > 5)
+		Reset();
+	//if (!playerBomb->GetActive())
+	//{
+	//	playerBomb->pos.Set(0, playerObj->pos.y, 0);
+	//	if (launched && !exploded)
+	//	{
+	//		playerObj->SetActive(true);
+	//		launched = false;
+	//		Reset();
+	//	}
+	//}
 		
 }
 
 void Player::Reset()
 {
 	// Resets player values
+	playerObj->SetActive(true);
+	playerBomb->SetActive(false);
 	playerObj->pos = defaultPos;
 	exploded = false;
 	launched = false;
 	bombspin = 0;
+	wait = 0;
 	playerObj->vel.SetZero();
 }
 
@@ -107,10 +120,11 @@ GameObject Player::GetPlayerBomb() const
 
 Vector3 Player::GetPlayerPos()
 {
-	if(!launched)
-		return playerObj->pos;
-	else
+	
+		
+	if (launched && wait < 5)
 		return playerBomb->pos;
+	return playerObj->pos;
 }
 
 Vector3 Player::GetVel()
