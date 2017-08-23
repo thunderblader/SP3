@@ -22,6 +22,7 @@ void Load_File::Init(vector<GameObject *>*Gameobj)
 
 bool Load_File::Load(bool checker, const string saveFileName)
 {
+	Unit_Height_Space = 0;
 	ifstream myfile(saveFileName.c_str(), ios::in);
 	if (myfile.is_open())
 	{

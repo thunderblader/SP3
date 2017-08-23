@@ -249,6 +249,14 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 		break;
 
 	case GameObject::GO_BRICK:
+		if (!m_player->GetExploded())
+		{
+			go1->vel.SetZero();
+			m_player->SetExploded(true);
+			go2->SetActive(false);
+			++newlevel;
+		}
+
 		Vector3 w0 = go2->pos;
 		Vector3 b1 = go1->pos;
 		Vector3 N = go2->dir;
@@ -261,15 +269,10 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 
 		Vector3 detect(Math::Clamp((b1 - w0).x, 0.f, h / 2), Math::Clamp((b1 - w0).y, 0.f, l / 2), 0);
 		detect += w0;
-
+		
 		if ((detect - b1).Length() < r)
 		{
-			if (!m_player->GetExploded())
-			{
-				go1->vel.SetZero();
-				m_player->SetExploded(true);
-				go2->SetActive(false);
-			}
+			
 
 			for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 			{
@@ -384,8 +387,7 @@ void Scene01::Update(double dt)
 		for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 		{
 			GameObject *go = (GameObject *)*it;
-			if (go->GetActive() && go->type != GameObject::GO_BLOCK
-				&& go->type != GameObject::GO_BOMB && go->type != GameObject::GO_SCREEN)
+			if (go->GetActive() && go->type == GameObject::GO_BRICK)
 			{
 				go->SetActive(false);
 			}
@@ -953,7 +955,7 @@ void Scene01::Render()
 		screen->type = GameObject::GO_SCREEN;
 		screen->dir.Set(0, 1, 0);
 		screen->pos.Set(camera.position.x + 65, camera.position.y + 50, 1);
-		screen->scale.Set(100, 85, 1);
+		screen->scale.Set((float)Application::GetWindowWidth(), 85, 1);
 
 		ss.str("");
 		ss << "Shop";
