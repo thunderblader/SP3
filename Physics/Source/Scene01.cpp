@@ -984,7 +984,7 @@ void Scene01::Render()
 		screen->type = GameObject::GO_SCREEN;
 		screen->dir.Set(0, 1, 0);
 		screen->pos.Set(camera.position.x + 65, camera.position.y + 50, 1);
-		screen->scale.Set(100, 85, 1);
+		screen->scale.Set((float)Application::GetWindowWidth(), 85, 1);
 
 		ss.str("");
 		ss << "Shop";
