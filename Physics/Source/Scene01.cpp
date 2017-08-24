@@ -7,6 +7,8 @@
 #include "Terrain\LoadHmap.h"
 #include "Physics\Physics.h"
 #include "Particle\Particle.h"
+#include "MeshBuilder.h"
+#include "LoadTGA.h"
 
 #include <sstream>
 #include <fstream>
@@ -382,6 +384,10 @@ void Scene01::Update(double dt)
 		leveltext += to_string(currlevel);
 		leveltext += ".csv";
 		file.Load(false, leveltext);
+		leveltext = "Image//heightmap";
+		leveltext += ".raw";
+		meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", leveltext, m_heightMap);
+		meshList[GEO_TERRAIN]->textureID = LoadTGA("Image//terrain.tga");
 	}
 	SceneBase::Update(dt);
 	if (KeyboardController::GetInstance()->IsKeyPressed('I'))
@@ -558,7 +564,7 @@ void Scene01::Update(double dt)
 					go->pos += go->vel * (float)dt;
 				}
 				Physics::K1(go->vel, Vector3(wind / go->mass, -9.8f * go->mass * 2.f, 0), (float)dt, go->vel);
-				if (go->pos.y <= (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + go->scale.y * 0.5f && go->pos.x < 0 && go->pos.x > -m_TerrainWidth)
+				if (go->pos.y <= (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + go->scale.y * 0.5f && go->pos.x < 0 - go->scale.x && go->pos.x > -m_TerrainWidth)
 				{
 					go->pos.y = (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + go->scale.y * 0.5f;
 					float backCart = ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth * 0.5f) - go->scale.x * 0.5f) / m_TerrainWidth, 0.f);

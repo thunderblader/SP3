@@ -117,8 +117,8 @@ void SceneBase::Init()
 
 	meshList[GEO_BACKGROUND] = MeshBuilder::GenerateQuad("background", Color(0.f, 0.f, 0.f), 1.f);
 	meshList[GEO_BACKGROUND]->textureID = LoadTGA("Image//background.tga");
-	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmap2.raw", m_heightMap);
-	meshList[GEO_TERRAIN]->textureID = LoadTGA("Image//moss1.tga");
+	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmap1.raw", m_heightMap);
+	meshList[GEO_TERRAIN]->textureID = LoadTGA("Image//terrain.tga");
 	meshList[GEO_CART] = MeshBuilder::GenerateQuad("cart", Color(0.f, 0.f, 0.f), 1.f);
 	meshList[GEO_CART]->textureID = LoadTGA("Image//cart.tga");
 	meshList[GEO_BRICK] = MeshBuilder::GenerateQuad("brick", Color(0.f, 0.f, 0.f), 1.f);
