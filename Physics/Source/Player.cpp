@@ -4,7 +4,7 @@
 
 void Player::Init(GameObject * _playerObj, GameObject * _playerBomb
 	, GameObject::GAMEOBJECT_TYPE _type
-	, Vector3 _pos, Vector3 _scale, float _mass, float _spd, float _jump_boost, float _blast)
+	, Vector3 _pos, Vector3 _scale, float _mass, float _spd, float _speedlimit, float _jump_boost, float _blast)
 {
 	playerObj = _playerObj;
 	playerObj->type = _type;
@@ -32,6 +32,7 @@ void Player::Init(GameObject * _playerObj, GameObject * _playerBomb
 	exploded = false;
 	bombspin = 0;
 	wait = 0;
+	speedlimit = _speedlimit;
 }
 
 void Player::Update(double dt)
@@ -173,7 +174,7 @@ void Player::CollisionResponse()
 
 void Player::Move_LeftRight(const double dt, const bool dLeft)
 {
-	if ((!m_heightmap || !playerObj || playerObj->vel.Length() > 100 ||
+	if ((!m_heightmap || !playerObj || playerObj->vel.Length() > speedlimit ||
 		playerObj->pos.y > (m_TerrainHeight * ReadHeightMap(*m_heightmap,
 		(playerObj->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + playerObj->scale.y * 0.5f))
 		return;
