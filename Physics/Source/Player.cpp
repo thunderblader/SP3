@@ -38,14 +38,20 @@ void Player::Update(double dt)
 {
 	if (!playerObj)
 		return;
-
+	if (playerObj->pos.x - playerObj->scale.x *0.6f< -m_TerrainWidth)
+	{
+		playerObj->pos.x = -m_TerrainWidth + playerObj->scale.x*0.6f+0.1f;
+	}
 	// Player Physics can be done here
-	if (playerObj->pos.x >= -playerObj->scale.x * 2 && !launched)
+	if (playerObj->pos.x >= -playerObj->scale.x && !launched)
 	{
 		playerBomb->SetActive(true);
 		playerBomb->type = GameObject::GO_BOMB;
 		playerBomb->vel.x = playerObj->vel.x * 5.0f;
 		playerBomb->vel.y = 200;
+		playerBomb->vel.y = abs(playerObj->vel.y);
+		playerBomb->vel.x = playerObj->vel.x;
+		playerBomb->vel = playerBomb->vel.Normalized() * playerObj->vel.Length() * 5;
 		playerBomb->pos = GetPlayerPos();
 		playerBomb->scale.Set(5, 5, 1);
 		playerBomb->mass = 5;
