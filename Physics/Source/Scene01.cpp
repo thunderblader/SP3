@@ -530,6 +530,14 @@ void Scene01::Update(double dt)
 		GameObject *go = (GameObject *)*it;
 		if (go->GetActive())
 		{
+			if (go->type == GameObject::GO_BRICK)
+			{
+				if (!go->vel.IsZero())
+				{
+					go->pos += go->vel * static_cast<float>(dt);
+					go->vel += Vector3(0, param_physics.gravity, 0) * (float)dt;
+				}
+			}
 			if ((go->type == GameObject::GO_BOMB && !m_player->GetExploded()) || go->type == GameObject::GO_PLAYER)
 			{
 				//go->vel.x = go->vel.x - go->vel.x * 1.f * (float)dt;
