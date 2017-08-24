@@ -152,7 +152,7 @@ bool Scene01::CheckCollision(GameObject * go1, GameObject * go2, float dt)
 
 	case GameObject::GO_BRICK:
 	{
-		if (go1->type != GameObject::GO_PLAYER)
+		if (go1->type == GameObject::GO_BOMB)
 		{
 			Vector3 w0 = go2->pos;
 			Vector3 b1 = go1->pos;
