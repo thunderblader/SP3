@@ -21,10 +21,12 @@ public:
 
 	int GetCurAnimFrame() const;
 	bool GetActive() const;
+	bool GetProjFired() const;
 
 	void SetPlayerObj(GameObject* _playerObj);
 	void SetBombObj(GameObject* _bombObj);
 	void SetSpriteAnim(Mesh* _sprite);
+	void SetProjFired(bool _projFired);
 
 	void PushProjectile(GameObject* _projObj, Vector3 _scale, float _spd);
 
@@ -50,6 +52,7 @@ private:
 
 	vector<GameObject*> projList;
 	float projSpd;
+	bool projFired;
 };
 
 #endif // !ENEMY_H

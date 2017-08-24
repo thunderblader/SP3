@@ -80,27 +80,24 @@ void Scene01::Init()
 
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
-	Enemy* enemy = new Enemy();
-	enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(-200.f, 22.f, 0.f), Vector3(10.f, 10.f, 1.f));
+	Enemy* enemy;
+	float rX = -m_TerrainWidth + 200.f;
+	float rY;
+
+	for (unsigned i = 0; rX < -200.f; ++i)
+	{
+		rX += Math::RandFloatMinMax(100.f, 200.f);
+		rY = Math::RandFloatMinMax(50.f, 70.f);
+		enemy = new Enemy();
+		enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(rX, rY, 0.f), Vector3(10.f, 10.f, 1.f));
+		enemy->SetSpriteAnim(meshList[GEO_SPRITE_YETI]);
+		enemyList.push_back(enemy);
+	}
 
 	enemy->SetPlayerObj(playerObj);
 	enemy->SetBombObj(bombObj);
-	enemy->SetSpriteAnim(meshList[GEO_SPRITE_YETI]);
-	enemyList.push_back(enemy);
 
-	GameObject* obj;
-	float rX = -m_TerrainWidth + 50.f;
-	float rY;
-	for (unsigned i = 0; rX < -100.f; ++i)
-	{
-		obj = FetchGO();
-		obj->type = (GameObject::GAMEOBJECT_TYPE)Math::RandIntMinMax(GameObject::GO_PU_SPEED, GameObject::GO_PU_POWER);
-		obj->SetActive(true);
-		rX += Math::RandFloatMinMax(30.f, 100.f);
-		rY = Math::RandFloatMinMax(15.f, 20.f);
-		obj->pos.Set(rX, m_TerrainHeight * ReadHeightMap(m_heightMap, (rX + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f) + rY, 0.f);
-		obj->scale.Set(5.f, 5.f, 5.f);
-	}
+	SpawnPowerups();
 
 	m_objectCount = &playerObj->m_totalGameObjects;
 	m_particleCount = 0;
@@ -110,6 +107,8 @@ void Scene01::Init()
 
 	display = true;
 	menustate = MENU;
+
+	debug = false;
 }
 
 GameObject* Scene01::FetchGO()
@@ -381,15 +380,19 @@ void Scene01::Update(double dt)
 	if (newlevel != currlevel && !m_player->GetExploded())
 	{
 		currlevel = newlevel;
+		m_tries = 3;
+
 		for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 		{
 			GameObject *go = (GameObject *)*it;
-			if (go->GetActive() && go->type == GameObject::GO_BRICK)
+			if (go->GetActive() && go->type != GameObject::GO_BOMB
+				&& go->type != GameObject::GO_PLAYER && go->type != GameObject::GO_ENEMY_SNOWYETI)
 			{
 				go->SetActive(false);
-				go->type = GameObject::GO_BALL;
+				go->type = GameObject::GO_NONE;
 			}
 		}
+
 		std::string leveltext = "Image//Level0";
 		leveltext += to_string(currlevel);
 		leveltext += ".csv";
@@ -400,9 +403,13 @@ void Scene01::Update(double dt)
 		meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", leveltext, m_heightMap);
 		meshList[GEO_TERRAIN]->textureID = LoadTGA("Image//terrain.tga");
 
+		SpawnPowerups();
+
 		wind = Math::RandFloatMinMax(-10, 10);
 	}
+
 	SceneBase::Update(dt);
+
 	if (KeyboardController::GetInstance()->IsKeyPressed('I'))
 	{
 		if (in_shop == false)
@@ -425,12 +432,16 @@ void Scene01::Update(double dt)
 
 	if (KeyboardController::GetInstance()->IsKeyPressed('L'))
 	{
-		++Score;
 		//file.Save_Data(Level, Score, Gold);
 	}
 	if (KeyboardController::GetInstance()->IsKeyPressed('K'))
 	{
 		//file.Load_Data();
+	}
+
+	if (KeyboardController::GetInstance()->IsKeyPressed('8'))
+	{
+		debug = !debug;
 	}
 
 	if (KeyboardController::GetInstance()->IsKeyPressed('9'))
@@ -445,14 +456,14 @@ void Scene01::Update(double dt)
 	m_player->Update(dt);
 	m_control->Update(dt);
 
-	static bool enemyFired = false;
-	if (enemyList[0]->GetCurAnimFrame() == 11 && !enemyFired) // Debug key snow yeti shooting
-	{
-		enemyList[0]->PushProjectile(FetchGO(), Vector3(1.f, 1.f, 1.f), 30.f);
-		enemyFired = true;
-	}
-	else if (enemyList[0]->GetCurAnimFrame() == 12)
-		enemyFired = false;
+	//static bool enemyFired = false;
+	//if (enemyList[0]->GetCurAnimFrame() == 11 && !enemyFired) // Debug key snow yeti shooting
+	//{
+	//	enemyList[0]->PushProjectile(FetchGO(), Vector3(1.f, 1.f, 1.f), 30.f);
+	//	enemyFired = true;
+	//}
+	//else if (enemyList[0]->GetCurAnimFrame() == 12)
+	//	enemyFired = false;
 
 	vector<Enemy*>::iterator it, end;
 	end = enemyList.end();
@@ -798,7 +809,7 @@ void Scene01::Render()
 	for (int i = -4; i < 4; ++i)
 	{
 		modelStack.PushMatrix();
-		modelStack.Translate((m_worldHeight * 2.f - 0.2f) * (1 + i) + (m_player->GetPlayerPos().x / m_TerrainWidth) * 600.f, m_worldHeight * 0.5f, -1.f);
+		modelStack.Translate((m_worldHeight * 2.f - 0.2f) * (1 + i) + (camera.position.x / m_TerrainWidth) * 600.f, m_worldHeight * 0.5f, -1.f);
 		modelStack.Scale(m_worldHeight * 2.f, m_worldHeight, 1.f);
 		RenderMesh(meshList[GEO_BACKGROUND], false);
 		modelStack.PopMatrix();
@@ -842,23 +853,26 @@ void Scene01::Render()
 	std::ostringstream ss;
 	if (in_shop == false)
 	{
-		ss.str("");
-		ss << "Pos Offset: " << (m_player->GetPlayerPos().x / m_TerrainWidth);
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 12);
+		if (debug)
+		{
+			ss.str("");
+			ss << "Pos Offset: " << (m_player->GetPlayerPos().x / m_TerrainWidth);
+			RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 12);
 
-		ss.str("");
-		ss << "Objects: " << *m_objectCount;
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 9);
+			ss.str("");
+			ss << "Objects: " << *m_objectCount;
+			RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 9);
 
-		ss.precision(3);
-		ss.str("");
-		ss << "Speed: " << m_player->GetVel().Length();
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 6);
+			ss.precision(3);
+			ss.str("");
+			ss << "Speed: " << m_player->GetVel().Length();
+			RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 6);
 
-		ss.precision(5);
-		ss.str("");
-		ss << "FPS: " << fps;
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 3);
+			ss.precision(5);
+			ss.str("");
+			ss << "FPS: " << fps;
+			RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 3);
+		}
 	}
 	else
 	{
@@ -976,6 +990,23 @@ void Scene01::RenderHUD()
 			break;
 		default: break;
 		}
+	}
+}
+
+void Scene01::SpawnPowerups()
+{
+	GameObject* obj;
+	float rX = -m_TerrainWidth + 50.f;
+	float rY;
+	for (unsigned i = 0; rX < -100.f; ++i)
+	{
+		obj = FetchGO();
+		obj->type = (GameObject::GAMEOBJECT_TYPE)Math::RandIntMinMax(GameObject::GO_PU_SPEED, GameObject::GO_PU_POWER);
+		obj->SetActive(true);
+		rX += Math::RandFloatMinMax(30.f, 100.f);
+		rY = Math::RandFloatMinMax(15.f, 20.f);
+		obj->pos.Set(rX, m_TerrainHeight * ReadHeightMap(m_heightMap, (rX + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f) + rY, 0.f);
+		obj->scale.Set(5.f, 5.f, 5.f);
 	}
 }
 
