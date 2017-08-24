@@ -36,7 +36,7 @@ void Scene01::Init()
 	m_worldHeight = 100.f;
 	m_worldWidth = m_worldHeight * (float)Application::GetWindowWidth() / Application::GetWindowHeight();
 
-	m_TerrainHeight = 20.f;
+	m_TerrainHeight = 30.f;
 	m_TerrainWidth = 1000;
 
 	m_speed = 40.f;
@@ -101,7 +101,7 @@ void Scene01::Init()
 	m_particleCount = 0;
 	MAX_PARTICLE = 1000;
 
-	wind = -10;
+	wind = Math::RandFloatMinMax(-10,10);
 
 	display = true;
 	menustate = MENU;
@@ -310,7 +310,7 @@ void Scene01::UpdateParticles(double dt)
 			ParticleObject* particle = GetParticle();
 			particle->type = ParticleObject_TYPE::P_RAIN;
 			particle->scale.Set(1, 3, 1);
-			particle->vel.Set(Math::RandFloatMinMax(-5.f, -4.f), -9.8f, 0.f);
+			particle->vel.Set(Math::RandFloatMinMax(wind - 1, wind + 1), -9.8f, 0.f);
 			particle->rotationSpeed = 0;
 			particle->rotation = Math::RadianToDegree(atan2(particle->vel.Normalized().y, particle->vel.Normalized().x)) - 270;
 			particle->pos.Set(Math::RandFloatMinMax(-m_TerrainWidth*1.5f, m_TerrainWidth*1.5f), m_worldHeight*1.5f, 0);
@@ -385,9 +385,12 @@ void Scene01::Update(double dt)
 		leveltext += ".csv";
 		file.Load(false, leveltext);
 		leveltext = "Image//heightmap";
+		leveltext += to_string(currlevel);
 		leveltext += ".raw";
 		meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", leveltext, m_heightMap);
 		meshList[GEO_TERRAIN]->textureID = LoadTGA("Image//terrain.tga");
+
+		wind = Math::RandFloatMinMax(-10, 10);
 	}
 	SceneBase::Update(dt);
 	if (KeyboardController::GetInstance()->IsKeyPressed('I'))
