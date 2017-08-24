@@ -67,6 +67,24 @@ public:
 		GEO_PARTICLE_EXPLOSION,
 		GEO_BOSS,
 
+		GEO_HUD_SCORE,
+		GEO_HUD_LEVEL1,
+		GEO_HUD_LEVEL2,
+		GEO_HUD_LEVEL3,
+		GEO_HUD_LEVEL4,
+		GEO_HUD_LEVEL5,
+		GEO_HUD_CHANCE,
+		GEO_NO_1,
+		GEO_NO_2,
+		GEO_NO_3,
+		GEO_NO_4,
+		GEO_NO_5,
+		GEO_NO_6,
+		GEO_NO_7,
+		GEO_NO_8,
+		GEO_NO_9,
+		GEO_NO_0,
+
 		GEO_MENU,
 		GEO_MENU2,
 		GEO_MENU3,
@@ -103,7 +121,7 @@ public:
 	void RenderText(Mesh* mesh, std::string text, Color color);
 	void RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y);
 	void RenderMesh(Mesh *mesh, bool enableLight);
-	void RenderMeshIn2D(Mesh *mesh, bool enableLight, float sizeX = 1.f, float sizeY = 1.f, float x = 0.0f, float y = 0.0f);
+	void RenderMeshIn2D(Mesh *mesh, bool enableLight, double m_width = 160, double m_height = 120, float sizeX = 1.f, float sizeY = 1.f, float x = 0.0f, float y = 0.0f);
 	void RenderGO(GameObject *go);
 
 	GameObject* FetchGO();

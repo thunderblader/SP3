@@ -48,6 +48,7 @@ void Scene01::Init()
 	m_ballCount = 0;
 
 	m_tries = 3;
+	Score = 0;
 	time_limit = 0;
 	item_id = 0;
 
@@ -424,6 +425,7 @@ void Scene01::Update(double dt)
 
 	if (KeyboardController::GetInstance()->IsKeyPressed('L'))
 	{
+		++Score;
 		//file.Save_Data(Level, Score, Gold);
 	}
 	if (KeyboardController::GetInstance()->IsKeyPressed('K'))
@@ -905,13 +907,75 @@ void Scene01::Render()
 
 void Scene01::RenderHUD()
 {
-	std::ostringstream ss;
-	ss.precision(6);
-	ss << "Chances:";
-	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0.5f, 55.8f);
+	float scaleX, scaleY;
+	scaleX = 20.f;
+	scaleY = 10.f;
+
+	RenderMeshIn2D(meshList[GEO_HUD_CHANCE], false, m_worldWidth, m_worldHeight, scaleX, scaleY, scaleX * 0.5f + 0.5f, m_worldHeight - scaleY * 0.5f);
 	for (unsigned int i = 0; i < m_tries; ++i)
 	{
-		RenderMeshIn2D(meshList[GEO_CART], false, 5.5f, 4.f, -5.5f + (i * 1.5f), 13.5f);
+		RenderMeshIn2D(meshList[GEO_CART], false, m_worldWidth, m_worldHeight, 5.f, 4.f, 25.5f + (i * 8.f), m_worldHeight - 5.5f);
+	}
+
+	switch (currlevel)
+	{
+	case 1:
+		RenderMeshIn2D(meshList[GEO_HUD_LEVEL1], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.5f, m_worldHeight - scaleY - scaleY * 0.5f);
+		break;
+	case 2:
+		RenderMeshIn2D(meshList[GEO_HUD_LEVEL2], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.5f, m_worldHeight - scaleY - scaleY * 0.5f);
+		break;
+	case 3:
+		RenderMeshIn2D(meshList[GEO_HUD_LEVEL3], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.5f, m_worldHeight - scaleY - scaleY * 0.5f);
+		break;
+	case 4:
+		RenderMeshIn2D(meshList[GEO_HUD_LEVEL4], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.5f, m_worldHeight - scaleY - scaleY * 0.5f);
+		break;
+	case 5:
+		RenderMeshIn2D(meshList[GEO_HUD_LEVEL5], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.5f, m_worldHeight - scaleY - scaleY * 0.5f);
+		break;
+	default: break;
+	}
+
+	string ss = to_string(Score);
+	RenderMeshIn2D(meshList[GEO_HUD_SCORE], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.5f, m_worldHeight - 5.f);
+
+	for (int i = 0; i < ss.size(); ++i)
+	{
+		switch (ss[i])
+		{
+		case '1':
+			RenderMeshIn2D(meshList[GEO_NO_1], false, m_worldWidth, m_worldHeight, scaleY, scaleY, m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f), m_worldHeight - 5.f);
+			break;
+		case '2': 
+			RenderMeshIn2D(meshList[GEO_NO_2], false, m_worldWidth, m_worldHeight, scaleY, scaleY, m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f), m_worldHeight - 5.f);
+			break;
+		case '3': 
+			RenderMeshIn2D(meshList[GEO_NO_3], false, m_worldWidth, m_worldHeight, scaleY, scaleY, m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f), m_worldHeight - 5.f);
+			break;
+		case '4': 
+			RenderMeshIn2D(meshList[GEO_NO_4], false, m_worldWidth, m_worldHeight, scaleY, scaleY, m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f), m_worldHeight - 5.f);
+			break;
+		case '5': 
+			RenderMeshIn2D(meshList[GEO_NO_5], false, m_worldWidth, m_worldHeight, scaleY, scaleY, m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f), m_worldHeight - 5.f);
+			break;
+		case '6': 
+			RenderMeshIn2D(meshList[GEO_NO_6], false, m_worldWidth, m_worldHeight, scaleY, scaleY, m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f), m_worldHeight - 5.f);
+			break;
+		case '7': 
+			RenderMeshIn2D(meshList[GEO_NO_7], false, m_worldWidth, m_worldHeight, scaleY, scaleY, m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f), m_worldHeight - 5.f);
+			break;
+		case '8': 
+			RenderMeshIn2D(meshList[GEO_NO_8], false, m_worldWidth, m_worldHeight, scaleY, scaleY, m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f), m_worldHeight - 5.f);
+			break;
+		case '9': 
+			RenderMeshIn2D(meshList[GEO_NO_9], false, m_worldWidth, m_worldHeight, scaleY, scaleY, m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f), m_worldHeight - 5.f);
+			break;
+		case '0': 
+			RenderMeshIn2D(meshList[GEO_NO_0], false, m_worldWidth, m_worldHeight, scaleY, scaleY, m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f), m_worldHeight - 5.f);
+			break;
+		default: break;
+		}
 	}
 }
 
