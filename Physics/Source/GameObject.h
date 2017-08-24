@@ -24,7 +24,6 @@ public:
 		GO_BOMB,
 		GO_BOSS,
 		GO_SCREEN,
-		GO_MENU,
 		GO_TOTAL //must be last
 	};
 

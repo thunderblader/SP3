@@ -95,9 +95,15 @@ protected:
 		OPTIONS,
 		OPTIONS2,
 
-		INSTRUCTIONS
+		INSTRUCTIONS,
+
+		LEVEL1,
+		LEVEL2,
+		LEVEL3,
+		LEVEL4,
+		LEVEL5,
+		LEVELBACK,
 	} menustate;
-	float menuBounce;
 	bool display;
 
 	// Physics Parameters

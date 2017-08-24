@@ -149,7 +149,7 @@ void Application::Exit()
 {
 	//Close OpenGL window and terminate GLFW
 	glfwDestroyWindow(m_window);
-	//Finalize and clean up GLFW
+	//Finalize and clean up GLFW	
 	glfwTerminate();
 }
 
