@@ -115,6 +115,8 @@ void SceneBase::Init()
 	meshList[GEO_TEXT]->textureID = LoadTGA("Image//calibri.tga");
 	meshList[GEO_TEXT]->material.kAmbient.Set(1, 0, 0);
 
+	meshList[GEO_FOREGROUND] = MeshBuilder::GenerateQuad("foreground", Color(0.f, 0.f, 0.f), 1.f);
+	meshList[GEO_FOREGROUND]->textureID = LoadTGA("Image//foreground.tga");
 	meshList[GEO_BACKGROUND] = MeshBuilder::GenerateQuad("background", Color(0.f, 0.f, 0.f), 1.f);
 	meshList[GEO_BACKGROUND]->textureID = LoadTGA("Image//background.tga");
 	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmap1.raw", m_heightMap);

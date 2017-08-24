@@ -86,14 +86,16 @@ void Scene01::Init()
 	enemyList.push_back(enemy);
 
 	GameObject* obj;
-	for (unsigned i = 0; i < 10; ++i)
+	float rX = -m_TerrainWidth + 50.f;
+	float rY;
+	for (unsigned i = 0; rX < -100.f; ++i)
 	{
 		obj = FetchGO();
 		obj->type = (GameObject::GAMEOBJECT_TYPE)Math::RandIntMinMax(GameObject::GO_PU_SPEED, GameObject::GO_PU_POWER);
 		obj->SetActive(true);
-		float rX = Math::RandFloatMinMax(50.f, m_TerrainWidth - 50.f);
-		float rY = Math::RandFloatMinMax(15.f, 20.f);
-		obj->pos.Set(-rX, ReadHeightMap(m_heightMap, (-rX + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f) + rY, 0.f);
+		rX += Math::RandFloatMinMax(30.f, 100.f);
+		rY = Math::RandFloatMinMax(15.f, 20.f);
+		obj->pos.Set(rX, m_TerrainHeight * ReadHeightMap(m_heightMap, (rX + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f) + rY, 0.f);
 		obj->scale.Set(5.f, 5.f, 5.f);
 	}
 
@@ -811,9 +813,18 @@ void Scene01::Render()
 	for (int i = -4; i < 4; ++i)
 	{
 		modelStack.PushMatrix();
-		modelStack.Translate((m_worldHeight * 2.f) * (1 + i) + (m_player->GetPlayerPos().x / m_TerrainWidth) * 600.f, m_worldHeight * 0.5f, -1.f);
+		modelStack.Translate((m_worldHeight * 2.f - 0.2f) * (1 + i) + (m_player->GetPlayerPos().x / m_TerrainWidth) * 600.f, m_worldHeight * 0.5f, -1.f);
 		modelStack.Scale(m_worldHeight * 2.f, m_worldHeight, 1.f);
 		RenderMesh(meshList[GEO_BACKGROUND], false);
+		modelStack.PopMatrix();
+	}
+
+	for (int i = -5; i < 5; ++i)
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate((m_worldHeight * 2.f - .5f) * (1 + i) + (m_player->GetPlayerPos().x / m_TerrainWidth) * 300.f, m_worldHeight * 0.4f, -0.8f);
+		modelStack.Scale(m_worldHeight * 2.f, m_worldHeight, 1.f);
+		RenderMesh(meshList[GEO_FOREGROUND], false);
 		modelStack.PopMatrix();
 	}
 

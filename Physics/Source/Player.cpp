@@ -38,10 +38,13 @@ void Player::Update(double dt)
 {
 	if (!playerObj)
 		return;
+
 	if (playerObj->pos.x - playerObj->scale.x *0.6f< -m_TerrainWidth)
 	{
 		playerObj->pos.x = -m_TerrainWidth + playerObj->scale.x*0.6f+0.1f;
+		playerObj->vel.x = -playerObj->vel.x * 0.1f;
 	}
+
 	// Player Physics can be done here
 	if (playerObj->pos.x >= -playerObj->scale.x && !launched)
 	{
