@@ -154,19 +154,22 @@ bool Scene01::CheckCollision(GameObject * go1, GameObject * go2, float dt)
 
 	case GameObject::GO_BRICK:
 	{
-		Vector3 w0 = go2->pos;
-		Vector3 b1 = go1->pos;
-		Vector3 N = go2->dir.Normalized();
-		Vector3 NP = go2->dir.Cross(Vector3(0, 0, 1));
-		float r = go1->scale.x;
-		float h = go2->scale.x;
-		float l = go2->scale.y;
-		if ((w0 - b1).Dot(N) < 0)
-			N = -N;
+		if (go1->type == GameObject::GO_PLAYER)
+		{
+			Vector3 w0 = go2->pos;
+			Vector3 b1 = go1->pos;
+			Vector3 N = go2->dir.Normalized();
+			Vector3 NP = go2->dir.Cross(Vector3(0, 0, 1));
+			float r = go1->scale.x;
+			float h = go2->scale.x;
+			float l = go2->scale.y;
+			if ((w0 - b1).Dot(N) < 0)
+				N = -N;
 
-		return go1->vel.Dot(N) > 0 && 
-			(abs((w0 - b1).Dot(N)) < (r + h * 0.5f)) && 
-			(abs((w0 - b1).Dot(NP)) < (r + l * 0.5f));
+			return go1->vel.Dot(N) > 0 &&
+				(abs((w0 - b1).Dot(N)) < (r + h * 0.5f)) &&
+				(abs((w0 - b1).Dot(NP)) < (r + l * 0.5f));
+		}
 	}
 
 	case GameObject::GO_PU_SPEED:
@@ -826,7 +829,7 @@ void Scene01::Render()
 	for (int i = -5; i < 5; ++i)
 	{
 		modelStack.PushMatrix();
-		modelStack.Translate((m_worldHeight * 2.f - .5f) * (1 + i) + (m_player->GetPlayerPos().x / m_TerrainWidth) * 300.f, m_worldHeight * 0.4f, -0.8f);
+		modelStack.Translate((m_worldHeight * 2.f - .5f) * (1 + i) + (camera.position.x / m_TerrainWidth) * 300.f, m_worldHeight * 0.4f, -0.8f);
 		modelStack.Scale(m_worldHeight * 2.f, m_worldHeight, 1.f);
 		RenderMesh(meshList[GEO_FOREGROUND], false);
 		modelStack.PopMatrix();
@@ -848,6 +851,12 @@ void Scene01::Render()
 		RenderMesh(meshList[GEO_TERRAIN], false);
 		modelStack.PopMatrix();
 	}
+
+	modelStack.PushMatrix();
+	modelStack.Translate(60, 0, -0.1);
+	modelStack.Scale(50, 25, 1); // values varies.
+	RenderMesh(meshList[GEO_CLIFF], false);
+	modelStack.PopMatrix();
 
 	RenderAllParticles();
 	RenderHUD();

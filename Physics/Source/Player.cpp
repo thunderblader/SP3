@@ -186,7 +186,7 @@ void Player::Move_LeftRight(const double dt, const bool dLeft)
 
 void Player::Jump(const double dt)
 {
-	if (!m_heightmap || !playerObj ||
+	if (!m_heightmap || !playerObj || launched ||
 		playerObj->pos.y > (m_TerrainHeight * ReadHeightMap(*m_heightmap, (playerObj->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + playerObj->scale.y * 0.5f)
 		return;
 
