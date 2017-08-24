@@ -41,9 +41,9 @@ void Scene01::Init()
 
 	Math::InitRNG();
 
-	//m_objectCount = 0;
 	m_ballCount = 0;
 
+	m_tries = 3;
 	time_limit = 0;
 	item_id = 0;
 
@@ -83,16 +83,22 @@ void Scene01::Init()
 	enemy->SetSpriteAnim(meshList[GEO_SPRITE_YETI]);
 	enemyList.push_back(enemy);
 
-	GameObject* obj = FetchGO();
-	obj->type = GameObject::GO_PU_SPEED;
-	obj->SetActive(true);
-	obj->pos.Set(-100.f, ReadHeightMap(m_heightMap, (-100 + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f) + 20.f, 0.f);
-	obj->scale.Set(5.f, 5.f, 5.f);
+	GameObject* obj;
+	for (unsigned i = 0; i < 10; ++i)
+	{
+		obj = FetchGO();
+		obj->type = (GameObject::GAMEOBJECT_TYPE)Math::RandIntMinMax(GameObject::GO_PU_SPEED, GameObject::GO_PU_POWER);
+		obj->SetActive(true);
+		float rX = Math::RandFloatMinMax(50.f, m_TerrainWidth - 50.f);
+		float rY = Math::RandFloatMinMax(15.f, 20.f);
+		obj->pos.Set(-rX, ReadHeightMap(m_heightMap, (-rX + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f) + rY, 0.f);
+		obj->scale.Set(5.f, 5.f, 5.f);
+	}
 
+	m_objectCount = &playerObj->m_totalGameObjects;
 	m_particleCount = 0;
 	MAX_PARTICLE = 1000;
 
-	m_objectCount = &playerObj->m_totalGameObjects;
 	wind = -10;
 
 	display = true;
@@ -221,6 +227,8 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 			go1->vel.SetZero();
 			m_player->SetExploded(true);
 			go2->SetActive(false);
+			if (m_tries > 0)
+				--m_tries;
 			//++newlevel;
 		}
 
@@ -663,17 +671,17 @@ void Scene01::Update(double dt)
 							u1 = goA->vel;
 							u2 = goB->vel;
 
-							initialMomentum = m1 * u1 + m2 * u2;
+							//initialMomentum = m1 * u1 + m2 * u2;
 
 							CollisionResponse(goA, goB);
 
 							v1 = goA->vel;
 							v2 = goB->vel;
 
-							finalMomentum = m1 * v1 + m2 * v2;
+							//finalMomentum = m1 * v1 + m2 * v2;
 
-							initialKE = 0.5f * m1 * u1.Dot(u1) + 0.5f * m2 * u2.Dot(u2);
-							finalKE = 0.5f * m1 * v1.Dot(v1) + 0.5f * m2 * v2.Dot(v2);
+							//initialKE = 0.5f * m1 * u1.Dot(u1) + 0.5f * m2 * u2.Dot(u2);
+							//finalKE = 0.5f * m1 * v1.Dot(v1) + 0.5f * m2 * v2.Dot(v2);
 
 							break;
 						}
@@ -807,6 +815,7 @@ void Scene01::Render()
 	}
 
 	RenderAllParticles();
+	RenderHUD();
 	//On screen text
 	std::ostringstream ss;
 	if (in_shop == false)
@@ -824,8 +833,6 @@ void Scene01::Render()
 		ss.str("");
 		ss << "FPS: " << fps;
 		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 3);
-
-		RenderTextOnScreen(meshList[GEO_TEXT], "Collision", Color(0, 1, 0), 3, 0, 0);
 	}
 	else
 	{
@@ -870,6 +877,18 @@ void Scene01::Render()
 	}
 
 	RenderMenu();
+}
+
+void Scene01::RenderHUD()
+{
+	std::ostringstream ss;
+	ss.precision(6);
+	ss << "Chances:";
+	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0.5f, 55.8f);
+	for (unsigned int i = 0; i < m_tries; ++i)
+	{
+		RenderMeshIn2D(meshList[GEO_CART], false, 5.5f, 4.f, -5.5f + (i * 1.5f), 13.5f);
+	}
 }
 
 void Scene01::Exit()
