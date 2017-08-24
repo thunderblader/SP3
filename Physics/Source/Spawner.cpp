@@ -41,16 +41,25 @@ void Spawner::Spawn(int value, int Width_Space, int Height_Space, vector<GameObj
 		spawner->type = GameObject::GO_BRICK;
 		spawner->SetActive(true);
 		spawner->dir.Set(0, 1, 0);
-		spawner->pos = Vector3(m_worldWidth - Width_Space-40, m_worldHeight - Height_Space, 0);
+		spawner->pos = Vector3(m_worldWidth + Width_Space - 40, m_worldHeight - Height_Space, 0);
 		spawner->vel.Set(0, 0, 0);
 		spawner->scale.Set(5, 5, 1);
 		spawner->mass = 1;
 		std::cout << "spawned" << std::endl;
 		std::cout << spawner->pos.x << ", " << spawner->pos.y << std::endl;
 	}
-	else if (value == 1)
+	else if (value == 2)
 	{
-
+		spawner = FetchGO(Gameobject_List);
+		spawner->type = GameObject::GO_BOSS;
+		spawner->SetActive(true);
+		spawner->dir.Set(0, 1, 0);
+		spawner->pos = Vector3(m_worldWidth + Width_Space - 40, m_worldHeight - Height_Space, 0);
+		spawner->vel.Set(0, 0, 0);
+		spawner->scale.Set(9, 15, 1);
+		spawner->mass = 1;
+		std::cout << "spawned" << std::endl;
+		std::cout << spawner->pos.x << ", " << spawner->pos.y << std::endl;
 	}
 	else
 	{

@@ -7,6 +7,7 @@
 #include "Physics\Collision.h"
 #include "Tree.h"
 #include "Shop.h"
+#include "PowerUp.h"
 
 #include <vector>
 
@@ -22,7 +23,7 @@ public:
 		GameObject::GAMEOBJECT_TYPE _type,
 		Vector3 _pos = Vector3(0.f, 0.f, 0.f),
 		Vector3 _scale = Vector3(1.f, 1.f, 1.f),
-		float _mass = 1.f, float _spd = 1.f);
+		float _mass = 1.f, float _spd = 1.f, float jump_boost = 0.f, float _blast = 0.f);
 	void Update(double dt);
 	void Reset();
 
@@ -30,6 +31,10 @@ public:
 	GameObject GetPlayerBomb() const;
 	Vector3 GetPlayerPos();
 	Vector3 GetVel();
+	void SetExploded(bool In);
+	bool GetExploded();
+	bool GetLaunched();
+	float GetBombspin();
 	void SetHeightmap(vector<unsigned char>* _heightmap, float _worldWidth, float _worldHeight);
 
 	virtual void CollisionResponse();
@@ -49,8 +54,14 @@ private:
 //	Tree* item_node;
 //	int id;
 
+	PowerUpStats pu_stats;
 	float m_speed;
+	float jump_boost;
+	float blast_strength;
 	bool launched;
+	bool exploded;
+	float bombspin;
+	float wait;
 };
 
 #endif // !PLAYER_H

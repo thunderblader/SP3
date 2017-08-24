@@ -160,6 +160,7 @@
     <ClCompile Include="Source\GameObject.cpp" />
     <ClCompile Include="Source\Load_File.cpp" />
     <ClCompile Include="Source\main.cpp" />
+    <ClCompile Include="Source\Menu.cpp" />
     <ClCompile Include="Source\MeshBuilder.cpp" />
     <ClCompile Include="Source\Particle\Particle.cpp" />
     <ClCompile Include="Source\Physics\Collision.cpp" />
@@ -189,6 +190,7 @@
     <ClInclude Include="Source\Physics\Collision.h" />
     <ClInclude Include="Source\Physics\Physics.h" />
     <ClInclude Include="Source\Player.h" />
+    <ClInclude Include="Source\PowerUp.h" />
     <ClInclude Include="Source\Scene01.h" />
     <ClInclude Include="Source\SceneBase.h" />
     <ClInclude Include="Source\shader.hpp" />

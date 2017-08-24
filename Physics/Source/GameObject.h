@@ -15,15 +15,17 @@ public:
 		GO_PLAYER,
 		GO_ENEMY,
 		GO_ENEMY_SNOWYETI,
-		GO_ENEMY_KING,
-		GO_ENEMY_KNIGHT,
 		GO_PROJ_SNOWBALL,
 		GO_WALL,
-		GO_BLOCK,
 		GO_TEMP,
 		GO_BRICK,
 		GO_BOMB,
+		GO_BOSS,
+		GO_PU_SPEED,
+		GO_PU_RANGE,
+		GO_PU_POWER,
 		GO_SCREEN,
+		GO_MENU,
 		GO_TOTAL //must be last
 	};
 
@@ -36,7 +38,6 @@ public:
 	Vector3 scale;
 	Vector3 dir;
 	Vector3 normal;
-	bool boom;
 	float mass;
 	float momentOfInertia;
 	float angularVelocity;
