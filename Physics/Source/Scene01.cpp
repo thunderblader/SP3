@@ -32,6 +32,8 @@ Scene01::~Scene01()
 void Scene01::Init()
 {
 	SceneBase::Init();
+	m_control = new Controller();
+	m_control->LoadConfig("Data//Config.ini", param_physics);
 
 	m_worldHeight = 100.f;
 	m_worldWidth = m_worldHeight * (float)Application::GetWindowWidth() / Application::GetWindowHeight();
@@ -59,14 +61,14 @@ void Scene01::Init()
 	leveltext += to_string(currlevel);
 	leveltext += ".csv";
 	file.Load(false, leveltext);
-
+	 
 	GameObject* playerObj = FetchGO();
 	GameObject* bombObj = FetchGO();
 	m_player = Player::GetInstance();
-	m_player->Init(playerObj, bombObj, GameObject::GO_PLAYER, Vector3(-m_TerrainWidth + 10, 1, 0), Vector3(5, 4, 1), 5.f, 500.f);
+	m_player->Init(playerObj, bombObj, GameObject::GO_PLAYER, Vector3(-m_TerrainWidth + 10, 1, 0), Vector3(5, 4, 1), param_physics.massCart, param_physics.acceleration, param_physics.speedLimit);
 	m_player->SetHeightmap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
-	m_control = new Controller(m_player);
-	m_control->LoadConfig("Data//Config.ini", param_physics);
+
+	m_control->SetPlayer(m_player);
 
 	file.Load(true, "Image//shop_data.csv");
 
@@ -312,7 +314,7 @@ void Scene01::UpdateParticles(double dt)
 			ParticleObject* particle = GetParticle();
 			particle->type = ParticleObject_TYPE::P_RAIN;
 			particle->scale.Set(1, 3, 1);
-			particle->vel.Set(Math::RandFloatMinMax(wind - 1, wind + 1), -9.8f, 0.f);
+			particle->vel.Set(Math::RandFloatMinMax(wind - 1, wind + 1), param_physics.gravity, 0.f);
 			particle->rotationSpeed = 0;
 			particle->rotation = Math::RadianToDegree(atan2(particle->vel.Normalized().y, particle->vel.Normalized().x)) - 270;
 			particle->pos.Set(Math::RandFloatMinMax(-m_TerrainWidth*1.5f, m_TerrainWidth*1.5f), m_worldHeight*1.5f, 0);
@@ -340,7 +342,7 @@ void Scene01::UpdateParticles(double dt)
 		ParticleObject* particle = (ParticleObject*)*it;
 		if (!particle->isActive)
 			continue;
-		particle->vel.y += -9.8f * (float)dt;
+		particle->vel.y += param_physics.gravity * (float)dt;
 		particle->pos += particle->vel * (float)dt * 10.0f;
 		if (particle->type == ParticleObject_TYPE::P_SPARK)
 		{
@@ -533,7 +535,7 @@ void Scene01::Update(double dt)
 				if (!go->vel.IsZero())
 				{
 					go->pos += go->vel * static_cast<float>(dt);
-					go->vel += Vector3(0, -9.8f, 0) * (float)dt;
+					go->vel += Vector3(0, param_physics.gravity, 0) * (float)dt;
 
 					for (std::vector<GameObject *>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
 					{
@@ -546,7 +548,7 @@ void Scene01::Update(double dt)
 								{
 									if (go->pos.y - go2->pos.y <= go->scale.y)
 									{
-										go->vel += Vector3(0, -9.8f, 0) * (float)dt;
+										go->vel += Vector3(0, param_physics.gravity, 0) * (float)dt;
 									}
 								}
 							}
@@ -568,7 +570,7 @@ void Scene01::Update(double dt)
 				{
 					go->pos += go->vel * (float)dt;
 				}
-				Physics::K1(go->vel, Vector3(wind / go->mass, -9.8f * go->mass * 2.f, 0), (float)dt, go->vel);
+				Physics::K1(go->vel, Vector3(wind / go->mass, param_physics.gravity * go->mass * 2.f, 0), (float)dt, go->vel);
 				if (go->pos.y <= (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + go->scale.y * 0.5f && go->pos.x < 0 - go->scale.x && go->pos.x > -m_TerrainWidth)
 				{
 					go->pos.y = (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + go->scale.y * 0.5f;
@@ -584,7 +586,7 @@ void Scene01::Update(double dt)
 					go->dir = tempnormal;
 
 					go->vel = go->vel - (1.1f*go->vel.Dot(tempnormal) * tempnormal);
-					go->vel.x = go->vel.x - go->vel.x * 0.2f * (float)dt; // friction
+					go->vel.x = go->vel.x - go->vel.x * param_physics.frictionTerrain * (float)dt; // friction
 				}
 				/*if ((go->pos.x < 0 + go->scale.x && go->vel.x < 0) || (go->pos.x > m_worldWidth - go->scale.x && go->vel.x > 0))
 				{
