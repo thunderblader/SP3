@@ -45,8 +45,6 @@ void Enemy::Update(double dt)
 	switch (enemyObj->type)
 	{
 	case GameObject::GO_ENEMY_SNOWYETI: RunYeti(dt); break;
-	case GameObject::GO_ENEMY_KING: RunKing(dt); break;
-	case GameObject::GO_ENEMY_KNIGHT: RunKnight(dt); break;
 	default: break;
 	}
 }
@@ -111,7 +109,6 @@ void Enemy::RunYeti(double dt)
 	for (unsigned i = 0; i < projList.size(); ++i)
 	{
 		Physics::K1(projList[i]->vel, Vector3(0.f, -9.8f * projList[i]->mass, 0.f), (float)dt, projList[i]->vel);
-		//Physics::K3_CalcInitialVel(playerObj->pos - projList[i]->pos, Vector3(0.f, -9.8f * projList[i]->mass, 0.f), (float)dt, projList[i]->vel);
 		projList[i]->pos += projList[i]->vel * projSpd * (float)dt;
 
 		if ((playerObj->pos - projList[i]->pos).LengthSquared()

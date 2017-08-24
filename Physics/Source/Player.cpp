@@ -4,7 +4,7 @@
 
 void Player::Init(GameObject * _playerObj, GameObject * _playerBomb
 	, GameObject::GAMEOBJECT_TYPE _type
-	, Vector3 _pos, Vector3 _scale, float _mass, float _spd, float _jump_boost, float _blast)
+	, Vector3 _pos, Vector3 _scale, float _mass, float _spd, float _speedlimit, float _jump_boost, float _blast)
 {
 	playerObj = _playerObj;
 	playerObj->type = _type;
@@ -32,6 +32,7 @@ void Player::Init(GameObject * _playerObj, GameObject * _playerBomb
 	exploded = false;
 	bombspin = 0;
 	wait = 0;
+	speedlimit = _speedlimit;
 }
 
 void Player::Update(double dt)
@@ -39,13 +40,22 @@ void Player::Update(double dt)
 	if (!playerObj)
 		return;
 
+	if (playerObj->pos.x - playerObj->scale.x *0.6f< -m_TerrainWidth)
+	{
+		playerObj->pos.x = -m_TerrainWidth + playerObj->scale.x*0.6f+0.1f;
+		playerObj->vel.x = -playerObj->vel.x * 0.1f;
+	}
+
 	// Player Physics can be done here
-	if (playerObj->pos.x >= -playerObj->scale.x * 2 && !launched)
+	if (playerObj->pos.x >= -playerObj->scale.x && !launched)
 	{
 		playerBomb->SetActive(true);
 		playerBomb->type = GameObject::GO_BOMB;
 		playerBomb->vel.x = playerObj->vel.x * 5.0f;
 		playerBomb->vel.y = 200;
+		playerBomb->vel.y = abs(playerObj->vel.y);
+		playerBomb->vel.x = playerObj->vel.x;
+		playerBomb->vel = playerBomb->vel.Normalized() * playerObj->vel.Length() * 5;
 		playerBomb->pos = GetPlayerPos();
 		playerBomb->scale.Set(5, 5, 1);
 		playerBomb->mass = 5;
@@ -63,11 +73,11 @@ void Player::Update(double dt)
 		{
 			//playerBomb->SetActive(false);
 			//Reset();
-			wait += 1 * dt;
+			wait += 1 * (float)dt;
 		}
 		else if (exploded)
 		{
-			wait += 1 * dt;
+			wait += 1 * (float)dt;
 		}
 		if (exploded && playerBomb->scale.x < 10) // if bomb scale lesser than 10 increase its scale
 		{
@@ -167,7 +177,7 @@ void Player::CollisionResponse()
 
 void Player::Move_LeftRight(const double dt, const bool dLeft)
 {
-	if ((!m_heightmap || !playerObj || playerObj->vel.Length() > 100 ||
+	if ((!m_heightmap || !playerObj || playerObj->vel.Length() > speedlimit ||
 		playerObj->pos.y > (m_TerrainHeight * ReadHeightMap(*m_heightmap,
 		(playerObj->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + playerObj->scale.y * 0.5f))
 		return;

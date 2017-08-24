@@ -39,6 +39,7 @@ public:
 	void Shop_Update(double dt);
 	void Menu(double dt);
 	void RenderMenu();
+	void RenderHUD();
 
 protected:
 	vector<GameObject *> m_goList;
@@ -53,13 +54,14 @@ protected:
 	GameObject *m_ghost;
 	GameObject *test;
 	GameObject *spawner;
+	unsigned int m_tries;
 	int m_ballCount;
 	int* m_objectCount;
 
 	float m1, m2;
 	Vector3 u1, u2, v1, v2, u1N, u2N;
-	Vector3 initialMomentum, finalMomentum;
-	float initialKE, finalKE;
+	//Vector3 initialMomentum, finalMomentum;
+	//float initialKE, finalKE;
 
 	bool free_look;
 	bool in_shop;
