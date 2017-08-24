@@ -153,7 +153,7 @@ bool Scene01::CheckCollision(GameObject * go1, GameObject * go2, float dt)
 
 	case GameObject::GO_BRICK:
 	{
-		if (go1->type == GameObject::GO_PLAYER)
+		if (go1->type == GameObject::GO_BOMB)
 		{
 			Vector3 w0 = go2->pos;
 			Vector3 b1 = go1->pos;
@@ -529,34 +529,12 @@ void Scene01::Update(double dt)
 		if (go->GetActive())
 		{
 			//Exercise 7: handle out of bound game objects
-			if (go->type == GameObject::GO_BOSS)
-			{
-				std::cout << "lmao" << std::endl;
-			}
 			if (go->type == GameObject::GO_BRICK)
 			{
 				if (!go->vel.IsZero())
 				{
 					go->pos += go->vel * static_cast<float>(dt);
 					go->vel += Vector3(0, param_physics.gravity, 0) * (float)dt;
-
-					for (std::vector<GameObject *>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
-					{
-						GameObject *go2 = (GameObject *)*it2;
-						if (go2->GetActive())
-						{
-							if (go2->type == GameObject::GO_BRICK)
-							{
-								if (abs(go->pos.x - go2->pos.x) <= go->scale.x && go->pos.y > go2->pos.y)
-								{
-									if (go->pos.y - go2->pos.y <= go->scale.y)
-									{
-										go->vel += Vector3(0, param_physics.gravity, 0) * (float)dt;
-									}
-								}
-							}
-						}
-					}
 				}
 			}
 
