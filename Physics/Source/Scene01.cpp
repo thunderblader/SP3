@@ -797,7 +797,7 @@ void Scene01::Render()
 	for (int i = -5; i < 5; ++i)
 	{
 		modelStack.PushMatrix();
-		modelStack.Translate((m_worldHeight * 2.f - .5f) * (1 + i) + (m_player->GetPlayerPos().x / m_TerrainWidth) * 300.f, m_worldHeight * 0.4f, -0.8f);
+		modelStack.Translate((m_worldHeight * 2.f - .5f) * (1 + i) + (camera.position.x / m_TerrainWidth) * 300.f, m_worldHeight * 0.4f, -0.8f);
 		modelStack.Scale(m_worldHeight * 2.f, m_worldHeight, 1.f);
 		RenderMesh(meshList[GEO_FOREGROUND], false);
 		modelStack.PopMatrix();
@@ -819,6 +819,12 @@ void Scene01::Render()
 		RenderMesh(meshList[GEO_TERRAIN], false);
 		modelStack.PopMatrix();
 	}
+
+	modelStack.PushMatrix();
+	modelStack.Translate(60, 0, -0.1);
+	modelStack.Scale(50, 25, 1); // values varies.
+	RenderMesh(meshList[GEO_CLIFF], false);
+	modelStack.PopMatrix();
 
 	RenderAllParticles();
 	RenderHUD();
