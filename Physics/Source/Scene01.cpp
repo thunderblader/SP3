@@ -808,6 +808,15 @@ void Scene01::Render()
 
 	RenderMesh(meshList[GEO_AXES], false);
 
+	for (int i = -4; i < 4; ++i)
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate((m_worldHeight * 2.f) * (1 + i) + (m_player->GetPlayerPos().x / m_TerrainWidth) * 600.f, m_worldHeight * 0.5f, -1.f);
+		modelStack.Scale(m_worldHeight * 2.f, m_worldHeight, 1.f);
+		RenderMesh(meshList[GEO_BACKGROUND], false);
+		modelStack.PopMatrix();
+	}
+
 	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;
@@ -831,6 +840,10 @@ void Scene01::Render()
 	std::ostringstream ss;
 	if (in_shop == false)
 	{
+		ss.str("");
+		ss << "Pos Offset: " << (m_player->GetPlayerPos().x / m_TerrainWidth);
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 12);
+
 		ss.str("");
 		ss << "Objects: " << *m_objectCount;
 		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 9);
