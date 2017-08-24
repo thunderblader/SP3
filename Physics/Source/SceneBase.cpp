@@ -151,6 +151,9 @@ void SceneBase::Init()
 	meshList[GEO_PARTICLE_EXPLOSION] = MeshBuilder::GenerateQuad("GEO_PARTICLE_EXPLOSION", Color(1, 1, 1), 1.f);
 	meshList[GEO_PARTICLE_EXPLOSION]->textureID = LoadTGA("Image//explosion.tga");
 
+	meshList[GEO_CLIFF] = MeshBuilder::GenerateQuad("GEO_CLIFF", Color(1, 1, 1), 1.f);
+	meshList[GEO_CLIFF]->textureID = LoadTGA("Image//cliff.tga");
+
 	meshList[GEO_MENU] = MeshBuilder::GenerateQuad("MENU", Color(1, 1, 1), 1.f);
 	meshList[GEO_MENU]->textureID = LoadTGA("Image//menu1.tga");
 	meshList[GEO_MENU2] = MeshBuilder::GenerateQuad("MENU2", Color(1, 1, 1), 1.f);
