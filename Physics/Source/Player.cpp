@@ -88,7 +88,6 @@ void Player::Update(double dt)
 				//playerBomb->SetActive(false);
 				//launched = false;
 				//Reset();
-				
 			}
 		}
 	}
