@@ -136,6 +136,41 @@ void SceneBase::Init()
 	meshList[GEO_BOSS] = MeshBuilder::GenerateQuad("boss", Color(0.f, 0.f, 0.f), 1.f);
 	meshList[GEO_BOSS]->textureID = LoadTGA("Image//boss.tga");
 
+	meshList[GEO_HUD_SCORE] = MeshBuilder::GenerateQuad("hud_score", Color(0.f, 0.f, 0.f), 1.f);
+	meshList[GEO_HUD_SCORE]->textureID = LoadTGA("Image//hud_score.tga");
+	meshList[GEO_HUD_CHANCE] = MeshBuilder::GenerateQuad("hud_chance", Color(0.f, 0.f, 0.f), 1.f);
+	meshList[GEO_HUD_CHANCE]->textureID = LoadTGA("Image//hud_chance.tga");
+	meshList[GEO_HUD_LEVEL1] = MeshBuilder::GenerateQuad("hud_level1", Color(0.f, 0.f, 0.f), 1.f);
+	meshList[GEO_HUD_LEVEL1]->textureID = LoadTGA("Image//hud_level1.tga");
+	meshList[GEO_HUD_LEVEL2] = MeshBuilder::GenerateQuad("hud_level2", Color(0.f, 0.f, 0.f), 1.f);
+	meshList[GEO_HUD_LEVEL2]->textureID = LoadTGA("Image//hud_level2.tga");
+	meshList[GEO_HUD_LEVEL3] = MeshBuilder::GenerateQuad("hud_level3", Color(0.f, 0.f, 0.f), 1.f);
+	meshList[GEO_HUD_LEVEL3]->textureID = LoadTGA("Image//hud_level3.tga");
+	meshList[GEO_HUD_LEVEL4] = MeshBuilder::GenerateQuad("hud_level4", Color(0.f, 0.f, 0.f), 1.f);
+	meshList[GEO_HUD_LEVEL4]->textureID = LoadTGA("Image//hud_level4.tga");
+	meshList[GEO_HUD_LEVEL5] = MeshBuilder::GenerateQuad("hud_level5", Color(0.f, 0.f, 0.f), 1.f);
+	meshList[GEO_HUD_LEVEL5]->textureID = LoadTGA("Image//hud_level5.tga");
+	meshList[GEO_NO_1] = MeshBuilder::GenerateQuad("hud_1", Color(0.f, 0.f, 0.f), 1.f);
+	meshList[GEO_NO_1]->textureID = LoadTGA("Image//Number//hud_1.tga");
+	meshList[GEO_NO_2] = MeshBuilder::GenerateQuad("hud_2", Color(0.f, 0.f, 0.f), 1.f);
+	meshList[GEO_NO_2]->textureID = LoadTGA("Image//Number//hud_2.tga");
+	meshList[GEO_NO_3] = MeshBuilder::GenerateQuad("hud_3", Color(0.f, 0.f, 0.f), 1.f);
+	meshList[GEO_NO_3]->textureID = LoadTGA("Image//Number//hud_3.tga");
+	meshList[GEO_NO_4] = MeshBuilder::GenerateQuad("hud_4", Color(0.f, 0.f, 0.f), 1.f);
+	meshList[GEO_NO_4]->textureID = LoadTGA("Image//Number//hud_4.tga");
+	meshList[GEO_NO_5] = MeshBuilder::GenerateQuad("hud_5", Color(0.f, 0.f, 0.f), 1.f);
+	meshList[GEO_NO_5]->textureID = LoadTGA("Image//Number//hud_5.tga");
+	meshList[GEO_NO_6] = MeshBuilder::GenerateQuad("hud_6", Color(0.f, 0.f, 0.f), 1.f);
+	meshList[GEO_NO_6]->textureID = LoadTGA("Image//Number//hud_6.tga");
+	meshList[GEO_NO_7] = MeshBuilder::GenerateQuad("hud_7", Color(0.f, 0.f, 0.f), 1.f);
+	meshList[GEO_NO_7]->textureID = LoadTGA("Image//Number//hud_7.tga");
+	meshList[GEO_NO_8] = MeshBuilder::GenerateQuad("hud_8", Color(0.f, 0.f, 0.f), 1.f);
+	meshList[GEO_NO_8]->textureID = LoadTGA("Image//Number//hud_8.tga");
+	meshList[GEO_NO_9] = MeshBuilder::GenerateQuad("hud_9", Color(0.f, 0.f, 0.f), 1.f);
+	meshList[GEO_NO_9]->textureID = LoadTGA("Image//Number//hud_9.tga");
+	meshList[GEO_NO_0] = MeshBuilder::GenerateQuad("hud_0", Color(0.f, 0.f, 0.f), 1.f);
+	meshList[GEO_NO_0]->textureID = LoadTGA("Image//Number//hud_0.tga");
+
 	meshList[GEO_PU_SPEED] = MeshBuilder::GenerateQuad("pu_speed", Color(0.f, 0.f, 0.f), 1.f);
 	meshList[GEO_PU_SPEED]->textureID = LoadTGA("Image//pu_speed.tga");
 	meshList[GEO_PU_RANGE] = MeshBuilder::GenerateQuad("pu_range", Color(0.f, 0.f, 0.f), 1.f);
@@ -164,6 +199,19 @@ void SceneBase::Init()
 	meshList[GEO_MENU4]->textureID = LoadTGA("Image//menu4.tga");
 	meshList[GEO_MENU5] = MeshBuilder::GenerateQuad("MENU5", Color(1, 1, 1), 1.f);
 	meshList[GEO_MENU5]->textureID = LoadTGA("Image//menu5.tga");
+
+	meshList[GEO_LEVEL1] = MeshBuilder::GenerateQuad("level", Color(1, 1, 1), 1.f);
+	meshList[GEO_LEVEL1]->textureID = LoadTGA("Image//level1.tga");
+	meshList[GEO_LEVEL2] = MeshBuilder::GenerateQuad("level2", Color(1, 1, 1), 1.f);
+	meshList[GEO_LEVEL2]->textureID = LoadTGA("Image//level2.tga");
+	meshList[GEO_LEVEL3] = MeshBuilder::GenerateQuad("level3", Color(1, 1, 1), 1.f);
+	meshList[GEO_LEVEL3]->textureID = LoadTGA("Image//level3.tga");
+	meshList[GEO_LEVEL4] = MeshBuilder::GenerateQuad("level4", Color(1, 1, 1), 1.f);
+	meshList[GEO_LEVEL4]->textureID = LoadTGA("Image//level4.tga");
+	meshList[GEO_LEVEL5] = MeshBuilder::GenerateQuad("level5", Color(1, 1, 1), 1.f);
+	meshList[GEO_LEVEL5]->textureID = LoadTGA("Image//level5.tga");
+	meshList[GEO_LEVELBACK] = MeshBuilder::GenerateQuad("levelback", Color(1, 1, 1), 1.f);
+	meshList[GEO_LEVELBACK]->textureID = LoadTGA("Image//levelback.tga");
 
 	//meshList[GEO_START] = MeshBuilder::GenerateQuad("GEO_PARTICLE_EXPLOSION", Color(1, 1, 1), 1.f);
 	//meshList[GEO_START]->textureID = LoadTGA("Image//explosion.tga");
@@ -319,19 +367,19 @@ void SceneBase::RenderMesh(Mesh *mesh, bool enableLight)
 	}
 }
 
-void SceneBase::RenderMeshIn2D(Mesh *mesh, bool enableLight, float sizeX, float sizeY, float x, float y)
+void SceneBase::RenderMeshIn2D(Mesh *mesh, bool enableLight, double m_width, double m_height, float sizeX, float sizeY, float x, float y)
 {
 	glDisable(GL_DEPTH_TEST);
 	Mtx44 ortho;
-	ortho.SetToOrtho(-80, 80, -60, 60, -10, 10);
+	ortho.SetToOrtho(0, m_width, 0, m_height, -10, 10);
 	projectionStack.PushMatrix();
 	projectionStack.LoadMatrix(ortho);
 	viewStack.PushMatrix();
 	viewStack.LoadIdentity();
 	modelStack.PushMatrix();
 	modelStack.LoadIdentity();
-	modelStack.Scale(sizeX, sizeY, 1.f);
 	modelStack.Translate(x, y, 0);
+	modelStack.Scale(sizeX, sizeY, 1.f);
 
 	Mtx44 MVP, modelView, modelView_inverse_transpose;
 

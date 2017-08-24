@@ -2,77 +2,111 @@
 #include "KeyboardController.h"
 
 void Scene01::Menu(double dt) {
-	if (menuBounce < 0.25f)
-		menuBounce += float(dt);
-	if (menuBounce > 0.25f)
+	switch (menustate)
 	{
-		switch (menustate)
+	case 1:
+		if (KeyboardController::GetInstance()->IsKeyPressed(VK_DOWN))
+			menustate = MENU2;
+		else if (KeyboardController::GetInstance()->IsKeyPressed(VK_UP))
+			menustate = MENU5;
+		if (KeyboardController::GetInstance()->IsKeyPressed(VK_RETURN))
+			menustate = LEVEL1;
+		break;
+	case 2:
+		if (KeyboardController::GetInstance()->IsKeyPressed(VK_DOWN))
+			menustate = MENU3;
+		else if (KeyboardController::GetInstance()->IsKeyPressed(VK_UP))
+			menustate = MENU;
+		break;
+	case 3:
+		if (KeyboardController::GetInstance()->IsKeyPressed(VK_DOWN))
+			menustate = MENU4;
+		else if (KeyboardController::GetInstance()->IsKeyPressed(VK_UP))
+			menustate = MENU2;
+		break;
+	case 4:
+		if (KeyboardController::GetInstance()->IsKeyPressed(VK_DOWN))
+			menustate = MENU5;
+		else if (KeyboardController::GetInstance()->IsKeyPressed(VK_UP))
+			menustate = MENU3;
+		break;
+	case 5:
+		if (KeyboardController::GetInstance()->IsKeyPressed(VK_DOWN))
+			menustate = MENU;
+		else if (KeyboardController::GetInstance()->IsKeyPressed(VK_UP))
+			menustate = MENU4;
+		break;
+	case 14:
+		if (KeyboardController::GetInstance()->IsKeyPressed(VK_LEFT))
+			menustate = LEVEL5;
+		else if (KeyboardController::GetInstance()->IsKeyPressed(VK_RIGHT))
+			menustate = LEVEL2;
+		else if (KeyboardController::GetInstance()->IsKeyPressed(VK_DOWN))
+			menustate = LEVELBACK;
+		else if (KeyboardController::GetInstance()->IsKeyPressed(VK_RETURN))
 		{
-		case 1:
-			if (KeyboardController::GetInstance()->IsKeyPressed(VK_DOWN))
-			{
-				menustate = MENU2;
-				menuBounce = 0;
-			}
-			else if (KeyboardController::GetInstance()->IsKeyPressed(VK_UP))
-			{
-				menustate = MENU5;
-				menuBounce = 0;
-			}
-			if (KeyboardController::GetInstance()->IsKeyPressed(VK_RETURN))
-			{
-				display = false;
-			}
-			break;
-		case 2:
-			if (KeyboardController::GetInstance()->IsKeyPressed(VK_DOWN))
-			{
-				menustate = MENU3;
-				menuBounce = 0;
-			}
-			else if (KeyboardController::GetInstance()->IsKeyPressed(VK_UP))
-			{
-				menustate = MENU;
-				menuBounce = 0;
-			}
-			break;
-		case 3:
-			if (KeyboardController::GetInstance()->IsKeyPressed(VK_DOWN))
-			{
-				menustate = MENU4;
-				menuBounce = 0;
-			}
-			else if (KeyboardController::GetInstance()->IsKeyPressed(VK_UP))
-			{
-				menustate = MENU2;
-				menuBounce = 0;
-			}
-			break;
-		case 4:
-			if (KeyboardController::GetInstance()->IsKeyPressed(VK_DOWN))
-			{
-				menustate = MENU5;
-				menuBounce = 0;
-			}
-			else if (KeyboardController::GetInstance()->IsKeyPressed(VK_UP))
-			{
-				menustate = MENU3;
-				menuBounce = 0;
-			}
-			break;
-		case 5:
-			if (KeyboardController::GetInstance()->IsKeyPressed(VK_DOWN))
-			{
-				menustate = MENU;
-				menuBounce = 0;
-			}
-			else if (KeyboardController::GetInstance()->IsKeyPressed(VK_UP))
-			{
-				menustate = MENU4;
-				menuBounce = 0;
-			}
-			break;
+			display = false;
+			newlevel = 1;
 		}
+		break;
+	case 15:
+		if (KeyboardController::GetInstance()->IsKeyPressed(VK_LEFT))
+			menustate = LEVEL1;
+		else if (KeyboardController::GetInstance()->IsKeyPressed(VK_RIGHT))
+			menustate = LEVEL3;
+		else if (KeyboardController::GetInstance()->IsKeyPressed(VK_DOWN))
+			menustate = LEVELBACK;
+		else if (KeyboardController::GetInstance()->IsKeyPressed(VK_RETURN))
+		{
+			display = false;
+			newlevel = 2;
+		}
+		break;
+	case 16:
+		if (KeyboardController::GetInstance()->IsKeyPressed(VK_LEFT))
+			menustate = LEVEL2;
+		else if (KeyboardController::GetInstance()->IsKeyPressed(VK_RIGHT))
+			menustate = LEVEL4;
+		else if (KeyboardController::GetInstance()->IsKeyPressed(VK_DOWN))
+			menustate = LEVELBACK;
+		else if (KeyboardController::GetInstance()->IsKeyPressed(VK_RETURN))
+		{
+			display = false;
+			newlevel = 3;
+		}
+		break;
+	case 17:
+		if (KeyboardController::GetInstance()->IsKeyPressed(VK_LEFT))
+			menustate = LEVEL3;
+		else if (KeyboardController::GetInstance()->IsKeyPressed(VK_RIGHT))
+			menustate = LEVEL5;
+		else if (KeyboardController::GetInstance()->IsKeyPressed(VK_DOWN))
+			menustate = LEVELBACK;
+		else if (KeyboardController::GetInstance()->IsKeyPressed(VK_RETURN))
+		{
+			display = false;
+			newlevel = 4;
+		}
+		break;
+	case 18:
+		if (KeyboardController::GetInstance()->IsKeyPressed(VK_LEFT))
+			menustate = LEVEL4;
+		else if (KeyboardController::GetInstance()->IsKeyPressed(VK_RIGHT))
+			menustate = LEVEL1;
+		else if (KeyboardController::GetInstance()->IsKeyPressed(VK_DOWN))
+			menustate = LEVELBACK;
+		else if (KeyboardController::GetInstance()->IsKeyPressed(VK_RETURN))
+		{
+			display = false;
+			newlevel = 5;
+		}
+		break;
+	case 19:
+		if (KeyboardController::GetInstance()->IsKeyPressed(VK_UP))
+			menustate = LEVEL1;
+		if (KeyboardController::GetInstance()->IsKeyPressed(VK_RETURN))
+			menustate = MENU;
+		break;
 	}
 }
 
@@ -122,6 +156,24 @@ void Scene01::RenderMenu() {
 			break;
 		case 13:
 			RenderMesh(meshList[GEO_INSTRUCTIONS], false);
+			break;
+		case 14:
+			RenderMesh(meshList[GEO_LEVEL1], false);
+			break;
+		case 15:
+			RenderMesh(meshList[GEO_LEVEL2], false);
+			break;
+		case 16:
+			RenderMesh(meshList[GEO_LEVEL3], false);
+			break;
+		case 17:
+			RenderMesh(meshList[GEO_LEVEL4], false);
+			break;
+		case 18:
+			RenderMesh(meshList[GEO_LEVEL5], false);
+			break;
+		case 19:
+			RenderMesh(meshList[GEO_LEVELBACK], false);
 			break;
 		}
 		modelStack.PopMatrix();
