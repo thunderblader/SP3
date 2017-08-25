@@ -220,8 +220,8 @@ void SceneBase::Init()
 	meshList[GEO_LEVELBACK] = MeshBuilder::GenerateQuad("levelback", Color(1, 1, 1), 1.f);
 	meshList[GEO_LEVELBACK]->textureID = LoadTGA("Image//levelback.tga");
 
-	meshList[GEO_5HOP] = MeshBuilder::GenerateQuad("Shop", Color(1, 1, 1), 1.f);
-	meshList[GEO_5HOP]->textureID = LoadTGA("Image//Shop.tga");
+	meshList[GEO_SHOP] = MeshBuilder::GenerateQuad("Shop", Color(1, 1, 1), 1.f);
+	meshList[GEO_SHOP]->textureID = LoadTGA("Image//Shop.tga");
 	meshList[GEO_SIZE] = MeshBuilder::GenerateQuad("Size", Color(1, 1, 1), 1.f);
 	meshList[GEO_SIZE]->textureID = LoadTGA("Image//Size.tga");
 	meshList[GEO_SPEED] = MeshBuilder::GenerateQuad("Speed", Color(1, 1, 1), 1.f);

@@ -97,6 +97,7 @@ void Scene01::Init()
 
 	enemy->SetPlayerObj(playerObj);
 	enemy->SetBombObj(bombObj);
+	enemy->SetHeightMap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
 
 	SpawnPowerups();
 	 
@@ -935,14 +936,15 @@ void Scene01::Render()
 	}
 	else
 	{
-		
+		float scaleX, scaleY;
+		scaleX = 20.f;
+		scaleY = 10.f;
+
 		modelStack.Translate(camera.position.x + 65, camera.position.y + 50, 1);
 		modelStack.Scale((float)Application::GetWindowWidth(), 85, 1);
 		RenderMesh(meshList[GEO_SCREEN], false);
 
-		ss.str("");
-		ss << "Shop";
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 4, 33, 51);
+		RenderMeshIn2D(meshList[GEO_SHOP], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.5f, m_worldHeight - scaleY - scaleY * 0.5f);
 		ss.str("");
 		ss << item_node->root.name;
 		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 15, 42);
