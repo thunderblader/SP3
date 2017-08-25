@@ -12,7 +12,6 @@ class Shop
 public:
 	void Load_Shop();
 	bool Purchase_Item(int id);
-	void Purchase_Upgrade(int id);
 	void get_item(int id);
 	
 	int gold;
