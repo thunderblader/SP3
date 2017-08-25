@@ -19,7 +19,8 @@ GameObject* Spawner::FetchGO(vector<GameObject *>* Gameobject_List)
 	for (std::vector<GameObject *>::iterator it = Gameobject_List->begin(); it != Gameobject_List->end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;
-		if (!go->GetActive())
+		if (!go->GetActive() && go->type != GameObject::GO_PLAYER
+			&& go->type != GameObject::GO_BOMB && go->type != GameObject::GO_SCREEN)
 		{
 			go->SetActive(true);
 			return go;
