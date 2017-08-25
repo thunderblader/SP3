@@ -198,32 +198,32 @@ void Tree::inorder(Tree *tree)
 //	cout << tree->root.id << endl;
 	inorder(tree->right);
 }
-int Tree::search(Tree *tree, int value)
-{
-	if (tree == NULL)
-	{
-		if (check == true)
-		{
-			return new_gold;
-		}
-		else
-		{
-			return 0;
-		}
-	}
-	else
-	{
-		search(tree->left, value);
-		if (value == tree->root.id)
-		{
-		//	cout << tree->root.name << endl;
-			new_gold = tree->root.price;
-			check = true;
-			return tree->root.price;
-		}
-		search(tree->right, value);
-	}
-}
+//int Tree::search(Tree *tree, int value)
+//{
+//	if (tree == NULL)
+//	{
+//		if (check == true)
+//		{
+//			return new_gold;
+//		}
+//		else
+//		{
+//			return 0;
+//		}
+//	}
+//	else
+//	{
+//		search(tree->left, value);
+//		if (value == tree->root.id)
+//		{
+//		//	cout << tree->root.name << endl;
+//			new_gold = tree->root.price;
+//			check = true;
+//			return tree->root.price;
+//		}
+//		search(tree->right, value);
+//	}
+//}
 
 Tree* Tree::retreve_item(Tree *tree, int value)
 {
