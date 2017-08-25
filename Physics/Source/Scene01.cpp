@@ -456,20 +456,21 @@ void Scene01::Update(double dt)
 	m_player->Update(dt);
 	m_control->Update(dt);
 
-	//static bool enemyFired = false;
-	//if (enemyList[0]->GetCurAnimFrame() == 11 && !enemyFired) // Debug key snow yeti shooting
-	//{
-	//	enemyList[0]->PushProjectile(FetchGO(), Vector3(1.f, 1.f, 1.f), 30.f);
-	//	enemyFired = true;
-	//}
-	//else if (enemyList[0]->GetCurAnimFrame() == 12)
-	//	enemyFired = false;
-
 	vector<Enemy*>::iterator it, end;
 	end = enemyList.end();
 	for (it = enemyList.begin(); it != end; ++it)
 	{
 		(*it)->Update(dt);
+
+		cout << enemyList[0]->GetCurAnimFrame() << endl;
+
+		if (!((*it)->GetProjFired()) && !((*it)->GetProjActive()) && ((*it)->GetCurAnimFrame() == 11))
+		{
+			(*it)->PushProjectile(FetchGO(), Vector3(1.f, 1.f, 1.f), 10.f);
+			(*it)->SetProjFired(true);
+		}
+		else if ((*it)->GetCurAnimFrame() == 12)
+			(*it)->SetProjFired(false);
 
 		if (!(*it)->GetActive())
 		{
@@ -723,12 +724,6 @@ void Scene01::RenderGO(GameObject *go)
 		RenderMesh(meshList[GEO_CART], false);
 		break;
 
-	case GameObject::GO_ENEMY_SNOWYETI:
-		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
-		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
-		RenderMesh(meshList[GEO_SPRITE_YETI], false);
-		break;
-
 	case GameObject::GO_PROJ_SNOWBALL:
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
@@ -809,7 +804,7 @@ void Scene01::Render()
 	for (int i = -4; i < 4; ++i)
 	{
 		modelStack.PushMatrix();
-		modelStack.Translate((m_worldHeight * 2.f - 0.2f) * (1 + i) + (camera.position.x / m_TerrainWidth) * 600.f, m_worldHeight * 0.5f, -1.f);
+		modelStack.Translate((m_worldHeight * 2.f - 0.2f) * (1 + i) + (camera.position.x / m_TerrainWidth) * 900.f, m_worldHeight * 0.5f, -1.f);
 		modelStack.Scale(m_worldHeight * 2.f, m_worldHeight, 1.f);
 		RenderMesh(meshList[GEO_BACKGROUND], false);
 		modelStack.PopMatrix();
@@ -818,7 +813,7 @@ void Scene01::Render()
 	for (int i = -5; i < 5; ++i)
 	{
 		modelStack.PushMatrix();
-		modelStack.Translate((m_worldHeight * 2.f - .5f) * (1 + i) + (camera.position.x / m_TerrainWidth) * 300.f, m_worldHeight * 0.4f, -0.8f);
+		modelStack.Translate((m_worldHeight * 2.f - .5f) * (1 + i) + (camera.position.x / m_TerrainWidth) * 600.f, m_worldHeight * 0.4f, -0.8f);
 		modelStack.Scale(m_worldHeight * 2.f, m_worldHeight, 1.f);
 		RenderMesh(meshList[GEO_FOREGROUND], false);
 		modelStack.PopMatrix();
@@ -832,6 +827,18 @@ void Scene01::Render()
 			RenderGO(go);
 		}
 	}
+	std::vector<Enemy*>::iterator it, end;
+	end = enemyList.end();
+	for (it = enemyList.begin(); it != end; ++it)
+	{
+		Enemy* enemy = (Enemy*)*it;
+		SpriteAnimation* anim = enemy->GetSprite();
+		modelStack.PushMatrix();
+		modelStack.Translate(enemy->GetPos());
+		modelStack.Scale(enemy->GetScale());
+		RenderSpriteMesh(anim->GetMesh(), false, anim->GetCurFrame());
+		modelStack.PopMatrix();
+	}
 
 	{
 		modelStack.PushMatrix();
@@ -842,7 +849,7 @@ void Scene01::Render()
 	}
 
 	modelStack.PushMatrix();
-	modelStack.Translate(60, 0, -0.1);
+	modelStack.Translate(60, 0, -0.1f);
 	modelStack.Scale(50, 25, 1); // values varies.
 	RenderMesh(meshList[GEO_CLIFF], false);
 	modelStack.PopMatrix();
@@ -954,7 +961,7 @@ void Scene01::RenderHUD()
 	string ss = to_string(Score);
 	RenderMeshIn2D(meshList[GEO_HUD_SCORE], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.5f, m_worldHeight - 5.f);
 
-	for (int i = 0; i < ss.size(); ++i)
+	for (unsigned i = 0; i < ss.size(); ++i)
 	{
 		switch (ss[i])
 		{

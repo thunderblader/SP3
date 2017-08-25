@@ -10,12 +10,17 @@ Enemy::Enemy()
 	: enemyObj(nullptr)
 	, defaultPos(0.f, 0.f, 0.f)
 	, spriteAnim(nullptr)
+	, snowBall(nullptr)
 	, projFired(false)
 {
 }
 
 Enemy::~Enemy()
 {
+	if (spriteAnim)
+	{
+		delete spriteAnim;
+	}
 }
 
 void Enemy::Init(GameObject* _enemyObj, GameObject::GAMEOBJECT_TYPE _type, Vector3 _pos, Vector3 _scale)
@@ -41,7 +46,7 @@ void Enemy::Update(double dt)
 	if (spriteAnim)
 	{
 		spriteAnim->Update(dt);
-		spriteAnim->m_anim->animActive = true;
+		spriteAnim->SetActive(true);
 	}
 
 	switch (enemyObj->type)
@@ -60,9 +65,24 @@ void Enemy::Reset()
 	enemyObj->pos = defaultPos;
 }
 
+Vector3 Enemy::GetPos() const
+{
+	return enemyObj->pos;
+}
+
+Vector3 Enemy::GetScale() const
+{
+	return enemyObj->scale;
+}
+
+SpriteAnimation * Enemy::GetSprite()
+{
+	return spriteAnim;
+}
+
 int Enemy::GetCurAnimFrame() const
 {
-	return spriteAnim->m_currentFrame;
+	return spriteAnim->GetCurFrame();
 }
 
 bool Enemy::GetActive() const
@@ -73,6 +93,13 @@ bool Enemy::GetActive() const
 bool Enemy::GetProjFired() const
 {
 	return projFired;
+}
+
+bool Enemy::GetProjActive() const
+{
+	if (!snowBall) return false;
+
+	return snowBall->GetActive();
 }
 
 void Enemy::SetPlayerObj(GameObject * _playerObj)
@@ -92,10 +119,8 @@ void Enemy::SetSpriteAnim(Mesh * _sprite)
 	if (spriteAnim)
 		return;
 
-	//spriteAnim = new SpriteAnimation(_sprite, 4, 4);
-	spriteAnim = dynamic_cast<SpriteAnimation*>(_sprite);
-	spriteAnim->m_anim = new Animation();
-	spriteAnim->m_anim->Set(0, 15, 0, 1.f, true);
+	spriteAnim = new SpriteAnimation();
+	spriteAnim->Set(dynamic_cast<SpriteMesh*>(_sprite), 0, 15, 0, 1.f, true);
 }
 
 void Enemy::SetProjFired(bool _projFired)
@@ -111,10 +136,10 @@ void Enemy::PushProjectile(GameObject * _projObj, Vector3 _scale, float _spd)
 	_projObj->dir = (playerObj->pos - _projObj->pos).Normalized() + Vector3(0.f, 1.f, 0.f);
 	_projObj->normal.Set(0.f, 1.f, 0.f);
 	_projObj->mass = .1f;
-	_projObj->vel = _projObj->dir/* * (playerObj->pos - _projObj->pos).Length()*/;
+	_projObj->vel = _projObj->dir;
 	projSpd = _spd;
 
-	projList.push_back(_projObj);
+	snowBall = _projObj;
 }
 
 void Enemy::RunYeti(double dt)
@@ -124,34 +149,23 @@ void Enemy::RunYeti(double dt)
 		projFired = true;
 	}
 
-	for (unsigned i = 0; i < projList.size(); ++i)
+	if (!snowBall)
+		return;
+
+	Physics::K1(snowBall->vel, Vector3(0.f, -9.8f * snowBall->mass, 0.f), (float)dt, snowBall->vel);
+	snowBall->pos += snowBall->vel * projSpd * (float)dt;
+
+	if ((playerObj->pos - snowBall->pos).LengthSquared()
+		<= (playerObj->scale.x * 0.5f + snowBall->scale.x) * (playerObj->scale.x * 0.5f + snowBall->scale.x))
 	{
-		Physics::K1(projList[i]->vel, Vector3(0.f, -9.8f * projList[i]->mass, 0.f), (float)dt, projList[i]->vel);
-		projList[i]->pos += projList[i]->vel * projSpd * (float)dt;
-
-		if ((playerObj->pos - projList[i]->pos).LengthSquared()
-			<= (playerObj->scale.x * 0.5f + projList[i]->scale.x) * (playerObj->scale.x * 0.5f + projList[i]->scale.x))
-		{
-			playerObj->vel *= 0.5f;
-			projList[i]->SetActive(false);
-		}
-
-		if (projList[i]->pos.y < 0)
-			projList[i]->SetActive(false);
-
-		if (!projList[i]->GetActive())
-			projList.erase(projList.begin() + i);
+		playerObj->vel *= 0.5f;
+		snowBall->SetActive(false);
 	}
+
+	if (snowBall->pos.y < 0)
+		snowBall->SetActive(false);
+
+	if (!snowBall->GetActive())
+		snowBall = nullptr;
 }
 
-void Enemy::RunKing(double dt)
-{
-	if (Collider::CheckCollision(enemyObj, bombObj))
-		enemyObj->SetActive(false);
-}
-
-void Enemy::RunKnight(double dt)
-{
-	if (Collider::CheckCollision(enemyObj, bombObj))
-		enemyObj->SetActive(false);
-}

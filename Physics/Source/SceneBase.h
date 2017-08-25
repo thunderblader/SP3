@@ -11,6 +11,8 @@
 #include <vector>
 
 class ParticleObject;
+class SpriteMesh;
+class SpriteAnimation;
 
 class SceneBase : public Scene
 {
@@ -121,6 +123,7 @@ public:
 	void RenderText(Mesh* mesh, std::string text, Color color);
 	void RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y);
 	void RenderMesh(Mesh *mesh, bool enableLight);
+	void RenderSpriteMesh(SpriteMesh* mesh, bool enableLight, int m_currentFrame);
 	void RenderMeshIn2D(Mesh *mesh, bool enableLight, double m_width = 160, double m_height = 120, float sizeX = 1.f, float sizeY = 1.f, float x = 0.0f, float y = 0.0f);
 	void RenderGO(GameObject *go);
 
