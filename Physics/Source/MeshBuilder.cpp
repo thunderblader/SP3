@@ -526,7 +526,7 @@ Mesh* MeshBuilder::GenerateTerrain(const std::string &meshName, const std::strin
 	return mesh;
 }
 
-SpriteAnimation * MeshBuilder::GenerateSpriteAnimation(const std::string & meshName, unsigned numRow, unsigned numCol, float alpha)
+SpriteMesh * MeshBuilder::GenerateSprite(const std::string & meshName, unsigned numRow, unsigned numCol, float alpha)
 {
 	Vertex v;
 	std::vector<Vertex> vertex_buffer_data;
@@ -573,7 +573,7 @@ SpriteAnimation * MeshBuilder::GenerateSpriteAnimation(const std::string & meshN
 		}
 	}
 
-	SpriteAnimation *mesh = new SpriteAnimation(meshName, numRow, numCol);
+	SpriteMesh *mesh = new SpriteMesh(meshName, numRow, numCol);
 
 	glBindBuffer(GL_ARRAY_BUFFER, mesh->vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, vertex_buffer_data.size() * sizeof(Vertex), &vertex_buffer_data[0], GL_STATIC_DRAW);

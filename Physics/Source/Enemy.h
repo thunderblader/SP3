@@ -19,9 +19,13 @@ public:
 	void Exit();
 	void Reset();
 
+	Vector3 GetPos() const;
+	Vector3 GetScale() const;
+	SpriteAnimation * GetSprite();
 	int GetCurAnimFrame() const;
 	bool GetActive() const;
 	bool GetProjFired() const;
+	bool GetProjActive() const;
 
 	void SetPlayerObj(GameObject* _playerObj);
 	void SetBombObj(GameObject* _bombObj);
@@ -39,8 +43,6 @@ protected:
 	};
 
 	void RunYeti(double dt);
-	void RunKing(double dt);
-	void RunKnight(double dt);
 
 private:
 	static GameObject* playerObj;
@@ -50,7 +52,7 @@ private:
 	ENEMY_STATE curState;
 	SpriteAnimation* spriteAnim;
 
-	vector<GameObject*> projList;
+	GameObject* snowBall;
 	float projSpd;
 	bool projFired;
 };
