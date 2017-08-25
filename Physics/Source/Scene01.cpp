@@ -76,7 +76,6 @@ void Scene01::Init()
 
 	shop.Load_Shop();
 
-	shop.Purchase_Item(1);
 	item_node = Tree::getInstance();
 
 	m_ghost = new GameObject(GameObject::GO_BALL);
@@ -309,6 +308,7 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 	case GameObject::GO_COIN:
 		go2->SetActive(false);
 		sound_engine->play2D("Sound//getitem.wav");
+		shop.Add_gold(10);
 		break;
 	}
 }
@@ -930,9 +930,10 @@ void Scene01::Render()
 		RenderMesh(meshList[GEO_SCREEN], false);
 
 		RenderMeshIn2D(meshList[GEO_SHOP], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.5f, m_worldHeight - scaleY - scaleY * 0.5f);
-		ss.str("");
-		ss << item_node->root.name;
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 15, 42);
+		if (item_node->root.id == 1)
+		{
+			RenderMeshIn2D(meshList[GEO_SIZE], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.2f, m_worldHeight - (scaleY * 2.5f));
+		}
 		ss.str("");
 		ss << "ID: " << item_node->root.data;
 		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 15, 39);
