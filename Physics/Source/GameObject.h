@@ -25,6 +25,7 @@ public:
 		GO_PU_RANGE,
 		GO_PU_POWER,
 		GO_SCREEN,
+		GO_COIN,
 		GO_TOTAL //must be last
 	};
 

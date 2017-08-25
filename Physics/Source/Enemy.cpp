@@ -2,9 +2,13 @@
 #include "Physics\Physics.h"
 #include "Mesh.h"
 #include "Physics\Collision.h"
+#include "Terrain\LoadHmap.h"
 
 GameObject* Enemy::playerObj = 0;
 GameObject* Enemy::bombObj = 0;
+vector<unsigned char>* Enemy::m_heightMap = 0;
+float Enemy::m_terrainWidth = 0;
+float Enemy::m_terrainHeight = 0;
 
 Enemy::Enemy()
 	: enemyObj(nullptr)
@@ -114,6 +118,13 @@ void Enemy::SetBombObj(GameObject * _bombObj)
 		bombObj = _bombObj;
 }
 
+void Enemy::SetHeightMap(vector<unsigned char>* _heightMap, float _terrainWidth, float _terrainHeight)
+{
+	m_heightMap = _heightMap;
+	m_terrainWidth = _terrainWidth;
+	m_terrainHeight = _terrainHeight;
+}
+
 void Enemy::SetSpriteAnim(Mesh * _sprite)
 {
 	if (spriteAnim)
@@ -144,16 +155,36 @@ void Enemy::PushProjectile(GameObject * _projObj, Vector3 _scale, float _spd)
 
 void Enemy::RunYeti(double dt)
 {
-	if (GetCurAnimFrame() == 11 && !projFired)
+	switch (curState)
 	{
-		projFired = true;
+	case IDLE:
+		if (spriteAnim->GetCurFrame() == 0)
+			spriteAnim->SetActive(false);
+
+		if (!GetProjActive())
+			curState = ATTACK;
+		break;
+
+	case ATTACK:
+		spriteAnim->SetActive(true);
+
+		if (GetProjFired())
+			curState = IDLE;
+		break;
+
+	default:
+		break;
 	}
 
 	if (!snowBall)
 		return;
 
-	Physics::K1(snowBall->vel, Vector3(0.f, -9.8f * snowBall->mass, 0.f), (float)dt, snowBall->vel);
-	snowBall->pos += snowBall->vel * projSpd * (float)dt;
+	float tHeight = m_terrainHeight * ReadHeightMap(*m_heightMap, (snowBall->pos.x + m_terrainWidth * 0.5f) / m_terrainWidth, 0.f);
+	if (tHeight <= snowBall->pos.y - snowBall->scale.y)
+	{
+		Physics::K1(snowBall->vel, Vector3(0.f, -9.8f * snowBall->mass, 0.f), (float)dt, snowBall->vel);
+		snowBall->pos += snowBall->vel * projSpd * (float)dt;
+	}
 
 	if ((playerObj->pos - snowBall->pos).LengthSquared()
 		<= (playerObj->scale.x * 0.5f + snowBall->scale.x) * (playerObj->scale.x * 0.5f + snowBall->scale.x))

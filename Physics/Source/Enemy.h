@@ -29,6 +29,7 @@ public:
 
 	void SetPlayerObj(GameObject* _playerObj);
 	void SetBombObj(GameObject* _bombObj);
+	void SetHeightMap(vector<unsigned char>* _heightMap, float _terrainWidth, float _terrainHeight);
 	void SetSpriteAnim(Mesh* _sprite);
 	void SetProjFired(bool _projFired);
 
@@ -47,6 +48,9 @@ protected:
 private:
 	static GameObject* playerObj;
 	static GameObject* bombObj;
+	static vector<unsigned char>* m_heightMap;
+	static float m_terrainWidth;
+	static float m_terrainHeight;
 	GameObject* enemyObj;
 	Vector3 defaultPos;
 	ENEMY_STATE curState;

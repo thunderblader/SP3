@@ -165,7 +165,7 @@ bool Load_File::Load_Data(const string saveFileName)
 	return true;
 }
 
-bool Load_File::Save_Data(int data1, int data2, int data3, Tree::avl_node &node, const string saveFileName)
+bool Load_File::Save_Data(int data1, int data2, int data3, Tree::avl_node & node, const string saveFileName)
 {
 	ofstream myfile;
 	myfile.open(saveFileName.c_str(), ios::out | ios::ate);
