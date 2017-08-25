@@ -97,6 +97,7 @@ void Scene01::Init()
 
 	enemy->SetPlayerObj(playerObj);
 	enemy->SetBombObj(bombObj);
+	enemy->SetHeightMap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
 
 	SpawnPowerups();
 	 
