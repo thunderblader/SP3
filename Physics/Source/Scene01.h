@@ -118,6 +118,7 @@ protected:
 	bool debug;
 
 	SpriteAnimation *coinanim;
+	SpriteAnimation *sledyetianim;
 };
 
 #endif

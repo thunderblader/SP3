@@ -26,6 +26,7 @@ public:
 		GO_PU_POWER,
 		GO_SCREEN,
 		GO_COIN,
+		GO_SLEDYETI,
 		GO_TOTAL //must be last
 	};
 

@@ -115,6 +115,7 @@ public:
 		GEO_JUMP,
 		GEO_BOOST,
 		GEO_COIN,
+		GEO_SLEDYETI,
 
 		NUM_GEOMETRY,
 	};

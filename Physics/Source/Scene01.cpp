@@ -112,7 +112,17 @@ void Scene01::Init()
 	debug = false;
 	
 	coinanim = new SpriteAnimation();
-	coinanim->Set(dynamic_cast<SpriteMesh*>(meshList[GEO_COIN]), 0, 5, 0, 1, true);
+	coinanim->Set(dynamic_cast<SpriteMesh*>(meshList[GEO_COIN]), 0, 5, -1, 1, true);
+	sledyetianim = new SpriteAnimation();
+	sledyetianim->Set(dynamic_cast<SpriteMesh*>(meshList[GEO_SLEDYETI]), 0, 13, -1, 1, true);
+
+	GameObject *sledyeti;
+	sledyeti = FetchGO();
+	sledyeti->SetActive(true);
+	sledyeti->type = GameObject::GO_SLEDYETI;
+	sledyeti->mass = 5;
+	sledyeti->scale.Set(10, 10, 1);
+	sledyeti->pos.Set(-m_TerrainWidth + 10, 20, 0);
 }
 
 GameObject* Scene01::FetchGO()
@@ -444,7 +454,7 @@ void Scene01::Update(double dt)
 	}
 
 	coinanim->Update(dt);
-
+	sledyetianim->Update(dt);
 	if (KeyboardController::GetInstance()->IsKeyPressed('I'))
 	{
 		if (in_shop == false)
@@ -808,6 +818,11 @@ void Scene01::RenderGO(GameObject *go)
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
 		RenderSpriteMesh(coinanim->GetMesh(), false, coinanim->GetCurFrame());
+		break;
+	case GameObject::GO_SLEDYETI:
+		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
+		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
+		RenderSpriteMesh(sledyetianim->GetMesh(), false, sledyetianim->GetCurFrame());
 		break;
 	}
 
