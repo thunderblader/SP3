@@ -130,7 +130,7 @@ void SceneBase::Init()
 	meshList[GEO_BOOM] = MeshBuilder::GenerateQuad("boom", Color(0.f, 0.f, 0.f), 1.f);
 	meshList[GEO_BOOM]->textureID = LoadTGA("Image//boom.tga");
 	meshList[GEO_SCREEN] = MeshBuilder::GenerateQuad("Screen", Color(0.f, 0.f, 0.f), 1.f);
-	meshList[GEO_SCREEN]->textureID = LoadTGA("Image//Screen.tga");
+	meshList[GEO_SCREEN]->textureID = LoadTGA("Image//Shop.tga");
 
 	meshList[GEO_SPRITE_YETI] = MeshBuilder::GenerateSpriteAnimation("yeti", 4, 4, 1.f);
 	meshList[GEO_SPRITE_YETI]->textureID = LoadTGA("Image//Sprite_YetiLeft.tga");
@@ -240,6 +240,8 @@ void SceneBase::Init()
 	//meshList[GEO_EXIT]->textureID = LoadTGA("Image//explosion.tga");
 
 	CSoundEngine::GetInstance()->Init(); 
+	
+	
 	CSoundEngine::GetInstance()->AddSound("Jump", "Image//Mario-jump-sound.mp3");
 	CSoundEngine::GetInstance()->AddSound("background-music", "Image//BGM.mp3");
 	CSoundEngine::GetInstance()->AddSound("blast", "Image//Blast.mp3");
