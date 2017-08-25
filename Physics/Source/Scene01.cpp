@@ -269,14 +269,17 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 
 	case GameObject::GO_PU_SPEED:
 		go2->SetActive(false);
+		CSoundEngine::GetInstance()->PlayASound("getitem");
 		break;
 
 	case GameObject::GO_PU_RANGE:
 		go2->SetActive(false);
+		CSoundEngine::GetInstance()->PlayASound("getitem");
 		break;
 
 	case GameObject::GO_PU_POWER:
 		go2->SetActive(false);
+		CSoundEngine::GetInstance()->PlayASound("getitem");
 		break;
 
 	case GameObject::GO_BOSS:
@@ -335,6 +338,7 @@ void Scene01::UpdateParticles(double dt)
 				particle->rotationSpeed = 0;
 				particle->rotation = Math::RadianToDegree(atan2(particle->vel.Normalized().y, particle->vel.Normalized().x)) - 270;
 				particle->pos = m_player->GetPlayerPos();
+				CSoundEngine::GetInstance()->PlayASound("blast");
 			}
 		}
 		
@@ -372,6 +376,7 @@ void Scene01::UpdateParticles(double dt)
 void Scene01::Update(double dt)
 {
 	SceneBase::Update(dt);
+	CSoundEngine::GetInstance()->PlayASound("background-music");
 	
 	if (display)
 	{
