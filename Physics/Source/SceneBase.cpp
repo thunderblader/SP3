@@ -135,6 +135,9 @@ void SceneBase::Init()
 	meshList[GEO_SPRITE_YETI] = MeshBuilder::GenerateSprite("yeti", 4, 4, 1.f);
 	meshList[GEO_SPRITE_YETI]->textureID = LoadTGA("Image//Sprite_YetiLeft.tga");
 
+	meshList[GEO_COIN] = MeshBuilder::GenerateSprite("coin", 1, 6, 1.f);
+	meshList[GEO_COIN]->textureID = LoadTGA("Image//coin.tga");
+
 	meshList[GEO_BOSS] = MeshBuilder::GenerateQuad("boss", Color(0.f, 0.f, 0.f), 1.f);
 	meshList[GEO_BOSS]->textureID = LoadTGA("Image//boss.tga");
 

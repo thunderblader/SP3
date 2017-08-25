@@ -116,6 +116,8 @@ protected:
 	ParamPhysics param_physics;
 
 	bool debug;
+
+	SpriteAnimation *coinanim;
 };
 
 #endif

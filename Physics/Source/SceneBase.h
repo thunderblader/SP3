@@ -114,6 +114,7 @@ public:
 		GEO_SPEED,
 		GEO_JUMP,
 		GEO_BOOST,
+		GEO_COIN,
 
 		NUM_GEOMETRY,
 	};

@@ -99,7 +99,7 @@ void Scene01::Init()
 	enemy->SetBombObj(bombObj);
 
 	SpawnPowerups();
-
+	 
 	m_objectCount = &playerObj->m_totalGameObjects;
 	m_particleCount = 0;
 	MAX_PARTICLE = 1000;
@@ -110,6 +110,9 @@ void Scene01::Init()
 	menustate = MENU;
 
 	debug = false;
+	
+	coinanim = new SpriteAnimation();
+	coinanim->Set(dynamic_cast<SpriteMesh*>(meshList[GEO_COIN]), 0, 5, 0, 1, true);
 }
 
 GameObject* Scene01::FetchGO()
@@ -210,6 +213,16 @@ bool Scene01::CheckCollision(GameObject * go1, GameObject * go2, float dt)
 		return (rel.Dot(dis) < 0 &&
 			dis.LengthSquared() <= combinedRadiusSq);
 	}
+
+	case GameObject::GO_COIN:
+	{
+		Vector3 dis = go1->pos - go2->pos;
+		Vector3 rel = go1->vel - go2->vel;
+		float combinedRadiusSq = (go1->scale.x + go2->scale.x / 2) * (go1->scale.x + go2->scale.x / 2);
+
+		return (rel.Dot(dis) < 0 &&
+			dis.LengthSquared() <= combinedRadiusSq);
+	}
 	}
 
 	return 0;
@@ -291,6 +304,10 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 			go2->SetActive(false);
 			++newlevel;
 		}
+		break;
+	case GameObject::GO_COIN:
+		go2->SetActive(false);
+		sound_engine->play2D("Sound//getitem.wav");
 		break;
 	}
 }
@@ -425,6 +442,8 @@ void Scene01::Update(double dt)
 
 		wind = Math::RandFloatMinMax(-10, 10);
 	}
+
+	coinanim->Update(dt);
 
 	if (KeyboardController::GetInstance()->IsKeyPressed('I'))
 	{
@@ -786,6 +805,12 @@ void Scene01::RenderGO(GameObject *go)
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
 		RenderMesh(meshList[GEO_BOSS], false);
 		break;
+
+	case GameObject::GO_COIN:
+		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
+		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
+		RenderSpriteMesh(coinanim->GetMesh(), false, coinanim->GetCurFrame());
+		break;
 	}
 
 	modelStack.PopMatrix();
@@ -1022,7 +1047,10 @@ void Scene01::SpawnPowerups()
 	for (unsigned i = 0; rX < -100.f; ++i)
 	{
 		obj = FetchGO();
-		obj->type = (GameObject::GAMEOBJECT_TYPE)Math::RandIntMinMax(GameObject::GO_PU_SPEED, GameObject::GO_PU_POWER);
+		if (Math::RandIntMinMax(0, 1))
+			obj->type = (GameObject::GAMEOBJECT_TYPE)Math::RandIntMinMax(GameObject::GO_PU_SPEED, GameObject::GO_PU_POWER);
+		else
+			obj->type = GameObject::GO_COIN;
 		obj->SetActive(true);
 		rX += Math::RandFloatMinMax(30.f, 100.f);
 		rY = Math::RandFloatMinMax(15.f, 20.f);
