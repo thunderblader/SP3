@@ -372,7 +372,6 @@ void Scene01::UpdateParticles(double dt)
 
 void Scene01::Update(double dt)
 {
-	
 	if (display)
 	{
 		Menu(dt);
@@ -384,7 +383,7 @@ void Scene01::Update(double dt)
 		for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 		{
 			GameObject *go = (GameObject *)*it;
-			if (go->GetActive() && go->type == GameObject::GO_BRICK)
+			if (go->GetActive() && (go->type == GameObject::GO_BRICK || go->type == GameObject::GO_BOSS))
 			{
 				go->SetActive(false);
 				go->type = GameObject::GO_BALL;
