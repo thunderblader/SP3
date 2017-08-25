@@ -40,6 +40,7 @@ public:
 	void Menu(double dt);
 	void RenderMenu();
 	void RenderHUD();
+	void SpawnPowerups();
 
 protected:
 	vector<GameObject *> m_goList;
@@ -110,6 +111,8 @@ protected:
 
 	// Physics Parameters
 	ParamPhysics param_physics;
+
+	bool debug;
 };
 
 #endif

@@ -10,6 +10,7 @@ Enemy::Enemy()
 	: enemyObj(nullptr)
 	, defaultPos(0.f, 0.f, 0.f)
 	, spriteAnim(nullptr)
+	, projFired(false)
 {
 }
 
@@ -29,6 +30,7 @@ void Enemy::Init(GameObject* _enemyObj, GameObject::GAMEOBJECT_TYPE _type, Vecto
 	enemyObj->colType = Collider::SPHERE;
 	curState = IDLE;
 	projSpd = 0.f;
+	projFired = false;
 }
 
 void Enemy::Update(double dt)
@@ -68,6 +70,11 @@ bool Enemy::GetActive() const
 	return enemyObj->GetActive();
 }
 
+bool Enemy::GetProjFired() const
+{
+	return projFired;
+}
+
 void Enemy::SetPlayerObj(GameObject * _playerObj)
 {
 	if (_playerObj->type == GameObject::GO_PLAYER)
@@ -85,9 +92,15 @@ void Enemy::SetSpriteAnim(Mesh * _sprite)
 	if (spriteAnim)
 		return;
 
+	//spriteAnim = new SpriteAnimation(_sprite, 4, 4);
 	spriteAnim = dynamic_cast<SpriteAnimation*>(_sprite);
 	spriteAnim->m_anim = new Animation();
 	spriteAnim->m_anim->Set(0, 15, 0, 1.f, true);
+}
+
+void Enemy::SetProjFired(bool _projFired)
+{
+	projFired = _projFired;
 }
 
 void Enemy::PushProjectile(GameObject * _projObj, Vector3 _scale, float _spd)
@@ -106,6 +119,11 @@ void Enemy::PushProjectile(GameObject * _projObj, Vector3 _scale, float _spd)
 
 void Enemy::RunYeti(double dt)
 {
+	if (GetCurAnimFrame() == 11 && !projFired)
+	{
+		projFired = true;
+	}
+
 	for (unsigned i = 0; i < projList.size(); ++i)
 	{
 		Physics::K1(projList[i]->vel, Vector3(0.f, -9.8f * projList[i]->mass, 0.f), (float)dt, projList[i]->vel);
