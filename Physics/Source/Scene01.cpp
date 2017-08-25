@@ -81,25 +81,10 @@ void Scene01::Init()
 
 	m_ghost = new GameObject(GameObject::GO_BALL);
 
-	Enemy* enemy;
-	float rX = -m_TerrainWidth + 200.f;
-	float rY;
-
-	for (unsigned i = 0; rX < -200.f; ++i)
-	{
-		rX += Math::RandFloatMinMax(100.f, 200.f);
-		rY = Math::RandFloatMinMax(50.f, 70.f);
-		enemy = new Enemy();
-		enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(rX, rY, 0.f), Vector3(10.f, 10.f, 1.f));
-		enemy->SetSpriteAnim(meshList[GEO_SPRITE_YETI]);
-		enemyList.push_back(enemy);
-	}
-
-	enemy->SetPlayerObj(playerObj);
-	enemy->SetBombObj(bombObj);
-	enemy->SetHeightMap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
-
 	SpawnPowerups();
+
+	SpawnEnemies();
+	enemyList[0]->SetPlayerObj(playerObj, bombObj);
 	 
 	m_objectCount = &playerObj->m_totalGameObjects;
 	m_particleCount = 0;
@@ -422,7 +407,7 @@ void Scene01::Update(double dt)
 		{
 			GameObject *go = (GameObject *)*it;
 			if (go->GetActive() && go->type != GameObject::GO_BOMB
-				&& go->type != GameObject::GO_PLAYER && go->type != GameObject::GO_ENEMY_SNOWYETI)
+				&& go->type != GameObject::GO_PLAYER)
 			{
 				go->SetActive(false);
 				go->type = GameObject::GO_NONE;
@@ -440,6 +425,7 @@ void Scene01::Update(double dt)
 		meshList[GEO_TERRAIN]->textureID = LoadTGA("Image//terrain.tga");
 
 		SpawnPowerups();
+		SpawnEnemies();
 
 		wind = Math::RandFloatMinMax(-10, 10);
 	}
@@ -1046,16 +1032,55 @@ void Scene01::SpawnPowerups()
 	for (unsigned i = 0; rX < -100.f; ++i)
 	{
 		obj = FetchGO();
-		if (Math::RandIntMinMax(0, 1))
-			obj->type = (GameObject::GAMEOBJECT_TYPE)Math::RandIntMinMax(GameObject::GO_PU_SPEED, GameObject::GO_PU_POWER);
-		else
+		if (Math::RandIntMinMax(0, 5))
+		{
+			rX += Math::RandFloatMinMax(20.f, 50.f);
+			rY = Math::RandFloatMinMax(15.f, 20.f);
 			obj->type = GameObject::GO_COIN;
+		}
+		else
+		{
+			rX += Math::RandFloatMinMax(30.f, 100.f);
+			rY = Math::RandFloatMinMax(15.f, 20.f);
+			obj->type = (GameObject::GAMEOBJECT_TYPE)Math::RandIntMinMax(GameObject::GO_PU_SPEED, GameObject::GO_PU_POWER);
+		}
+
 		obj->SetActive(true);
-		rX += Math::RandFloatMinMax(30.f, 100.f);
-		rY = Math::RandFloatMinMax(15.f, 20.f);
 		obj->pos.Set(rX, m_TerrainHeight * ReadHeightMap(m_heightMap, (rX + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f) + rY, 0.f);
 		obj->scale.Set(5.f, 5.f, 5.f);
 	}
+}
+
+void Scene01::SpawnEnemies()
+{
+	if (!enemyList.empty())
+	{
+		vector<Enemy*>::iterator it, end;
+		end = enemyList.end();
+		for (it = enemyList.begin(); it != end; ++it)
+		{
+			(*it)->Exit();
+			delete *it;
+		}
+
+		while (!enemyList.empty()) enemyList.pop_back();
+	}
+
+	Enemy* enemy;
+	float rX = -m_TerrainWidth + 200.f;
+	float rY;
+
+	for (unsigned i = 0; rX < -200.f; ++i)
+	{
+		rX += Math::RandFloatMinMax(100.f, 200.f);
+		rY = Math::RandFloatMinMax(40.f, 80.f);
+		enemy = new Enemy();
+		enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(rX, rY, 0.f), Vector3(10.f, 10.f, 1.f));
+		enemy->SetSpriteAnim(meshList[GEO_SPRITE_YETI]);
+		enemyList.push_back(enemy);
+	}
+
+	enemy->SetHeightMap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
 }
 
 void Scene01::Exit()

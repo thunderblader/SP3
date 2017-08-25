@@ -42,6 +42,7 @@ public:
 	void RenderMenu();
 	void RenderHUD();
 	void SpawnPowerups();
+	void SpawnEnemies();
 
 protected:
 	vector<GameObject *> m_goList;

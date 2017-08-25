@@ -27,8 +27,7 @@ public:
 	bool GetProjFired() const;
 	bool GetProjActive() const;
 
-	void SetPlayerObj(GameObject* _playerObj);
-	void SetBombObj(GameObject* _bombObj);
+	void SetPlayerObj(GameObject* _playerObj, GameObject* _bombObj);
 	void SetHeightMap(vector<unsigned char>* _heightMap, float _terrainWidth, float _terrainHeight);
 	void SetSpriteAnim(Mesh* _sprite);
 	void SetProjFired(bool _projFired);

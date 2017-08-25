@@ -62,6 +62,23 @@ void Enemy::Update(double dt)
 
 void Enemy::Exit()
 {
+	if (snowBall)
+	{
+		snowBall->SetActive(false);
+		snowBall = nullptr;
+	}
+
+	if (spriteAnim)
+	{
+		delete spriteAnim;
+		spriteAnim = nullptr;
+	}
+
+	if (enemyObj)
+	{
+		enemyObj->type = GameObject::GO_NONE;
+		enemyObj->SetActive(false);
+	}
 }
 
 void Enemy::Reset()
@@ -106,14 +123,11 @@ bool Enemy::GetProjActive() const
 	return snowBall->GetActive();
 }
 
-void Enemy::SetPlayerObj(GameObject * _playerObj)
+void Enemy::SetPlayerObj(GameObject * _playerObj, GameObject* _bombObj)
 {
 	if (_playerObj->type == GameObject::GO_PLAYER)
 		playerObj = _playerObj;
-}
 
-void Enemy::SetBombObj(GameObject * _bombObj)
-{
 	if (_bombObj->type == GameObject::GO_BOMB)
 		bombObj = _bombObj;
 }
