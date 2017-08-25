@@ -371,12 +371,14 @@ void Scene01::UpdateParticles(double dt)
 
 void Scene01::Update(double dt)
 {
+	SceneBase::Update(dt);
 	
 	if (display)
 	{
 		Menu(dt);
 		return;
 	}
+
 	if (newlevel != currlevel && !m_player->GetExploded())
 	{
 		currlevel = newlevel;
@@ -407,8 +409,6 @@ void Scene01::Update(double dt)
 
 		wind = Math::RandFloatMinMax(-10, 10);
 	}
-
-	SceneBase::Update(dt);
 
 	if (KeyboardController::GetInstance()->IsKeyPressed('I'))
 	{

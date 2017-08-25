@@ -92,6 +92,7 @@ void Enemy::SetSpriteAnim(Mesh * _sprite)
 	if (spriteAnim)
 		return;
 
+	//spriteAnim = new SpriteAnimation(_sprite, 4, 4);
 	spriteAnim = dynamic_cast<SpriteAnimation*>(_sprite);
 	spriteAnim->m_anim = new Animation();
 	spriteAnim->m_anim->Set(0, 15, 0, 1.f, true);
