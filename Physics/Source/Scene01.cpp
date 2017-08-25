@@ -476,11 +476,9 @@ void Scene01::Update(double dt)
 	{
 		(*it)->Update(dt);
 
-		cout << enemyList[0]->GetCurAnimFrame() << endl;
-
-		if (!((*it)->GetProjFired()) && !((*it)->GetProjActive()) && ((*it)->GetCurAnimFrame() == 11))
+		if (!(*it)->GetProjFired() && !(*it)->GetProjActive() && (*it)->GetCurAnimFrame() == 11)
 		{
-			(*it)->PushProjectile(FetchGO(), Vector3(1.f, 1.f, 1.f), 10.f);
+			(*it)->PushProjectile(FetchGO(), Vector3(1.f, 1.f, 1.f), 30.f);
 			(*it)->SetProjFired(true);
 		}
 		else if ((*it)->GetCurAnimFrame() == 12)

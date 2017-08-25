@@ -52,17 +52,23 @@ void SpriteAnimation::Update(double dt)
 
 	if (m_currentTime >= animTime)
 	{
-		if (repeatCount == 0 || repeatCount <= m_playCount)
+		if (repeatCount > 0)
+		{
+			m_currentTime = 0.f;
+			m_currentFrame = startFrame;
+			--repeatCount;
+			++m_playCount;
+		}
+		else if (repeatCount == 0)
 		{
 			animActive = false;
 			m_currentTime = 0.f;
 			m_currentFrame = startFrame;
 			repeatCount = 0;
-			m_playCount = 0;
 			ended = true;
 		}
 
-		if (repeatCount >= 1)
+		if (repeatCount < 0)
 		{
 			m_currentTime = 0.f;
 			m_currentFrame = startFrame;

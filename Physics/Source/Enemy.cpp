@@ -5,6 +5,7 @@
 
 GameObject* Enemy::playerObj = 0;
 GameObject* Enemy::bombObj = 0;
+vector<unsigned char>* Enemy::m_heightMap = 0;
 
 Enemy::Enemy()
 	: enemyObj(nullptr)
@@ -114,6 +115,11 @@ void Enemy::SetBombObj(GameObject * _bombObj)
 		bombObj = _bombObj;
 }
 
+void Enemy::SetHeightMap(vector<unsigned char>* _heightMap)
+{
+	m_heightMap = _heightMap;
+}
+
 void Enemy::SetSpriteAnim(Mesh * _sprite)
 {
 	if (spriteAnim)
@@ -144,9 +150,25 @@ void Enemy::PushProjectile(GameObject * _projObj, Vector3 _scale, float _spd)
 
 void Enemy::RunYeti(double dt)
 {
-	if (GetCurAnimFrame() == 11 && !projFired)
+	switch (curState)
 	{
-		projFired = true;
+	case IDLE:
+		if (spriteAnim->GetCurFrame() == 0)
+			spriteAnim->SetActive(false);
+
+		if (!GetProjActive())
+			curState = ATTACK;
+		break;
+
+	case ATTACK:
+		spriteAnim->SetActive(true);
+
+		if (GetProjFired())
+			curState = IDLE;
+		break;
+
+	default:
+		break;
 	}
 
 	if (!snowBall)
