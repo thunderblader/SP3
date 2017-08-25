@@ -165,7 +165,7 @@ bool Load_File::Load_Data(const string saveFileName)
 	return true;
 }
 
-bool Load_File::Save_Data(int data1, int data2, int data3, const string saveFileName)
+bool Load_File::Save_Data(int data1, int data2, int data3, Tree::avl_node &node, const string saveFileName)
 {
 	ofstream myfile;
 	myfile.open(saveFileName.c_str(), ios::out | ios::ate);
@@ -175,6 +175,26 @@ bool Load_File::Save_Data(int data1, int data2, int data3, const string saveFile
 		myfile << "Level=" << data1 << endl;
 		myfile << "Score=" << data2 << endl;
 		myfile << "Gold=" << data3 << endl;
+		if (node.id == 1)
+		{
+			myfile << "item1=" << node.has_item << endl;
+			myfile << "item1_level=" << node.item_count << endl;
+		}
+		if (node.id == 2)
+		{
+			myfile << "item2=" << node.has_item << endl;
+			myfile << "item2_level=" << node.item_count << endl;
+		}
+		if (node.id == 3)
+		{
+			myfile << "item3=" << node.has_item << endl;
+			myfile << "item3_level=" << node.item_count << endl;
+		}
+		if (node.id == 4)
+		{
+			myfile << "item4=" << node.has_item << endl;
+			myfile << "item4_level=" << node.item_count << endl;
+		}
 		cout << "saved" << endl;
 		myfile.close();
 		return true;

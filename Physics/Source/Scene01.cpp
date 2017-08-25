@@ -3,7 +3,6 @@
 #include "Application.h"
 #include "KeyboardController.h"
 #include "MouseController.h"
-#include "SoundEngine.h"
 #include "Terrain\LoadHmap.h"
 #include "Physics\Physics.h"
 #include "Particle\Particle.h"
@@ -47,10 +46,12 @@ void Scene01::Init()
 
 	m_ballCount = 0;
 
+
 	m_tries = 3;
 	Score = 0;
 	time_limit = 0;
 	item_id = 0;
+	Level_data = 0;
 
 	free_look = false;
 	in_shop = false;
@@ -269,14 +270,17 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 
 	case GameObject::GO_PU_SPEED:
 		go2->SetActive(false);
+		sound_engine->play2D("Sound//getitem.wav");
 		break;
 
 	case GameObject::GO_PU_RANGE:
 		go2->SetActive(false);
+		sound_engine->play2D("Sound//getitem.wav");
 		break;
 
 	case GameObject::GO_PU_POWER:
 		go2->SetActive(false);
+		sound_engine->play2D("Sound//getitem.wav");
 		break;
 
 	case GameObject::GO_BOSS:
@@ -335,6 +339,7 @@ void Scene01::UpdateParticles(double dt)
 				particle->rotationSpeed = 0;
 				particle->rotation = Math::RadianToDegree(atan2(particle->vel.Normalized().y, particle->vel.Normalized().x)) - 270;
 				particle->pos = m_player->GetPlayerPos();
+				sound_engine->play2D("Sound//blast.mp3");
 			}
 		}
 		
@@ -372,13 +377,24 @@ void Scene01::UpdateParticles(double dt)
 void Scene01::Update(double dt)
 {
 	SceneBase::Update(dt);
-	
+
 	if (display)
 	{
 		Menu(dt);
+		if (!sound_engine->isCurrentlyPlaying("Sound//mainmenu.mp3"))
+		{
+			sound_engine->play2D("Sound//mainmenu.mp3", true);
+		}
 		return;
 	}
-
+	if (sound_engine->isCurrentlyPlaying("Sound//mainmenu.mp3"))
+	{
+		sound_engine->stopAllSounds();
+	}
+	if (!sound_engine->isCurrentlyPlaying("Sound//gameplay.mp3"))
+	{
+		sound_engine->play2D("Sound//gameplay.mp3", true);
+	}
 	if (newlevel != currlevel && !m_player->GetExploded())
 	{
 		currlevel = newlevel;
@@ -432,18 +448,16 @@ void Scene01::Update(double dt)
 
 	if (KeyboardController::GetInstance()->IsKeyPressed('L'))
 	{
-		//file.Save_Data(Level, Score, Gold);
+		file.Save_Data(Level_data, Score, Gold, item_node->root);
 	}
 	if (KeyboardController::GetInstance()->IsKeyPressed('K'))
 	{
 		//file.Load_Data();
 	}
-
 	if (KeyboardController::GetInstance()->IsKeyPressed('8'))
 	{
 		debug = !debug;
 	}
-
 	if (KeyboardController::GetInstance()->IsKeyPressed('9'))
 	{
 		m_speed = Math::Max(0.f, m_speed - 0.1f);
@@ -886,7 +900,7 @@ void Scene01::Render()
 		
 		modelStack.Translate(camera.position.x + 65, camera.position.y + 50, 1);
 		modelStack.Scale((float)Application::GetWindowWidth(), 85, 1);
-		RenderMesh(meshList[GEO_CUBE], false);
+		RenderMesh(meshList[GEO_SCREEN], false);
 
 		ss.str("");
 		ss << "Shop";

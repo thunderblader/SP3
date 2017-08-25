@@ -11,6 +11,7 @@
 #include "Shop.h"
 #include "ParameterPhysics.h"
 #include "Tree.h"
+#include "SoundEngine.h"
 
 #include <vector>
 
@@ -79,7 +80,9 @@ protected:
 	int Score;
 	int Gold;
 	int item_id;
+	int Level_data;
 	float wind;
+	irrklang::ISoundEngine* sound_engine = irrklang::createIrrKlangDevice();
 
 	enum MENU {
 		MENU = 1,

@@ -17,25 +17,12 @@ void Scene01::Camera_Control(double dt)
 			free_look = false;
 		}
 	}
-	if (free_look == false)
-	{
-		camera.position.x = 0;
-		camera.target.x = 0;
-		camera.position.y = 0;
-		camera.target.y = 0;
-	}
-
 	if (free_look == true)
 	{
-		//camera.position.y = m_player->Get_PlayerPos().y - 45;
-		//camera.target.y = m_player->Get_PlayerPos().y - 45;
-
 		if (KeyboardController::GetInstance()->IsKeyDown('A'))
 		{
-			//CSoundEngine::GetInstance()->PlayASound("Jump");
 			camera.position.x -= (float)dt * 50.f;
 			camera.target.x -= (float)dt * 50.f;
-
 		}
 		else if (KeyboardController::GetInstance()->IsKeyDown('D'))
 		{
@@ -47,7 +34,10 @@ void Scene01::Camera_Control(double dt)
 	{
 		camera.position.x = m_player->GetPlayerPos().x - 30;
 		camera.target.x = m_player->GetPlayerPos().x - 30;
+		if (camera.position.x < -1000)
+		{
+			camera.position.x = -1000;
+			camera.target.x = -1000;
+		}
 	}
-	//std::cout << camera.position.x << std::endl;
-	//std::cout << free_look << std::endl;
 }
