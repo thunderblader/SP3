@@ -16,12 +16,12 @@ private:
 public:
 	struct avl_node
 	{
-		string name;	//name of item
+		string name;
 		int id;
 		int item_count;
-		int data;	//data,price,stats
+		int data;
 		int price;
-		bool has_item;	//check if player has item
+		bool has_item;	
 	};
 	
 	~Tree();
@@ -35,7 +35,6 @@ public:
 	Tree* balance(Tree *);
 	Tree* insert(Tree *, int data, int item_count, int stat, bool has_item, int price, string name);
 	void inorder(Tree *);
-	int search(Tree *, int value);
 	Tree* retreve_item(Tree*, int value);
 	void set_item(int id);
 

@@ -137,6 +137,8 @@ void SceneBase::Init()
 
 	meshList[GEO_COIN] = MeshBuilder::GenerateSprite("coin", 1, 6, 1.f);
 	meshList[GEO_COIN]->textureID = LoadTGA("Image//coin.tga");
+	meshList[GEO_SLEDYETI] = MeshBuilder::GenerateSprite("sledyeti", 3, 5, 1.f);
+	meshList[GEO_SLEDYETI]->textureID = LoadTGA("Image//sledyeti.tga");
 
 	meshList[GEO_BOSS] = MeshBuilder::GenerateQuad("boss", Color(0.f, 0.f, 0.f), 1.f);
 	meshList[GEO_BOSS]->textureID = LoadTGA("Image//boss.tga");
@@ -218,8 +220,8 @@ void SceneBase::Init()
 	meshList[GEO_LEVELBACK] = MeshBuilder::GenerateQuad("levelback", Color(1, 1, 1), 1.f);
 	meshList[GEO_LEVELBACK]->textureID = LoadTGA("Image//levelback.tga");
 
-	meshList[GEO_5HOP] = MeshBuilder::GenerateQuad("Shop", Color(1, 1, 1), 1.f);
-	meshList[GEO_5HOP]->textureID = LoadTGA("Image//Shop.tga");
+	meshList[GEO_SHOP] = MeshBuilder::GenerateQuad("Shop", Color(1, 1, 1), 1.f);
+	meshList[GEO_SHOP]->textureID = LoadTGA("Image//Shop.tga");
 	meshList[GEO_SIZE] = MeshBuilder::GenerateQuad("Size", Color(1, 1, 1), 1.f);
 	meshList[GEO_SIZE]->textureID = LoadTGA("Image//Size.tga");
 	meshList[GEO_SPEED] = MeshBuilder::GenerateQuad("Speed", Color(1, 1, 1), 1.f);
