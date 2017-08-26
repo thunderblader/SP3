@@ -27,14 +27,14 @@ Enemy::~Enemy()
 	}
 }
 
-void Enemy::Init(GameObject* _enemyObj, GameObject::GAMEOBJECT_TYPE _type, Vector3 _pos, Vector3 _scale)
+void Enemy::Init(GameObject* _enemyObj, GameObject::GAMEOBJECT_TYPE _type, Vector3 _pos, Vector3 _scale, float _mass)
 {
 	enemyObj = _enemyObj;
 	enemyObj->type = _type;
 	enemyObj->pos = _pos;
 	defaultPos = _pos;
 	enemyObj->scale = _scale;
-	enemyObj->mass = 1.f;
+	enemyObj->mass = _mass;
 	enemyObj->vel.Set(0.f, 0.f, 0.f);
 	enemyObj->colType = Collider::SPHERE;
 	curState = IDLE;
@@ -56,6 +56,7 @@ void Enemy::Update(double dt)
 	switch (enemyObj->type)
 	{
 	case GameObject::GO_ENEMY_SNOWYETI: RunYeti(dt); break;
+	case GameObject::GO_SLEDYETI: RunSledYeti(dt); break;
 	default: break;
 	}
 }
@@ -139,13 +140,13 @@ void Enemy::SetHeightMap(vector<unsigned char>* _heightMap, float _terrainWidth,
 	m_terrainHeight = _terrainHeight;
 }
 
-void Enemy::SetSpriteAnim(Mesh * _sprite)
+void Enemy::SetSpriteAnim(Mesh * _sprite, int _startFrame, int _endFrame, int _repeat, float _time, bool _active)
 {
 	if (spriteAnim)
 		return;
 
 	spriteAnim = new SpriteAnimation();
-	spriteAnim->Set(dynamic_cast<SpriteMesh*>(_sprite), 0, 15, 0, 1.f, true);
+	spriteAnim->Set(dynamic_cast<SpriteMesh*>(_sprite), _startFrame, _endFrame, _repeat, _time, _active);
 }
 
 void Enemy::SetProjFired(bool _projFired)
@@ -158,7 +159,8 @@ void Enemy::PushProjectile(GameObject * _projObj, Vector3 _scale, float _spd)
 	_projObj->type = GameObject::GO_PROJ_SNOWBALL;	// Set type to projectile
 	_projObj->pos = enemyObj->pos;
 	_projObj->scale = _scale;
-	_projObj->dir = (playerObj->pos - _projObj->pos).Normalized() + Vector3(0.f, 1.f, 0.f);
+	//_projObj->dir = (playerObj->pos - _projObj->pos).Normalized() + Vector3(0.f, 1.f, 0.f);
+	_projObj->dir = Vector3(0.f, -9.8f, 0.f);
 	_projObj->normal.Set(0.f, 1.f, 0.f);
 	_projObj->mass = .1f;
 	_projObj->vel = _projObj->dir;
@@ -175,7 +177,7 @@ void Enemy::RunYeti(double dt)
 		if (spriteAnim->GetCurFrame() == 0)
 			spriteAnim->SetActive(false);
 
-		if (!GetProjActive())
+		if (!GetProjActive() && abs(playerObj->pos.x - enemyObj->pos.x) <= 100.f)
 			curState = ATTACK;
 		break;
 
@@ -196,7 +198,7 @@ void Enemy::RunYeti(double dt)
 	float tHeight = m_terrainHeight * ReadHeightMap(*m_heightMap, (snowBall->pos.x + m_terrainWidth * 0.5f) / m_terrainWidth, 0.f);
 	if (tHeight <= snowBall->pos.y - snowBall->scale.y)
 	{
-		Physics::K1(snowBall->vel, Vector3(0.f, -9.8f * snowBall->mass, 0.f), (float)dt, snowBall->vel);
+		//Physics::K1(snowBall->vel, Vector3(0.f, -9.8f * snowBall->mass, 0.f), (float)dt, snowBall->vel);
 		snowBall->pos += snowBall->vel * projSpd * (float)dt;
 	}
 
@@ -212,5 +214,10 @@ void Enemy::RunYeti(double dt)
 
 	if (!snowBall->GetActive())
 		snowBall = nullptr;
+}
+
+void Enemy::RunSledYeti(double dt)
+{
+	// Physics can be done here
 }
 

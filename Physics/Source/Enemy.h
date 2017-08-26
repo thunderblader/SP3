@@ -14,7 +14,7 @@ public:
 	Enemy();
 	~Enemy();
 
-	void Init(GameObject* _enemyObj, GameObject::GAMEOBJECT_TYPE _type, Vector3 _pos, Vector3 _scale);
+	void Init(GameObject* _enemyObj, GameObject::GAMEOBJECT_TYPE _type, Vector3 _pos, Vector3 _scale, float _mass = 1.f);
 	void Update(double dt);
 	void Exit();
 	void Reset();
@@ -29,7 +29,7 @@ public:
 
 	void SetPlayerObj(GameObject* _playerObj, GameObject* _bombObj);
 	void SetHeightMap(vector<unsigned char>* _heightMap, float _terrainWidth, float _terrainHeight);
-	void SetSpriteAnim(Mesh* _sprite);
+	void SetSpriteAnim(Mesh* _sprite, int _startFrame, int _endFrame, int _repeat, float _time, bool _active);
 	void SetProjFired(bool _projFired);
 
 	void PushProjectile(GameObject* _projObj, Vector3 _scale, float _spd);
@@ -43,6 +43,7 @@ protected:
 	};
 
 	void RunYeti(double dt);
+	void RunSledYeti(double dt);
 
 private:
 	static GameObject* playerObj;

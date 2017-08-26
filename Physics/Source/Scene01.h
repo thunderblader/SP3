@@ -119,7 +119,7 @@ protected:
 	bool debug;
 
 	SpriteAnimation *coinanim;
-	SpriteAnimation *sledyetianim;
+	//SpriteAnimation *sledyetianim;
 };
 
 #endif

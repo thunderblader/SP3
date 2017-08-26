@@ -98,16 +98,6 @@ void Scene01::Init()
 	
 	coinanim = new SpriteAnimation();
 	coinanim->Set(dynamic_cast<SpriteMesh*>(meshList[GEO_COIN]), 0, 5, -1, 1, true);
-	sledyetianim = new SpriteAnimation();
-	sledyetianim->Set(dynamic_cast<SpriteMesh*>(meshList[GEO_SLEDYETI]), 0, 13, -1, 1, true);
-
-	GameObject *sledyeti;
-	sledyeti = FetchGO();
-	sledyeti->SetActive(true);
-	sledyeti->type = GameObject::GO_SLEDYETI;
-	sledyeti->mass = 5;
-	sledyeti->scale.Set(10, 10, 1);
-	sledyeti->pos.Set(-m_TerrainWidth + 10, 20, 0);
 }
 
 GameObject* Scene01::FetchGO()
@@ -441,7 +431,6 @@ void Scene01::Update(double dt)
 	}
 
 	coinanim->Update(dt);
-	sledyetianim->Update(dt);
 	if (KeyboardController::GetInstance()->IsKeyPressed('I'))
 	{
 		if (in_shop == false)
@@ -494,7 +483,7 @@ void Scene01::Update(double dt)
 
 		if (!(*it)->GetProjFired() && !(*it)->GetProjActive() && (*it)->GetCurAnimFrame() == 11)
 		{
-			(*it)->PushProjectile(FetchGO(), Vector3(1.f, 1.f, 1.f), 30.f);
+			(*it)->PushProjectile(FetchGO(), Vector3(1.f, 1.f, 1.f), 10.f);
 			(*it)->SetProjFired(true);
 		}
 		else if ((*it)->GetCurAnimFrame() == 12)
@@ -806,11 +795,6 @@ void Scene01::RenderGO(GameObject *go)
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
 		RenderSpriteMesh(coinanim->GetMesh(), false, coinanim->GetCurFrame());
 		break;
-	case GameObject::GO_SLEDYETI:
-		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
-		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
-		RenderSpriteMesh(sledyetianim->GetMesh(), false, sledyetianim->GetCurFrame());
-		break;
 	}
 
 	modelStack.PopMatrix();
@@ -1093,9 +1077,14 @@ void Scene01::SpawnEnemies()
 		rY = Math::RandFloatMinMax(40.f, 80.f);
 		enemy = new Enemy();
 		enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(rX, rY, 0.f), Vector3(10.f, 10.f, 1.f));
-		enemy->SetSpriteAnim(meshList[GEO_SPRITE_YETI]);
+		enemy->SetSpriteAnim(meshList[GEO_SPRITE_YETI], 0, 15, 0, 1.f, true);
 		enemyList.push_back(enemy);
 	}
+
+	enemy = new Enemy();
+	enemy->Init(FetchGO(), GameObject::GO_SLEDYETI, Vector3(-m_TerrainWidth + 10, 20, 0), Vector3(10.f, 10.f, 1.f), 5.f);
+	enemy->SetSpriteAnim(meshList[GEO_SLEDYETI], 0, 13, -1, 1, true);
+	enemyList.push_back(enemy);
 
 	enemy->SetHeightMap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
 }
