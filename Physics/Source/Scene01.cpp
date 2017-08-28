@@ -487,6 +487,30 @@ void Scene01::Update(double dt)
 	{
 		m_speed += 0.1f;
 	}
+	if (KeyboardController::GetInstance()->IsKeyPressed('P'))
+	{
+		for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
+		{
+			GameObject *go = (GameObject *)*it;
+			if (go->GetActive())
+			{
+				if (go->type == GameObject::GO_BOSS)
+				{
+					go->SetActive(false);
+					deathrotation = 0;
+					bossDie = false;
+					menustate = WIN1;
+					display = true;
+				}
+			}
+		}
+	}
+
+	if (m_tries == 0 && m_player->GetPlayerPos().y < 0)
+	{
+		menustate = LOSE1;
+		display = true;
+	}
 
 	m_player->Update(dt);
 	m_control->Update(dt);
@@ -1164,6 +1188,7 @@ void Scene01::Reset(int _level)
 	SpawnEnemies();
 
 	wind = Math::RandFloatMinMax(-10, 10);
+	display = false;
 }
 
 void Scene01::Exit()
