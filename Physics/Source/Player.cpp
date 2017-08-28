@@ -209,7 +209,7 @@ void Player::Upgrade(Tree::avl_node &node)
 	}
 	else if (node.id == 4)
 	{
-		playerObj->vel.x += 5;
+		playerObj->vel.x += 100;
 	}
 
 }
