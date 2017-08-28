@@ -124,6 +124,11 @@ bool Enemy::GetProjActive() const
 	return snowBall->GetActive();
 }
 
+GameObject::GAMEOBJECT_TYPE Enemy::Gettype() const
+{
+	return enemyObj->type;
+}
+
 void Enemy::SetPlayerObj(GameObject * _playerObj, GameObject* _bombObj)
 {
 	if (_playerObj->type == GameObject::GO_PLAYER)
@@ -201,6 +206,10 @@ void Enemy::RunYeti(double dt)
 		//Physics::K1(snowBall->vel, Vector3(0.f, -9.8f * snowBall->mass, 0.f), (float)dt, snowBall->vel);
 		snowBall->pos += snowBall->vel * projSpd * (float)dt;
 	}
+	else
+	{
+		snowBall->pos.y = tHeight + snowBall->scale.y * 0.5f;
+	}
 
 	if ((playerObj->pos - snowBall->pos).LengthSquared()
 		<= (playerObj->scale.x * 0.5f + snowBall->scale.x) * (playerObj->scale.x * 0.5f + snowBall->scale.x))
@@ -219,5 +228,7 @@ void Enemy::RunYeti(double dt)
 void Enemy::RunSledYeti(double dt)
 {
 	// Physics can be done here
+
+
 }
 

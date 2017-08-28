@@ -63,8 +63,6 @@ protected:
 
 	float m1, m2;
 	Vector3 u1, u2, v1, v2, u1N, u2N;
-	//Vector3 initialMomentum, finalMomentum;
-	//float initialKE, finalKE;
 
 	bool free_look;
 	bool in_shop;
@@ -84,7 +82,7 @@ protected:
 	int item_id;
 	int Level_data;
 	float wind;
-	irrklang::ISoundEngine* sound_engine = irrklang::createIrrKlangDevice();
+	ISoundEngine* sound_engine;
 
 	enum MENU {
 		MENU = 1,
@@ -120,7 +118,7 @@ protected:
 	bool debug;
 
 	SpriteAnimation *coinanim;
-	//SpriteAnimation *sledyetianim;
+	bool sledYetiOnScreen;
 };
 
 #endif

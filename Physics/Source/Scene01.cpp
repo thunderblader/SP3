@@ -33,6 +33,7 @@ void Scene01::Init()
 	SceneBase::Init();
 	m_control = new Controller();
 	m_control->LoadConfig("Data//Config.ini", param_physics);
+	sound_engine = createIrrKlangDevice();
 
 	m_worldHeight = 100.f;
 	m_worldWidth = m_worldHeight * (float)Application::GetWindowWidth() / Application::GetWindowHeight();
@@ -70,6 +71,7 @@ void Scene01::Init()
 	m_player = Player::GetInstance();
 	m_player->Init(playerObj, bombObj, GameObject::GO_PLAYER, Vector3(-m_TerrainWidth + 10, 1, 0), Vector3(5, 4, 1), param_physics.massCart, param_physics.acceleration, param_physics.speedLimit);
 	m_player->SetHeightmap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
+	Camera_Control(0);
 
 	m_control->SetPlayer(m_player);
 
@@ -99,6 +101,7 @@ void Scene01::Init()
 	
 	coinanim = new SpriteAnimation();
 	coinanim->Set(dynamic_cast<SpriteMesh*>(meshList[GEO_COIN]), 0, 5, -1, 1, true);
+	sledYetiOnScreen = false;
 }
 
 GameObject* Scene01::FetchGO()
@@ -209,6 +212,15 @@ bool Scene01::CheckCollision(GameObject * go1, GameObject * go2, float dt)
 		return (rel.Dot(dis) < 0 &&
 			dis.LengthSquared() <= combinedRadiusSq);
 	}
+	case GameObject::GO_SLEDYETI:
+	{
+		Vector3 dis = go1->pos - go2->pos;
+		Vector3 rel = go1->vel - go2->vel;
+		float combinedRadiusSq = (go1->scale.x + go2->scale.x / 3) * (go1->scale.x + go2->scale.x / 3);
+
+		return (rel.Dot(dis) < 0 &&
+			dis.LengthSquared() <= combinedRadiusSq);
+	}
 	}
 
 	return 0;
@@ -295,6 +307,9 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 		go2->SetActive(false);
 		sound_engine->play2D("Sound//getitem.wav");
 		shop.Add_gold(10);
+		break;
+	case GameObject::GO_SLEDYETI:
+		m_player->Jump(0);
 		break;
 	}
 }
@@ -478,9 +493,15 @@ void Scene01::Update(double dt)
 
 	vector<Enemy*>::iterator it, end;
 	end = enemyList.end();
+	sledYetiOnScreen = false;
 	for (it = enemyList.begin(); it != end; ++it)
 	{
 		(*it)->Update(dt);
+
+		if ((*it)->Gettype() == GameObject::GO_SLEDYETI && !sledYetiOnScreen && (*it)->GetPos().x > camera.position.x - m_worldWidth *0.5f)
+		{
+			sledYetiOnScreen = true;
+		}
 
 		if (!(*it)->GetProjFired() && !(*it)->GetProjActive() && (*it)->GetCurAnimFrame() == 11)
 		{
@@ -496,6 +517,16 @@ void Scene01::Update(double dt)
 			enemyList.erase(it);
 		}
 	}
+	if (!sledYetiOnScreen)
+	{
+		Enemy* enemy;
+		enemy = new Enemy();
+		enemy->Init(FetchGO(), GameObject::GO_SLEDYETI, Vector3(camera.position.x + m_worldWidth, 0.5f, 0), Vector3(10.f, 10.f, 1.f), 5.f);
+		enemy->SetSpriteAnim(meshList[GEO_SLEDYETI], 0, 13, -1, 1, true);
+		enemyList.push_back(enemy);
+		//sledYetiOnScreen = true;
+	}
+
 
 	//Mouse Section
 	//if (MouseController::GetInstance()->IsButtonPressed(MouseController::LMB))
@@ -570,7 +601,7 @@ void Scene01::Update(double dt)
 					go->vel += Vector3(0, param_physics.gravity, 0) * (float)dt;
 				}
 			}
-			if ((go->type == GameObject::GO_BOMB && !m_player->GetExploded()) || go->type == GameObject::GO_PLAYER)
+			if ((go->type == GameObject::GO_BOMB && !m_player->GetExploded()) || go->type == GameObject::GO_PLAYER || go->type == GameObject::GO_SLEDYETI)
 			{
 				//go->vel.x = go->vel.x - go->vel.x * 1.f * (float)dt;
 				if (go->vel.Length() < 3)
@@ -700,17 +731,10 @@ void Scene01::Update(double dt)
 						u1 = goA->vel;
 						u2 = goB->vel;
 
-						//initialMomentum = m1 * u1 + m2 * u2;
-
 						CollisionResponse(goA, goB);
 
 						v1 = goA->vel;
 						v2 = goB->vel;
-
-						//finalMomentum = m1 * v1 + m2 * v2;
-
-						//initialKE = 0.5f * m1 * u1.Dot(u1) + 0.5f * m2 * u2.Dot(u2);
-						//finalKE = 0.5f * m1 * v1.Dot(v1) + 0.5f * m2 * v2.Dot(v2);
 
 						break;
 					}
@@ -952,32 +976,39 @@ void Scene01::Render()
 
 void Scene01::RenderHUD()
 {
-	float scaleX, scaleY;
+	float scaleX, scaleY, posX, posY;
 	scaleX = 20.f;
 	scaleY = 10.f;
+	posX = scaleX * 0.5f + 0.5f;
+	posY = m_worldHeight - scaleY * 0.5f;
 
-	RenderMeshIn2D(meshList[GEO_HUD_CHANCE], false, m_worldWidth, m_worldHeight, scaleX, scaleY, scaleX * 0.5f + 0.5f, m_worldHeight - scaleY * 0.5f);
+	RenderMeshIn2D(meshList[GEO_HUD_CHANCE], false, m_worldWidth, m_worldHeight, scaleX, scaleY, posX, posY);
 	for (unsigned int i = 0; i < m_tries; ++i)
 	{
-		RenderMeshIn2D(meshList[GEO_CART], false, m_worldWidth, m_worldHeight, 5.f, 4.f, 25.5f + (i * 8.f), m_worldHeight - 5.5f);
+		posX = 25.5f + (i * 8.f);
+		posY = m_worldHeight - 5.5f;
+		RenderMeshIn2D(meshList[GEO_CART], false, m_worldWidth, m_worldHeight, 5.f, 4.f, posX, posY);
 	}
+
+	posX = m_worldWidth * 0.5f;
+	posY = m_worldHeight - scaleY - scaleY * 0.5f;
 
 	switch (currlevel)
 	{
 	case 1:
-		RenderMeshIn2D(meshList[GEO_HUD_LEVEL1], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.5f, m_worldHeight - scaleY - scaleY * 0.5f);
+		RenderMeshIn2D(meshList[GEO_HUD_LEVEL1], false, m_worldWidth, m_worldHeight, scaleX, scaleY, posX, posY);
 		break;
 	case 2:
-		RenderMeshIn2D(meshList[GEO_HUD_LEVEL2], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.5f, m_worldHeight - scaleY - scaleY * 0.5f);
+		RenderMeshIn2D(meshList[GEO_HUD_LEVEL2], false, m_worldWidth, m_worldHeight, scaleX, scaleY, posX, posY);
 		break;
 	case 3:
-		RenderMeshIn2D(meshList[GEO_HUD_LEVEL3], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.5f, m_worldHeight - scaleY - scaleY * 0.5f);
+		RenderMeshIn2D(meshList[GEO_HUD_LEVEL3], false, m_worldWidth, m_worldHeight, scaleX, scaleY, posX, posY);
 		break;
 	case 4:
-		RenderMeshIn2D(meshList[GEO_HUD_LEVEL4], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.5f, m_worldHeight - scaleY - scaleY * 0.5f);
+		RenderMeshIn2D(meshList[GEO_HUD_LEVEL4], false, m_worldWidth, m_worldHeight, scaleX, scaleY, posX, posY);
 		break;
 	case 5:
-		RenderMeshIn2D(meshList[GEO_HUD_LEVEL5], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.5f, m_worldHeight - scaleY - scaleY * 0.5f);
+		RenderMeshIn2D(meshList[GEO_HUD_LEVEL5], false, m_worldWidth, m_worldHeight, scaleX, scaleY, posX, posY);
 		break;
 	default: break;
 	}
@@ -987,37 +1018,40 @@ void Scene01::RenderHUD()
 
 	for (unsigned i = 0; i < ss.size(); ++i)
 	{
+		posX = m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f);
+		posY = m_worldHeight - 5.f;
+
 		switch (ss[i])
 		{
 		case '1':
-			RenderMeshIn2D(meshList[GEO_NO_1], false, m_worldWidth, m_worldHeight, scaleY, scaleY, m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f), m_worldHeight - 5.f);
+			RenderMeshIn2D(meshList[GEO_NO_1], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
 			break;
 		case '2': 
-			RenderMeshIn2D(meshList[GEO_NO_2], false, m_worldWidth, m_worldHeight, scaleY, scaleY, m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f), m_worldHeight - 5.f);
+			RenderMeshIn2D(meshList[GEO_NO_2], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
 			break;
 		case '3': 
-			RenderMeshIn2D(meshList[GEO_NO_3], false, m_worldWidth, m_worldHeight, scaleY, scaleY, m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f), m_worldHeight - 5.f);
+			RenderMeshIn2D(meshList[GEO_NO_3], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
 			break;
 		case '4': 
-			RenderMeshIn2D(meshList[GEO_NO_4], false, m_worldWidth, m_worldHeight, scaleY, scaleY, m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f), m_worldHeight - 5.f);
+			RenderMeshIn2D(meshList[GEO_NO_4], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
 			break;
 		case '5': 
-			RenderMeshIn2D(meshList[GEO_NO_5], false, m_worldWidth, m_worldHeight, scaleY, scaleY, m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f), m_worldHeight - 5.f);
+			RenderMeshIn2D(meshList[GEO_NO_5], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
 			break;
 		case '6': 
-			RenderMeshIn2D(meshList[GEO_NO_6], false, m_worldWidth, m_worldHeight, scaleY, scaleY, m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f), m_worldHeight - 5.f);
+			RenderMeshIn2D(meshList[GEO_NO_6], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
 			break;
 		case '7': 
-			RenderMeshIn2D(meshList[GEO_NO_7], false, m_worldWidth, m_worldHeight, scaleY, scaleY, m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f), m_worldHeight - 5.f);
+			RenderMeshIn2D(meshList[GEO_NO_7], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
 			break;
 		case '8': 
-			RenderMeshIn2D(meshList[GEO_NO_8], false, m_worldWidth, m_worldHeight, scaleY, scaleY, m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f), m_worldHeight - 5.f);
+			RenderMeshIn2D(meshList[GEO_NO_8], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
 			break;
 		case '9': 
-			RenderMeshIn2D(meshList[GEO_NO_9], false, m_worldWidth, m_worldHeight, scaleY, scaleY, m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f), m_worldHeight - 5.f);
+			RenderMeshIn2D(meshList[GEO_NO_9], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
 			break;
 		case '0': 
-			RenderMeshIn2D(meshList[GEO_NO_0], false, m_worldWidth, m_worldHeight, scaleY, scaleY, m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f), m_worldHeight - 5.f);
+			RenderMeshIn2D(meshList[GEO_NO_0], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
 			break;
 		default: break;
 		}
@@ -1081,9 +1115,10 @@ void Scene01::SpawnEnemies()
 	}
 
 	enemy = new Enemy();
-	enemy->Init(FetchGO(), GameObject::GO_SLEDYETI, Vector3(-m_TerrainWidth + 10, 20, 0), Vector3(10.f, 10.f, 1.f), 5.f);
+	enemy->Init(FetchGO(), GameObject::GO_SLEDYETI, Vector3(camera.position.x + m_worldWidth, 0.5f, 0), Vector3(10.f, 10.f, 1.f), 5.f);
 	enemy->SetSpriteAnim(meshList[GEO_SLEDYETI], 0, 13, -1, 1, true);
 	enemyList.push_back(enemy);
+	sledYetiOnScreen = true;
 
 	enemy->SetHeightMap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
 }
