@@ -189,6 +189,7 @@ void Scene01::Menu(double dt) {
 		if (KeyboardController::GetInstance()->IsKeyPressed(VK_RETURN) || KeyboardController::GetInstance()->IsKeyPressed(VK_SPACE))
 		{
 			Reset(newlevel);
+			display = false;
 		}
 		break;
 	case WIN2:
@@ -212,15 +213,14 @@ void Scene01::Menu(double dt) {
 		if (KeyboardController::GetInstance()->IsKeyPressed(VK_RETURN) || KeyboardController::GetInstance()->IsKeyPressed(VK_SPACE))
 		{
 			Reset(newlevel);
+			display = false;
 		}
 		break;
 	case LOSE2:
-		if (KeyboardController::GetInstance()->IsKeyPressed(VK_DOWN))
+		if (KeyboardController::GetInstance()->IsKeyPressed(VK_UP))
 			menustate = LOSE1;
 		if (KeyboardController::GetInstance()->IsKeyPressed(VK_RETURN) || KeyboardController::GetInstance()->IsKeyPressed(VK_SPACE))
-		{
-			// reset
-		}
+			menustate = MENU;
 		break;
 	}
 }

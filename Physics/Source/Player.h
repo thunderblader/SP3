@@ -34,6 +34,7 @@ public:
 	void SetExploded(bool In);
 	bool GetExploded();
 	bool GetLaunched();
+	void SetLaunched(bool In);
 	float GetBombspin();
 	void SetHeightmap(vector<unsigned char>* _heightmap, float _worldWidth, float _worldHeight);
 
@@ -42,7 +43,8 @@ public:
 	void Move_LeftRight(const double dt, const bool dLeft);
 	void Jump(const double dt);
 	void Upgrade(Tree::avl_node &node);
-
+	bool GetTumble();
+	void SetTumble(bool In);
 private:
 	Player();
 	virtual ~Player();
@@ -63,6 +65,8 @@ private:
 	float bombspin;
 	float wait;
 	float speedlimit;
+	bool tumble;
+	double tumbletime;
 };
 
 #endif // !PLAYER_H
