@@ -307,6 +307,7 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 		sound_engine->play2D("Sound//getitem.wav");
 		shop.Add_gold(10);
 		break;
+
 	case GameObject::GO_SLEDYETI:
 		m_player->Jump(0);
 		break;
@@ -445,6 +446,11 @@ void Scene01::Update(double dt)
 		wind = Math::RandFloatMinMax(-10, 10);
 	}
 
+	if (m_player->GetLaunched())
+	{
+		ClearEnemyProj();
+	}
+
 	coinanim->Update(dt);
 	if (KeyboardController::GetInstance()->IsKeyPressed('I'))
 	{
@@ -490,32 +496,43 @@ void Scene01::Update(double dt)
 	m_player->Update(dt);
 	m_control->Update(dt);
 
+	sledYetiOnScreen = false;
 	vector<Enemy*>::iterator it, end;
 	end = enemyList.end();
-	sledYetiOnScreen = false;
 	for (it = enemyList.begin(); it != end; ++it)
 	{
 		(*it)->Update(dt);
 
-		if ((*it)->Gettype() == GameObject::GO_SLEDYETI && !sledYetiOnScreen && (*it)->GetPos().x > camera.position.x - m_worldWidth *0.5f)
+		switch ((*it)->GetType())
 		{
-			sledYetiOnScreen = true;
-		}
+		case GameObject::GO_SLEDYETI:
+			if (!sledYetiOnScreen && (*it)->GetPos().x > camera.position.x - m_worldWidth *0.5f)
+			{
+				sledYetiOnScreen = true;
+			}
+			break;
 
-		if (!(*it)->GetProjFired() && !(*it)->GetProjActive() && (*it)->GetCurAnimFrame() == 11)
-		{
-			(*it)->PushProjectile(FetchGO(), Vector3(1.f, 1.f, 1.f), 10.f);
-			(*it)->SetProjFired(true);
-		}
-		else if ((*it)->GetCurAnimFrame() == 12)
-			(*it)->SetProjFired(false);
+		case GameObject::GO_ENEMY_SNOWYETI:
+			if (!(*it)->GetProjFired() && !(*it)->GetProjActive() && (*it)->GetCurAnimFrame() == 11)
+			{
+				(*it)->PushProjectile(FetchGO(), Vector3(1.f, 1.f, 1.f), 10.f);
+				(*it)->SetProjFired(true);
+			}
+			else if ((*it)->GetCurAnimFrame() == 12)
+				(*it)->SetProjFired(false);
+			break;
 
+		default:
+			break;
+		}
+		
 		if (!(*it)->GetActive())
 		{
 			delete *it;
 			enemyList.erase(it);
 		}
 	}
+
 	if (!sledYetiOnScreen)
 	{
 		Enemy* enemy;
@@ -523,7 +540,6 @@ void Scene01::Update(double dt)
 		enemy->Init(FetchGO(), GameObject::GO_SLEDYETI, Vector3(camera.position.x + m_worldWidth, 0.5f, 0), Vector3(10.f, 10.f, 1.f), 5.f);
 		enemy->SetSpriteAnim(meshList[GEO_SLEDYETI], 0, 13, -1, 1, true);
 		enemyList.push_back(enemy);
-		//sledYetiOnScreen = true;
 	}
 
 
@@ -1122,6 +1138,14 @@ void Scene01::SpawnEnemies()
 	sledYetiOnScreen = true;
 
 	enemy->SetHeightMap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
+}
+
+void Scene01::ClearEnemyProj()
+{
+	vector<Enemy*>::iterator it, end;
+	end = enemyList.end();
+	for (it = enemyList.begin(); it != end; ++it)
+		(*it)->ClearProjectile();
 }
 
 void Scene01::Exit()

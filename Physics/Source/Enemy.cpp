@@ -124,7 +124,7 @@ bool Enemy::GetProjActive() const
 	return snowBall->GetActive();
 }
 
-GameObject::GAMEOBJECT_TYPE Enemy::Gettype() const
+GameObject::GAMEOBJECT_TYPE Enemy::GetType() const
 {
 	return enemyObj->type;
 }
@@ -172,6 +172,15 @@ void Enemy::PushProjectile(GameObject * _projObj, Vector3 _scale, float _spd)
 	projSpd = _spd;
 
 	snowBall = _projObj;
+}
+
+void Enemy::ClearProjectile()
+{
+	if (snowBall && snowBall->GetActive())
+	{
+		snowBall->SetActive(false);
+		snowBall->type = GameObject::GO_NONE;
+	}
 }
 
 void Enemy::RunYeti(double dt)
