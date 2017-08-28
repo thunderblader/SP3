@@ -484,7 +484,7 @@ void Scene01::Update(double dt)
 	}
 	if (KeyboardController::GetInstance()->IsKeyPressed('K'))
 	{
-		//file.Load_Data();
+		file.Load_Data(item_node->root);
 	}
 	if (KeyboardController::GetInstance()->IsKeyPressed('8'))
 	{
