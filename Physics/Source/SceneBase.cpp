@@ -182,8 +182,6 @@ void SceneBase::Init()
 	meshList[GEO_PU_SPEED]->textureID = LoadTGA("Image//pu_speed.tga");
 	meshList[GEO_PU_RANGE] = MeshBuilder::GenerateQuad("pu_range", Color(0.f, 0.f, 0.f), 1.f);
 	meshList[GEO_PU_RANGE]->textureID = LoadTGA("Image//pu_range.tga");
-	meshList[GEO_PU_POWER] = MeshBuilder::GenerateQuad("pu_power", Color(0.f, 0.f, 0.f), 1.f);
-	meshList[GEO_PU_POWER]->textureID = LoadTGA("Image//pu_power.tga");
 
 	meshList[GEO_PARTICLE_SPARK] = MeshBuilder::GenerateQuad("GEO_PARTICLE_SPARK", Color(1, 1, 1), 1.f);
 	meshList[GEO_PARTICLE_SPARK]->textureID = LoadTGA("Image//spark.tga");

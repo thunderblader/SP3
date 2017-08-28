@@ -5,7 +5,7 @@
 struct PowerUpStats
 {
 	float speed;
-	float power;
+	float range;
 };
 
 #endif // !POWERUP_H

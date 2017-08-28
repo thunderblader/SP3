@@ -22,8 +22,10 @@ void Player::Init(GameObject * _playerObj, GameObject * _playerBomb
 	playerBomb->mass = 5;
 	playerBomb->SetActive(false);
 
-	pu_stats.power = 1.f;
+	pu_stats.range = 1.f;
 	pu_stats.speed = 1.f;
+	pu_counts[0] = 0;
+	pu_counts[1] = 0;
 	defaultPos = _pos;
 	m_speed = _spd;
 	jump_boost = _jump_boost;
@@ -116,6 +118,11 @@ void Player::Reset()
 	bombspin = 0;
 	wait = 0;
 	playerObj->vel.SetZero();
+
+	pu_stats.range = 1.f;
+	pu_stats.speed = 1.f;
+	pu_counts[0] = 0;
+	pu_counts[1] = 0;
 }
 
 GameObject Player::GetPlayerObj() const
@@ -147,6 +154,26 @@ void Player::SetExploded(bool In)
 	exploded = In;
 }
 
+void Player::SetPowRange(float _in)
+{
+	pu_stats.range = _in;
+}
+
+void Player::SetPowSpd(float _in)
+{
+	pu_stats.speed = _in;
+}
+
+void Player::AddPowSpdCount(unsigned int _in)
+{
+	pu_counts[0] += _in;
+}
+
+void Player::AddPowRangeCount(unsigned int _in)
+{
+	pu_counts[1] += _in;
+}
+
 bool Player::GetExploded()
 {
 	return exploded;
@@ -160,6 +187,21 @@ bool Player::GetLaunched()
 float Player::GetBombspin()
 {
 	return bombspin;
+}
+
+PowerUpStats Player::GetPowStats() const
+{
+	return pu_stats;
+}
+
+unsigned int Player::GetPowSpdCount() const
+{
+	return pu_counts[0];
+}
+
+unsigned int Player::GetPowRangeCount() const
+{
+	return pu_counts[1];
 }
 
 void Player::SetHeightmap(vector<unsigned char>* _heightmap, float _worldWidth, float _worldHeight)

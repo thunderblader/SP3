@@ -44,6 +44,7 @@ protected:
 	void RenderHUD();
 	void SpawnPowerups();
 	void SpawnEnemies();
+	void ClearPowerUps();
 	void ClearEnemy();
 	void ClearEnemyProj();
 	void Shop_Render();
