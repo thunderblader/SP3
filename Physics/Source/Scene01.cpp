@@ -1185,7 +1185,7 @@ void Scene01::SpawnEnemies()
 	}
 
 	enemy = new Enemy();
-	enemy->Init(FetchGO(), GameObject::GO_SLEDYETI, Vector3(camera.position.x + m_worldWidth, 0.5f, 0), Vector3(10.f, 10.f, 1.f), 5.f);
+	enemy->Init(FetchGO(), GameObject::GO_SLEDYETI, Vector3(-m_TerrainWidth + m_worldWidth, 0.5f, 0), Vector3(10.f, 10.f, 1.f), 5.f);
 	enemy->SetSpriteAnim(meshList[GEO_SLEDYETI], 0, 13, -1, 1, true);
 	enemyList.push_back(enemy);
 	sledYetiOnScreen = true;
