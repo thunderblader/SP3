@@ -45,6 +45,7 @@ protected:
 	void SpawnPowerups();
 	void SpawnEnemies();
 	void ClearEnemyProj();
+	void Shop_Render();
 
 private:
 	vector<GameObject *> m_goList;
@@ -111,6 +112,12 @@ private:
 		LEVEL4,
 		LEVEL5,
 		LEVELBACK,
+
+		WIN1,
+		WIN2,
+		WIN3,
+		LOSE1,
+		LOSE2,
 	} menustate;
 	bool display;
 
@@ -118,6 +125,9 @@ private:
 	ParamPhysics param_physics;
 
 	bool debug;
+
+	bool bossDie;
+	float deathrotation;
 
 	SpriteAnimation *coinanim;
 	bool sledYetiOnScreen;

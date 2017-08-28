@@ -99,6 +99,8 @@ void Scene01::Init()
 	menustate = MENU;
 
 	debug = false;
+	bossDie = false;
+	deathrotation = 0;
 	
 	coinanim = new SpriteAnimation();
 	coinanim->Set(dynamic_cast<SpriteMesh*>(meshList[GEO_COIN]), 0, 5, -1, 1, true);
@@ -303,9 +305,10 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 		{
 			go1->vel.SetZero();
 			m_player->SetExploded(true);
-			go2->SetActive(false);
+			go2->vel.Set(Math::RandFloatMinMax(10, 20), Math::RandFloatMinMax(10, 20), 0);
+			go2->pos.z = -0.5;
+			bossDie = true;
 			Score += 50;
-			++newlevel;
 		}
 		break;
 	case GameObject::GO_COIN:
@@ -628,6 +631,26 @@ void Scene01::Update(double dt)
 					go->vel += Vector3(0, param_physics.gravity, 0) * (float)dt;
 				}
 			}
+			if (go->type == GameObject::GO_BOSS)
+			{
+				if (bossDie)
+				{
+					if (go->scale.x > 0.001)
+					{
+						go->scale *= 0.95;
+						deathrotation += 10;
+					}
+					else if (go->scale.x < 0.001)
+					{
+						go->SetActive(false);
+						bossDie = false;
+						++newlevel;
+					}
+
+					go->pos += go->vel * static_cast<float>(dt);
+					go->vel += Vector3(0, param_physics.gravity, 0) * (float)dt;
+				}
+			}
 			if ((go->type == GameObject::GO_BOMB && !m_player->GetExploded()) || go->type == GameObject::GO_PLAYER || go->type == GameObject::GO_SLEDYETI)
 			{
 				//go->vel.x = go->vel.x - go->vel.x * 1.f * (float)dt;
@@ -838,6 +861,7 @@ void Scene01::RenderGO(GameObject *go)
 
 	case GameObject::GO_BOSS:
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
+		modelStack.Rotate(deathrotation, 0, 0, 1);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
 		RenderMesh(meshList[GEO_BOSS], false);
 		break;
@@ -960,86 +984,7 @@ void Scene01::Render()
 	}
 	else
 	{
-		string Gold_string = to_string(Gold);
-		float scaleX, scaleY, posX, posY;
-		scaleX = 20.f;
-		scaleY = 10.f;
-
-		modelStack.Translate(camera.position.x + 65, camera.position.y + 50, 1);
-		modelStack.Scale((float)Application::GetWindowWidth(), 85, 1);
-		RenderMesh(meshList[GEO_SCREEN], false);
-
-		RenderMeshIn2D(meshList[GEO_SHOP], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.5f, m_worldHeight - scaleY - scaleY * 0.5f);
-		if (item_node->root.id == 1)
-		{
-			RenderMeshIn2D(meshList[GEO_SIZE], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.2f, m_worldHeight - (scaleY * 2.5f));
-		}
-		else if (item_node->root.id == 2)
-		{
-			RenderMeshIn2D(meshList[GEO_SPEED], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.2f, m_worldHeight - (scaleY * 2.5f));
-		}
-		else if (item_node->root.id == 3)
-		{
-			RenderMeshIn2D(meshList[GEO_JUMP], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.2f, m_worldHeight - (scaleY * 2.5f));
-		}
-		else if (item_node->root.id == 4)
-		{
-			RenderMeshIn2D(meshList[GEO_BOOST], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.2f, m_worldHeight - (scaleY * 2.5f));
-		}
-		RenderMeshIn2D(meshList[GEO_PRICE], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.2f, m_worldHeight - (scaleY * 3.f));
-		RenderMeshIn2D(meshList[GEO_GOLD], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.2f, m_worldHeight - (scaleY * 6.f));
-		for (unsigned i = 0; i < Gold_string.size(); ++i)
-		{
-			posX = m_worldWidth * 0.3f + (i * 5.f);
-			posY = m_worldHeight - (scaleY * 6.f);
-
-			switch (Gold_string[i])
-			{
-			case '1':
-				RenderMeshIn2D(meshList[GEO_NO_1], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
-				break;
-			case '2':
-				RenderMeshIn2D(meshList[GEO_NO_2], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
-				break;
-			case '3':
-				RenderMeshIn2D(meshList[GEO_NO_3], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
-				break;
-			case '4':
-				RenderMeshIn2D(meshList[GEO_NO_4], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
-				break;
-			case '5':
-				RenderMeshIn2D(meshList[GEO_NO_5], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
-				break;
-			case '6':
-				RenderMeshIn2D(meshList[GEO_NO_6], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
-				break;
-			case '7':
-				RenderMeshIn2D(meshList[GEO_NO_7], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
-				break;
-			case '8':
-				RenderMeshIn2D(meshList[GEO_NO_8], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
-				break;
-			case '9':
-				RenderMeshIn2D(meshList[GEO_NO_9], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
-				break;
-			case '0':
-				RenderMeshIn2D(meshList[GEO_NO_0], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
-				break;
-			default: break;
-			}
-		}
-		if (buy_item == true)
-		{
-			if (purchased == true)
-			{
-				RenderMeshIn2D(meshList[GEO_BOUGHT], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.2f, m_worldHeight - (scaleY * 7.f));
-			}
-			else
-			{
-				RenderMeshIn2D(meshList[GEO_INSUFFICIENT], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.2f, m_worldHeight - (scaleY * 7.f));
-				RenderMeshIn2D(meshList[GEO_GOLD], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.325f, m_worldHeight - (scaleY * 7.f));
-			}
-		}
+		Shop_Render();
 	}
 	RenderMenu();
 }
