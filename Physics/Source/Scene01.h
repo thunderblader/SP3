@@ -47,7 +47,7 @@ protected:
 	void ClearEnemy();
 	void ClearEnemyProj();
 	void Shop_Render();
-	void Reset(bool isHardReset);
+	void Reset(int _level);
 
 private:
 	vector<GameObject *> m_goList;
