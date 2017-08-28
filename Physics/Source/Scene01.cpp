@@ -237,7 +237,7 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 		break;
 
 	case GameObject::GO_BRICK:
-		if (go1->type != GameObject::GO_PLAYER)
+		if (go1->type == GameObject::GO_BOMB)
 		{
 			if (!m_player->GetExploded())
 			{
