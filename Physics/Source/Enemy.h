@@ -26,6 +26,7 @@ public:
 	bool GetActive() const;
 	bool GetProjFired() const;
 	bool GetProjActive() const;
+	GameObject::GAMEOBJECT_TYPE Gettype() const;
 
 	void SetPlayerObj(GameObject* _playerObj, GameObject* _bombObj);
 	void SetHeightMap(vector<unsigned char>* _heightMap, float _terrainWidth, float _terrainHeight);
