@@ -319,7 +319,8 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 		break;
 
 	case GameObject::GO_SLEDYETI:
-		m_player->Jump(0);
+		if (!m_player->GetTumble())
+ 			m_player->SetTumble(true);
 		break;
 	}
 }
