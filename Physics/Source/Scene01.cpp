@@ -429,7 +429,7 @@ void Scene01::Update(double dt)
 
 	if (newlevel != currlevel && !m_player->GetExploded())
 	{
-		Reset(true);
+		Reset(newlevel);
 	}
 
 	static bool CurrentTry = false;
@@ -467,11 +467,11 @@ void Scene01::Update(double dt)
 
 	if (KeyboardController::GetInstance()->IsKeyPressed('L'))
 	{
-		file.Save_Data(Level_data, Score, Gold, item_node->root);
+		//file.Save_Data(Level_data, Score, Gold, item_node->root);
 	}
 	if (KeyboardController::GetInstance()->IsKeyPressed('K'))
 	{
-		file.Load_Data(item_node->root);
+		//file.Load_Data(item_node->root);
 	}
 	if (KeyboardController::GetInstance()->IsKeyPressed('8'))
 	{
@@ -1129,7 +1129,7 @@ void Scene01::ClearEnemyProj()
 		(*it)->ClearProjectile();
 }
 
-void Scene01::Reset(bool isHardReset)
+void Scene01::Reset(int _level)
 {
 	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
@@ -1144,22 +1144,19 @@ void Scene01::Reset(bool isHardReset)
 
 	ClearEnemy();
 
-	if (isHardReset)
-	{
-		currlevel = newlevel;
-		m_tries = 3;
+	currlevel = _level;
+	m_tries = 3;
 
-		std::string leveltext = "Image//Level0";
-		leveltext += to_string(currlevel);
-		leveltext += ".csv";
-		file.Load(false, leveltext);
-		leveltext = "Image//heightmap";
-		leveltext += to_string(currlevel);
-		leveltext += ".raw";
-		meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", leveltext, m_heightMap);
-		meshList[GEO_TERRAIN]->textureID = LoadTGA("Image//terrain.tga");
-	}
-	
+	std::string leveltext = "Image//Level0";
+	leveltext += to_string(currlevel);
+	leveltext += ".csv";
+	file.Load(false, leveltext);
+	leveltext = "Image//heightmap";
+	leveltext += to_string(currlevel);
+	leveltext += ".raw";
+	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", leveltext, m_heightMap);
+	meshList[GEO_TERRAIN]->textureID = LoadTGA("Image//terrain.tga");
+
 	SpawnPowerups();
 	SpawnEnemies();
 
