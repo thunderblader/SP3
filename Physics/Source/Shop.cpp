@@ -2,7 +2,7 @@
 
 void Shop::Load_Shop()
 {
-	gold = 1000;
+	gold = 0;
 }
 
 void Shop::Add_gold(int Add)
