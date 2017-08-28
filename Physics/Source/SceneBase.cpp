@@ -264,14 +264,14 @@ void SceneBase::Init()
 	//meshList[GEO_EXIT] = MeshBuilder::GenerateQuad("GEO_PARTICLE_EXPLOSION", Color(1, 1, 1), 1.f);
 	//meshList[GEO_EXIT]->textureID = LoadTGA("Image//explosion.tga");
 
-	CSoundEngine::GetInstance()->Init(); 
-	
-	
-	CSoundEngine::GetInstance()->AddSound("Jump", "Image//Mario-jump-sound.mp3");
-	CSoundEngine::GetInstance()->AddSound("background-music", "Image//BGM.mp3");
-	CSoundEngine::GetInstance()->AddSound("blast", "Image//Blast.mp3");
-	CSoundEngine::GetInstance()->AddSound("toss", "Image//Toss.mp3");
-	CSoundEngine::GetInstance()->AddSound("getitem", "Image//Getitem.wav");
+	//CSoundEngine::GetInstance()->Init(); 
+	//
+	//
+	//CSoundEngine::GetInstance()->AddSound("Jump", "Image//Mario-jump-sound.mp3");
+	//CSoundEngine::GetInstance()->AddSound("background-music", "Image//BGM.mp3");
+	//CSoundEngine::GetInstance()->AddSound("blast", "Image//Blast.mp3");
+	//CSoundEngine::GetInstance()->AddSound("toss", "Image//Toss.mp3");
+	//CSoundEngine::GetInstance()->AddSound("getitem", "Image//Getitem.wav");
 
 	bLightEnabled = false;
 }

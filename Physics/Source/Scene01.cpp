@@ -53,6 +53,7 @@ void Scene01::Init()
 	time_limit = 0;
 	item_id = 0;
 	Level_data = 0;
+	Gold = 0;
 
 	move_shop = false;
 	free_look = false;
@@ -953,7 +954,8 @@ void Scene01::Render()
 	}
 	else
 	{
-		float scaleX, scaleY;
+		string Gold_string = to_string(Gold);
+		float scaleX, scaleY, posX, posY;
 		scaleX = 20.f;
 		scaleY = 10.f;
 
@@ -980,6 +982,46 @@ void Scene01::Render()
 		}
 		RenderMeshIn2D(meshList[GEO_PRICE], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.2f, m_worldHeight - (scaleY * 3.f));
 		RenderMeshIn2D(meshList[GEO_GOLD], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.2f, m_worldHeight - (scaleY * 6.f));
+		for (unsigned i = 0; i < Gold_string.size(); ++i)
+		{
+			posX = m_worldWidth * 0.3f + (i * 5.f);
+			posY = m_worldHeight - (scaleY * 6.f);
+
+			switch (Gold_string[i])
+			{
+			case '1':
+				RenderMeshIn2D(meshList[GEO_NO_1], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
+				break;
+			case '2':
+				RenderMeshIn2D(meshList[GEO_NO_2], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
+				break;
+			case '3':
+				RenderMeshIn2D(meshList[GEO_NO_3], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
+				break;
+			case '4':
+				RenderMeshIn2D(meshList[GEO_NO_4], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
+				break;
+			case '5':
+				RenderMeshIn2D(meshList[GEO_NO_5], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
+				break;
+			case '6':
+				RenderMeshIn2D(meshList[GEO_NO_6], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
+				break;
+			case '7':
+				RenderMeshIn2D(meshList[GEO_NO_7], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
+				break;
+			case '8':
+				RenderMeshIn2D(meshList[GEO_NO_8], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
+				break;
+			case '9':
+				RenderMeshIn2D(meshList[GEO_NO_9], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
+				break;
+			case '0':
+				RenderMeshIn2D(meshList[GEO_NO_0], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
+				break;
+			default: break;
+			}
+		}
 		if (buy_item == true)
 		{
 			if (purchased == true)

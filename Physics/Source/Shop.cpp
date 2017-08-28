@@ -33,3 +33,7 @@ void Shop::get_item(int id)
 {
 	stuff = stuff->retreve_item(stuff, id);
 }
+int Shop::get_gold()
+{
+	return gold;
+}
