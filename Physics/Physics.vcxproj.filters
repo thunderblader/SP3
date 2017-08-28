@@ -98,7 +98,7 @@
     <ClCompile Include="Source\Menu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ShopRender.cpp">
+    <ClCompile Include="Source\ShopRender.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
