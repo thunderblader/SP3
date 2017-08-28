@@ -624,6 +624,8 @@ void Scene01::Update(double dt)
 					{
 						go->SetActive(false);
 						bossDie = false;
+						menustate = WIN1;
+						display = true;
 					}
 
 					go->pos += go->vel * static_cast<float>(dt);
