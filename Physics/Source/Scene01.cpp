@@ -99,6 +99,8 @@ void Scene01::Init()
 	menustate = MENU;
 
 	debug = false;
+	bossDie = false;
+	deathrotation = 0;
 	
 	coinanim = new SpriteAnimation();
 	coinanim->Set(dynamic_cast<SpriteMesh*>(meshList[GEO_COIN]), 0, 5, -1, 1, true);
@@ -303,9 +305,10 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 		{
 			go1->vel.SetZero();
 			m_player->SetExploded(true);
-			go2->SetActive(false);
+			go2->vel.Set(Math::RandFloatMinMax(10, 20), Math::RandFloatMinMax(10, 20), 0);
+			go2->pos.z = -0.5;
+			bossDie = true;
 			Score += 50;
-			++newlevel;
 		}
 		break;
 	case GameObject::GO_COIN:
@@ -628,6 +631,26 @@ void Scene01::Update(double dt)
 					go->vel += Vector3(0, param_physics.gravity, 0) * (float)dt;
 				}
 			}
+			if (go->type == GameObject::GO_BOSS)
+			{
+				if (bossDie)
+				{
+					if (go->scale.x > 0.001)
+					{
+						go->scale *= 0.95;
+						deathrotation += 10;
+					}
+					else if (go->scale.x < 0.001)
+					{
+						go->SetActive(false);
+						bossDie = false;
+						++newlevel;
+					}
+
+					go->pos += go->vel * static_cast<float>(dt);
+					go->vel += Vector3(0, param_physics.gravity, 0) * (float)dt;
+				}
+			}
 			if ((go->type == GameObject::GO_BOMB && !m_player->GetExploded()) || go->type == GameObject::GO_PLAYER || go->type == GameObject::GO_SLEDYETI)
 			{
 				//go->vel.x = go->vel.x - go->vel.x * 1.f * (float)dt;
@@ -838,6 +861,7 @@ void Scene01::RenderGO(GameObject *go)
 
 	case GameObject::GO_BOSS:
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
+		modelStack.Rotate(deathrotation, 0, 0, 1);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
 		RenderMesh(meshList[GEO_BOSS], false);
 		break;
