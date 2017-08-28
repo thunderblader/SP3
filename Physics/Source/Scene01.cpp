@@ -447,10 +447,14 @@ void Scene01::Update(double dt)
 		wind = Math::RandFloatMinMax(-10, 10);
 	}
 
-	if (m_player->GetLaunched())
+	static bool tempRun = false;
+	if (m_player->GetLaunched() && !tempRun)
 	{
 		ClearEnemyProj();
+		tempRun = true;
 	}
+	else if (!m_player->GetLaunched())
+		tempRun = false;
 
 	coinanim->Update(dt);
 	if (KeyboardController::GetInstance()->IsKeyPressed('I'))
