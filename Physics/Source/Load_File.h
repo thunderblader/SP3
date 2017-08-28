@@ -26,8 +26,8 @@ public:
 	void Init(vector<GameObject *>*Gameobj);
 	bool Load(bool checker, const string saveFileName);
 	void Process(bool checker, string content);
-	bool Load_Data(Tree::avl_node & node, const string saveFileName = "Image//test.sav");
-	bool Save_Data(int data1, int data2, int data3, Tree::avl_node &node, const string saveFileName = "Image//test.sav");
+	bool Load_Data(Tree::avl_node & node, const string saveFileName = "Image//save_data.sav");
+	bool Save_Data(int data1, int data2, int data3, Tree::avl_node &node, const string saveFileName = "Image//save_data.sav");
 	
 	int number_of_items;
 

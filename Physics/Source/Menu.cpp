@@ -125,7 +125,7 @@ void Scene01::Menu(double dt) {
 			menustate = LS3;
 		if (KeyboardController::GetInstance()->IsKeyPressed(VK_RETURN) || KeyboardController::GetInstance()->IsKeyPressed(VK_SPACE))
 		{
-			// load function
+			file.Load_Data(item_node->root);
 		}
 		break;
 	case LS2:
@@ -135,7 +135,7 @@ void Scene01::Menu(double dt) {
 			menustate = LS3;
 		if (KeyboardController::GetInstance()->IsKeyPressed(VK_RETURN) || KeyboardController::GetInstance()->IsKeyPressed(VK_SPACE))
 		{
-			// save function
+			file.Save_Data(Level_data, Score, Gold, item_node->root);
 		}
 		break;
 	case LS3:
@@ -158,7 +158,7 @@ void Scene01::Menu(double dt) {
 			menustate = OPTIONS3;
 		if (KeyboardController::GetInstance()->IsKeyPressed(VK_RETURN) || KeyboardController::GetInstance()->IsKeyPressed(VK_SPACE))
 		{
-			// mute function
+			sound_engine->setSoundVolume(0);
 		}
 		break;
 	case OPTIONS2:
@@ -168,7 +168,7 @@ void Scene01::Menu(double dt) {
 			menustate = OPTIONS3;
 		if (KeyboardController::GetInstance()->IsKeyPressed(VK_RETURN) || KeyboardController::GetInstance()->IsKeyPressed(VK_SPACE))
 		{
-			// unmute function
+			sound_engine->setSoundVolume(100);
 		}
 		break;
 	case OPTIONS3:

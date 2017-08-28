@@ -467,11 +467,11 @@ void Scene01::Update(double dt)
 
 	if (KeyboardController::GetInstance()->IsKeyPressed('L'))
 	{
-		file.Save_Data(Level_data, Score, Gold, item_node->root);
+		//file.Save_Data(Level_data, Score, Gold, item_node->root);
 	}
 	if (KeyboardController::GetInstance()->IsKeyPressed('K'))
 	{
-		file.Load_Data(item_node->root);
+		//file.Load_Data(item_node->root);
 	}
 	if (KeyboardController::GetInstance()->IsKeyPressed('8'))
 	{
