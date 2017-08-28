@@ -122,6 +122,7 @@ void Load_File::Process(bool checker, string content)
 
 bool Load_File::Load_Data(Tree::avl_node & node, const string saveFileName)
 {
+
 	ifstream myfile(saveFileName.c_str(), ios::in);
 	if (myfile.is_open())
 	{
@@ -204,7 +205,10 @@ bool Load_File::Load_Data(Tree::avl_node & node, const string saveFileName)
 				}
 			}
 		}
+		cout << Gold << endl;
 		cout << "Loaded" << endl;
+		items->root = node;
+		items->setInstance(items);
 		myfile.close();
 	}
 	else
@@ -262,3 +266,12 @@ bool Load_File::Save_Data(int data1, int data2, int data3, Tree::avl_node & node
 	}
 }
 
+int Load_File::get_score()
+{
+	return Score;
+}
+
+int Load_File::get_gold()
+{
+	return Gold;
+}

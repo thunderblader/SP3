@@ -462,7 +462,7 @@ void Scene01::Update(double dt)
 		Shop_Update(dt);
 		return;
 	}
-
+	Score = file.get_score();
 	Camera_Control(dt);
 	UpdateParticles(dt);
 
@@ -472,7 +472,8 @@ void Scene01::Update(double dt)
 	}
 	if (KeyboardController::GetInstance()->IsKeyPressed('K'))
 	{
-		file.Load_Data(item_node->root);
+		//file.Load_Data(item_node->root);
+	
 	}
 	if (KeyboardController::GetInstance()->IsKeyPressed('8'))
 	{
@@ -624,6 +625,8 @@ void Scene01::Update(double dt)
 					{
 						go->SetActive(false);
 						bossDie = false;
+						menustate = WIN1;
+						display = true;
 					}
 
 					go->pos += go->vel * static_cast<float>(dt);

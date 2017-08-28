@@ -125,7 +125,10 @@ void Scene01::Menu(double dt) {
 			menustate = LS3;
 		if (KeyboardController::GetInstance()->IsKeyPressed(VK_RETURN) || KeyboardController::GetInstance()->IsKeyPressed(VK_SPACE))
 		{
-			// load function
+			file.Load_Data(item_node->root);
+			Gold = file.get_gold();
+			Score = file.get_score();
+			shop.set_gold(Gold);
 		}
 		break;
 	case LS2:
@@ -135,7 +138,7 @@ void Scene01::Menu(double dt) {
 			menustate = LS3;
 		if (KeyboardController::GetInstance()->IsKeyPressed(VK_RETURN) || KeyboardController::GetInstance()->IsKeyPressed(VK_SPACE))
 		{
-			// save function
+			file.Save_Data(Level_data, Score, Gold, item_node->root);
 		}
 		break;
 	case LS3:
@@ -158,7 +161,7 @@ void Scene01::Menu(double dt) {
 			menustate = OPTIONS3;
 		if (KeyboardController::GetInstance()->IsKeyPressed(VK_RETURN) || KeyboardController::GetInstance()->IsKeyPressed(VK_SPACE))
 		{
-			// mute function
+			sound_engine->setSoundVolume(0);
 		}
 		break;
 	case OPTIONS2:
@@ -168,7 +171,7 @@ void Scene01::Menu(double dt) {
 			menustate = OPTIONS3;
 		if (KeyboardController::GetInstance()->IsKeyPressed(VK_RETURN) || KeyboardController::GetInstance()->IsKeyPressed(VK_SPACE))
 		{
-			// unmute function
+			sound_engine->setSoundVolume(100);
 		}
 		break;
 	case OPTIONS3:
@@ -185,7 +188,8 @@ void Scene01::Menu(double dt) {
 			menustate = WIN3;
 		if (KeyboardController::GetInstance()->IsKeyPressed(VK_RETURN) || KeyboardController::GetInstance()->IsKeyPressed(VK_SPACE))
 		{
-			// reset
+			Reset(newlevel);
+			display = false;
 		}
 		break;
 	case WIN2:
@@ -208,16 +212,15 @@ void Scene01::Menu(double dt) {
 			menustate = LOSE2;
 		if (KeyboardController::GetInstance()->IsKeyPressed(VK_RETURN) || KeyboardController::GetInstance()->IsKeyPressed(VK_SPACE))
 		{
-			// reset
+			Reset(newlevel);
+			display = false;
 		}
 		break;
 	case LOSE2:
-		if (KeyboardController::GetInstance()->IsKeyPressed(VK_DOWN))
+		if (KeyboardController::GetInstance()->IsKeyPressed(VK_UP))
 			menustate = LOSE1;
 		if (KeyboardController::GetInstance()->IsKeyPressed(VK_RETURN) || KeyboardController::GetInstance()->IsKeyPressed(VK_SPACE))
-		{
-			// reset
-		}
+			menustate = MENU;
 		break;
 	}
 }
