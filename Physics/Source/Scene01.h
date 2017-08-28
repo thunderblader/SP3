@@ -33,6 +33,7 @@ public:
 
 	GameObject* FetchGO();
 
+protected:
 	bool CheckCollision(GameObject *go1, GameObject *go2, float dt);
 	void CollisionResponse(GameObject *go1, GameObject *go2);
 	void Camera_Control(double dt);
@@ -43,8 +44,9 @@ public:
 	void RenderHUD();
 	void SpawnPowerups();
 	void SpawnEnemies();
+	void ClearEnemyProj();
 
-protected:
+private:
 	vector<GameObject *> m_goList;
 	vector<Enemy*> enemyList;
 	Player* m_player;
@@ -68,6 +70,7 @@ protected:
 	bool in_shop;
 	bool buy_item;
 	bool purchased;
+	bool move_shop;
 
 	Load_File file;
 	Shop shop;

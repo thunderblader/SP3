@@ -54,6 +54,7 @@ void Scene01::Init()
 	item_id = 0;
 	Level_data = 0;
 
+	move_shop = false;
 	free_look = false;
 	in_shop = false;
 	purchased = false;
@@ -307,6 +308,7 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 		sound_engine->play2D("Sound//getitem.wav");
 		shop.Add_gold(10);
 		break;
+
 	case GameObject::GO_SLEDYETI:
 		m_player->Jump(0);
 		break;
@@ -445,6 +447,11 @@ void Scene01::Update(double dt)
 		wind = Math::RandFloatMinMax(-10, 10);
 	}
 
+	if (m_player->GetLaunched())
+	{
+		ClearEnemyProj();
+	}
+
 	coinanim->Update(dt);
 	if (KeyboardController::GetInstance()->IsKeyPressed('I'))
 	{
@@ -490,32 +497,43 @@ void Scene01::Update(double dt)
 	m_player->Update(dt);
 	m_control->Update(dt);
 
+	sledYetiOnScreen = false;
 	vector<Enemy*>::iterator it, end;
 	end = enemyList.end();
-	sledYetiOnScreen = false;
 	for (it = enemyList.begin(); it != end; ++it)
 	{
 		(*it)->Update(dt);
 
-		if ((*it)->Gettype() == GameObject::GO_SLEDYETI && !sledYetiOnScreen && (*it)->GetPos().x > camera.position.x - m_worldWidth *0.5f)
+		switch ((*it)->GetType())
 		{
-			sledYetiOnScreen = true;
-		}
+		case GameObject::GO_SLEDYETI:
+			if (!sledYetiOnScreen && (*it)->GetPos().x > camera.position.x - m_worldWidth *0.5f)
+			{
+				sledYetiOnScreen = true;
+			}
+			break;
 
-		if (!(*it)->GetProjFired() && !(*it)->GetProjActive() && (*it)->GetCurAnimFrame() == 11)
-		{
-			(*it)->PushProjectile(FetchGO(), Vector3(1.f, 1.f, 1.f), 10.f);
-			(*it)->SetProjFired(true);
-		}
-		else if ((*it)->GetCurAnimFrame() == 12)
-			(*it)->SetProjFired(false);
+		case GameObject::GO_ENEMY_SNOWYETI:
+			if (!(*it)->GetProjFired() && !(*it)->GetProjActive() && (*it)->GetCurAnimFrame() == 11)
+			{
+				(*it)->PushProjectile(FetchGO(), Vector3(1.f, 1.f, 1.f), 10.f);
+				(*it)->SetProjFired(true);
+			}
+			else if ((*it)->GetCurAnimFrame() == 12)
+				(*it)->SetProjFired(false);
+			break;
 
+		default:
+			break;
+		}
+		
 		if (!(*it)->GetActive())
 		{
 			delete *it;
 			enemyList.erase(it);
 		}
 	}
+
 	if (!sledYetiOnScreen)
 	{
 		Enemy* enemy;
@@ -523,7 +541,6 @@ void Scene01::Update(double dt)
 		enemy->Init(FetchGO(), GameObject::GO_SLEDYETI, Vector3(camera.position.x + m_worldWidth, 0.5f, 0), Vector3(10.f, 10.f, 1.f), 5.f);
 		enemy->SetSpriteAnim(meshList[GEO_SLEDYETI], 0, 13, -1, 1, true);
 		enemyList.push_back(enemy);
-		//sledYetiOnScreen = true;
 	}
 
 
@@ -944,35 +961,33 @@ void Scene01::Render()
 		{
 			RenderMeshIn2D(meshList[GEO_SIZE], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.2f, m_worldHeight - (scaleY * 2.5f));
 		}
-		ss.str("");
-		ss << "ID: " << item_node->root.data;
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 15, 39);
-		ss.str("");
-		ss << "Price: " << item_node->root.price;
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 15, 36);
-		ss.str("");
-		ss << "Gold: " << shop.gold;
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 15, 15);
+		else if (item_node->root.id == 2)
+		{
+			RenderMeshIn2D(meshList[GEO_SPEED], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.2f, m_worldHeight - (scaleY * 2.5f));
+		}
+		else if (item_node->root.id == 3)
+		{
+			RenderMeshIn2D(meshList[GEO_JUMP], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.2f, m_worldHeight - (scaleY * 2.5f));
+		}
+		else if (item_node->root.id == 4)
+		{
+			RenderMeshIn2D(meshList[GEO_BOOST], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.2f, m_worldHeight - (scaleY * 2.5f));
+		}
+		RenderMeshIn2D(meshList[GEO_PRICE], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.2f, m_worldHeight - (scaleY * 3.f));
+		RenderMeshIn2D(meshList[GEO_GOLD], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.2f, m_worldHeight - (scaleY * 6.f));
 		if (buy_item == true)
 		{
 			if (purchased == true)
 			{
-				ss.str("");
-				ss << "You bought:" << item_node->root.name;
-				RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 15, 18);
+				RenderMeshIn2D(meshList[GEO_BOUGHT], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.2f, m_worldHeight - (scaleY * 7.f));
 			}
 			else
 			{
-				ss.str("");
-				ss << "You no money";
-				RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 15, 18);
-				ss.str("");
-				ss << "It costs: " << item_node->root.price;
-				RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 15, 21);
+				RenderMeshIn2D(meshList[GEO_INSUFFICIENT], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.2f, m_worldHeight - (scaleY * 7.f));
+				RenderMeshIn2D(meshList[GEO_GOLD], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.325f, m_worldHeight - (scaleY * 7.f));
 			}
 		}
 	}
-
 	RenderMenu();
 }
 
@@ -1123,6 +1138,14 @@ void Scene01::SpawnEnemies()
 	sledYetiOnScreen = true;
 
 	enemy->SetHeightMap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
+}
+
+void Scene01::ClearEnemyProj()
+{
+	vector<Enemy*>::iterator it, end;
+	end = enemyList.end();
+	for (it = enemyList.begin(); it != end; ++it)
+		(*it)->ClearProjectile();
 }
 
 void Scene01::Exit()
