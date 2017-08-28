@@ -3,6 +3,7 @@
 
 void Scene01::Shop_Update(double dt)
 {
+	Gold = shop.get_gold();
 	if (time_limit < 3)
 	{
 		time_limit += (float)dt;
