@@ -15,6 +15,7 @@ public:
 	bool Purchase_Item(int id);
 	void get_item(int id);
 	void set_gold(int new_gold);
+	int get_gold();
 	
 	int gold;
 	int item_price;

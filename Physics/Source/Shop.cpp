@@ -36,3 +36,8 @@ void Shop::set_gold(int new_gold)
 {
 	gold = new_gold;
 }
+
+int Shop::get_gold()
+{
+	return gold;
+}
