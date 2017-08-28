@@ -104,6 +104,7 @@ private:
 
 		OPTIONS,
 		OPTIONS2,
+		OPTIONS3,
 
 		INSTRUCTIONS,
 
@@ -117,6 +118,7 @@ private:
 		WIN1,
 		WIN2,
 		WIN3,
+
 		LOSE1,
 		LOSE2,
 	} menustate;
