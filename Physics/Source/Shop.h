@@ -12,13 +12,12 @@ class Shop
 public:
 	void Load_Shop();
 	void Add_gold(int Add);
-	bool Purchase_Item(int id);
+	bool Purchase_Item(int id, Tree::avl_node &node);
 	void get_item(int id);
 	void set_gold(int new_gold);
 	int get_gold();
 	
 	int gold;
-	int item_price;
 
 	Load_File shop_file;
 	Tree *stuff;
