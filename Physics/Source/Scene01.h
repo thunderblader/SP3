@@ -70,6 +70,7 @@ private:
 	bool in_shop;
 	bool buy_item;
 	bool purchased;
+	bool move_shop;
 
 	Load_File file;
 	Shop shop;

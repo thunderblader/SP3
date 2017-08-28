@@ -231,6 +231,15 @@ void SceneBase::Init()
 	meshList[GEO_BOOST] = MeshBuilder::GenerateQuad("Boost", Color(1, 1, 1), 1.f);
 	meshList[GEO_BOOST]->textureID = LoadTGA("Image//Boost.tga");
 
+	meshList[GEO_GOLD] = MeshBuilder::GenerateQuad("gold", Color(1, 1, 1), 1.f);
+	meshList[GEO_GOLD]->textureID = LoadTGA("Image//gold.tga");
+	meshList[GEO_PRICE] = MeshBuilder::GenerateQuad("price", Color(1, 1, 1), 1.f);
+	meshList[GEO_PRICE]->textureID = LoadTGA("Image//price.tga");
+	meshList[GEO_BOUGHT] = MeshBuilder::GenerateQuad("bought", Color(1, 1, 1), 1.f);
+	meshList[GEO_BOUGHT]->textureID = LoadTGA("Image//bought.tga"); 
+	meshList[GEO_INSUFFICIENT] = MeshBuilder::GenerateQuad("insufficient", Color(1, 1, 1), 1.f);
+	meshList[GEO_INSUFFICIENT]->textureID = LoadTGA("Image//insufficient.tga");
+
 	//meshList[GEO_START] = MeshBuilder::GenerateQuad("GEO_PARTICLE_EXPLOSION", Color(1, 1, 1), 1.f);
 	//meshList[GEO_START]->textureID = LoadTGA("Image//explosion.tga");
 	//meshList[GEO_START2] = MeshBuilder::GenerateQuad("GEO_PARTICLE_EXPLOSION", Color(1, 1, 1), 1.f);

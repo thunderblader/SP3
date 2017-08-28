@@ -54,6 +54,7 @@ void Scene01::Init()
 	item_id = 0;
 	Level_data = 0;
 
+	move_shop = false;
 	free_look = false;
 	in_shop = false;
 	purchased = false;
@@ -959,35 +960,33 @@ void Scene01::Render()
 		{
 			RenderMeshIn2D(meshList[GEO_SIZE], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.2f, m_worldHeight - (scaleY * 2.5f));
 		}
-		ss.str("");
-		ss << "ID: " << item_node->root.data;
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 15, 39);
-		ss.str("");
-		ss << "Price: " << item_node->root.price;
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 15, 36);
-		ss.str("");
-		ss << "Gold: " << shop.gold;
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 15, 15);
+		else if (item_node->root.id == 2)
+		{
+			RenderMeshIn2D(meshList[GEO_SPEED], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.2f, m_worldHeight - (scaleY * 2.5f));
+		}
+		else if (item_node->root.id == 3)
+		{
+			RenderMeshIn2D(meshList[GEO_JUMP], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.2f, m_worldHeight - (scaleY * 2.5f));
+		}
+		else if (item_node->root.id == 4)
+		{
+			RenderMeshIn2D(meshList[GEO_BOOST], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.2f, m_worldHeight - (scaleY * 2.5f));
+		}
+		RenderMeshIn2D(meshList[GEO_PRICE], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.2f, m_worldHeight - (scaleY * 3.f));
+		RenderMeshIn2D(meshList[GEO_GOLD], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.2f, m_worldHeight - (scaleY * 6.f));
 		if (buy_item == true)
 		{
 			if (purchased == true)
 			{
-				ss.str("");
-				ss << "You bought:" << item_node->root.name;
-				RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 15, 18);
+				RenderMeshIn2D(meshList[GEO_BOUGHT], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.2f, m_worldHeight - (scaleY * 7.f));
 			}
 			else
 			{
-				ss.str("");
-				ss << "You no money";
-				RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 15, 18);
-				ss.str("");
-				ss << "It costs: " << item_node->root.price;
-				RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 15, 21);
+				RenderMeshIn2D(meshList[GEO_INSUFFICIENT], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.2f, m_worldHeight - (scaleY * 7.f));
+				RenderMeshIn2D(meshList[GEO_GOLD], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.325f, m_worldHeight - (scaleY * 7.f));
 			}
 		}
 	}
-
 	RenderMenu();
 }
 
