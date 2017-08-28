@@ -41,7 +41,7 @@ void Scene01::Shop_Update(double dt)
 		}
 		else
 		{
-			purchased = shop.Purchase_Item(item_id);
+			purchased = shop.Purchase_Item(item_id, item_node->root);
 			buy_item = true;
 			if (purchased)
 			{

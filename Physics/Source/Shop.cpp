@@ -3,7 +3,6 @@
 void Shop::Load_Shop()
 {
 	gold = 1000;
-	item_price = 0;
 }
 
 void Shop::Add_gold(int Add)
@@ -11,19 +10,55 @@ void Shop::Add_gold(int Add)
 	gold += Add;
 }
 
-bool Shop::Purchase_Item(int id)
+bool Shop::Purchase_Item(int id, Tree::avl_node &node)
 {
-	item_price = 0;
-	stuff = Tree::getInstance();
-	stuff = stuff->retreve_item(stuff, id);
-	if (gold < stuff->root.price)
-	{			
-		return false;
-	}
-	else
+	if (node.id == 1)
 	{
-		gold -= stuff->root.price;
-		return true;
+		if (gold < node.price)
+		{
+			return false;
+		}
+		else
+		{
+			gold -= node.price;
+			return true;
+		}
+	}
+	if (node.id == 2)
+	{
+		if (gold < node.price)
+		{
+			return false;
+		}
+		else
+		{
+			gold -= node.price;
+			return true;
+		}
+	}
+	if (node.id == 3)
+	{
+		if (gold < node.price)
+		{
+			return false;
+		}
+		else
+		{
+			gold -= node.price;
+			return true;
+		}
+	}
+	if (node.id == 4)
+	{
+		if (gold < node.price)
+		{
+			return false;
+		}
+		else
+		{
+			gold -= node.price;
+			return true;
+		}
 	}
 }
 

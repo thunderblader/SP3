@@ -462,7 +462,7 @@ void Scene01::Update(double dt)
 		Shop_Update(dt);
 		return;
 	}
-	Score = file.get_score();
+
 	Camera_Control(dt);
 	UpdateParticles(dt);
 
