@@ -416,55 +416,30 @@ void Scene01::Update(double dt)
 		}
 		return;
 	}
+
 	if (sound_engine->isCurrentlyPlaying("Sound//mainmenu.mp3"))
 	{
 		sound_engine->stopAllSounds();
 	}
+
 	if (!sound_engine->isCurrentlyPlaying("Sound//gameplay.mp3"))
 	{
 		sound_engine->play2D("Sound//gameplay.mp3", true);
 	}
+
 	if (newlevel != currlevel && !m_player->GetExploded())
 	{
-		currlevel = newlevel;
-		m_tries = 3;
-
-		for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
-		{
-			GameObject *go = (GameObject *)*it;
-			if (go->GetActive() && go->type != GameObject::GO_BOMB
-				&& go->type != GameObject::GO_PLAYER)
-			{
-				go->SetActive(false);
-				go->type = GameObject::GO_NONE;
-			}
-		}
-
-		ClearEnemy();
-
-		std::string leveltext = "Image//Level0";
-		leveltext += to_string(currlevel);
-		leveltext += ".csv";
-		file.Load(false, leveltext);
-		leveltext = "Image//heightmap";
-		leveltext += to_string(currlevel);
-		leveltext += ".raw";
-		meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", leveltext, m_heightMap);
-		meshList[GEO_TERRAIN]->textureID = LoadTGA("Image//terrain.tga");
-
-		SpawnPowerups();
-		SpawnEnemies();
-
-		wind = Math::RandFloatMinMax(-10, 10);
+		Reset(true);
 	}
 
 	static bool CurrentTry = false;
 	if (m_player->GetLaunched() && !CurrentTry)
 	{
 		ClearEnemyProj();
+		CurrentTry = true;
+
 		if (m_tries > 0)
 			--m_tries;
-		CurrentTry = true;
 	}
 	else if (!m_player->GetLaunched())
 		CurrentTry = false;
@@ -1152,6 +1127,43 @@ void Scene01::ClearEnemyProj()
 	end = enemyList.end();
 	for (it = enemyList.begin(); it != end; ++it)
 		(*it)->ClearProjectile();
+}
+
+void Scene01::Reset(bool isHardReset)
+{
+	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
+	{
+		GameObject *go = (GameObject *)*it;
+		if (go->GetActive() && go->type != GameObject::GO_BOMB
+			&& go->type != GameObject::GO_PLAYER)
+		{
+			go->SetActive(false);
+			go->type = GameObject::GO_NONE;
+		}
+	}
+
+	ClearEnemy();
+
+	if (isHardReset)
+	{
+		currlevel = newlevel;
+		m_tries = 3;
+
+		std::string leveltext = "Image//Level0";
+		leveltext += to_string(currlevel);
+		leveltext += ".csv";
+		file.Load(false, leveltext);
+		leveltext = "Image//heightmap";
+		leveltext += to_string(currlevel);
+		leveltext += ".raw";
+		meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", leveltext, m_heightMap);
+		meshList[GEO_TERRAIN]->textureID = LoadTGA("Image//terrain.tga");
+	}
+	
+	SpawnPowerups();
+	SpawnEnemies();
+
+	wind = Math::RandFloatMinMax(-10, 10);
 }
 
 void Scene01::Exit()
