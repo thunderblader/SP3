@@ -193,22 +193,19 @@ void Player::Jump(const double dt)
 }
 
 void Player::Upgrade(Tree::avl_node &node)
-{	//size=2, mass=1.5
+{
 	if (node.id == 1)
 	{
-//		playerObj->scale.Set(10, 10, 1);
-//		playerObj->mass = 1.5f;
 		playerObj->scale.Set(playerObj->scale.x + (node.item_count * 1), playerObj->scale.y + (node.item_count * 1), 1);
-		playerObj->mass = 1 + (node.item_count * 0.1f);
-		//m_speed = 20;
+		playerObj->mass += (node.item_count * 0.1f);
 	}
 	else if (node.id == 2)
 	{
-		m_speed = (float)(10 + (node.item_count * 1));
+		m_speed += (float)(5 + (node.item_count * 1));
 	}
 	else if (node.id == 3)
 	{
-		jump_boost = (float)(node.item_count * 30);
+		jump_boost = (float)(node.item_count * 5);
 	}
 	else if (node.id == 4)
 	{

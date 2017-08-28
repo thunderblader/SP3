@@ -198,12 +198,15 @@ bool Scene01::CheckCollision(GameObject * go1, GameObject * go2, float dt)
 
 	case GameObject::GO_BOSS:
 	{
-		Vector3 dis = go1->pos - go2->pos;
-		Vector3 rel = go1->vel - go2->vel;
-		float combinedRadiusSq = (go1->scale.x + go2->scale.x / 2) * (go1->scale.x + go2->scale.x / 2);
+		if(go1->type == GameObject::GO_BOMB)
+		{
+			Vector3 dis = go1->pos - go2->pos;
+			Vector3 rel = go1->vel - go2->vel;
+			float combinedRadiusSq = (go1->scale.x + go2->scale.x / 2) * (go1->scale.x + go2->scale.x / 2);
 
-		return (rel.Dot(dis) < 0 &&
-			dis.LengthSquared() <= combinedRadiusSq);
+			return (rel.Dot(dis) < 0 &&
+				dis.LengthSquared() <= combinedRadiusSq);
+		}
 	}
 
 	case GameObject::GO_COIN:
@@ -620,7 +623,6 @@ void Scene01::Update(double dt)
 					{
 						go->SetActive(false);
 						bossDie = false;
-						++newlevel;
 					}
 
 					go->pos += go->vel * static_cast<float>(dt);

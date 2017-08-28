@@ -220,6 +220,30 @@ void SceneBase::Init()
 	meshList[GEO_LEVELBACK] = MeshBuilder::GenerateQuad("levelback", Color(1, 1, 1), 1.f);
 	meshList[GEO_LEVELBACK]->textureID = LoadTGA("Image//levelback.tga");
 
+	meshList[GEO_LS] = MeshBuilder::GenerateQuad("ls", Color(1, 1, 1), 1.f);
+	meshList[GEO_LS]->textureID = LoadTGA("Image//ls.tga");
+	meshList[GEO_LS2] = MeshBuilder::GenerateQuad("ls2", Color(1, 1, 1), 1.f);
+	meshList[GEO_LS2]->textureID = LoadTGA("Image//ls2.tga");
+	meshList[GEO_LS3] = MeshBuilder::GenerateQuad("ls3", Color(1, 1, 1), 1.f);
+	meshList[GEO_LS3]->textureID = LoadTGA("Image//ls3.tga");
+
+	meshList[GEO_OPTIONS] = MeshBuilder::GenerateQuad("options1", Color(1, 1, 1), 1.f);
+	meshList[GEO_OPTIONS]->textureID = LoadTGA("Image//options1.tga");
+	meshList[GEO_OPTIONS2] = MeshBuilder::GenerateQuad("options2", Color(1, 1, 1), 1.f);
+	meshList[GEO_OPTIONS2]->textureID = LoadTGA("Image//options2.tga");
+	meshList[GEO_OPTIONS3] = MeshBuilder::GenerateQuad("options3", Color(1, 1, 1), 1.f);
+	meshList[GEO_OPTIONS3]->textureID = LoadTGA("Image//options3.tga");
+
+	meshList[GEO_WIN1] = MeshBuilder::GenerateQuad("win1", Color(1, 1, 1), 1.f);
+	meshList[GEO_WIN1]->textureID = LoadTGA("Image//win1.tga");
+	meshList[GEO_WIN2] = MeshBuilder::GenerateQuad("win2", Color(1, 1, 1), 1.f);
+	meshList[GEO_WIN2]->textureID = LoadTGA("Image//win2.tga");
+	meshList[GEO_WIN3] = MeshBuilder::GenerateQuad("win3", Color(1, 1, 1), 1.f);
+	meshList[GEO_WIN3]->textureID = LoadTGA("Image//win3.tga");
+
+	//meshList[GEO_INSTRUCTIONS] = MeshBuilder::GenerateQuad("GEO_PARTICLE_EXPLOSION", Color(1, 1, 1), 1.f);
+	//meshList[GEO_INSTRUCTIONS]->textureID = LoadTGA("Image//explosion.tga");
+
 	meshList[GEO_SHOP] = MeshBuilder::GenerateQuad("Shop", Color(1, 1, 1), 1.f);
 	meshList[GEO_SHOP]->textureID = LoadTGA("Image//Shop.tga");
 	meshList[GEO_SIZE] = MeshBuilder::GenerateQuad("Size", Color(1, 1, 1), 1.f);
@@ -239,30 +263,6 @@ void SceneBase::Init()
 	meshList[GEO_BOUGHT]->textureID = LoadTGA("Image//bought.tga"); 
 	meshList[GEO_INSUFFICIENT] = MeshBuilder::GenerateQuad("insufficient", Color(1, 1, 1), 1.f);
 	meshList[GEO_INSUFFICIENT]->textureID = LoadTGA("Image//insufficient.tga");
-
-	//meshList[GEO_START] = MeshBuilder::GenerateQuad("GEO_PARTICLE_EXPLOSION", Color(1, 1, 1), 1.f);
-	//meshList[GEO_START]->textureID = LoadTGA("Image//explosion.tga");
-	//meshList[GEO_START2] = MeshBuilder::GenerateQuad("GEO_PARTICLE_EXPLOSION", Color(1, 1, 1), 1.f);
-	//meshList[GEO_START2]->textureID = LoadTGA("Image//explosion.tga");
-	//
-	//
-	//meshList[GEO_LS] = MeshBuilder::GenerateQuad("GEO_PARTICLE_EXPLOSION", Color(1, 1, 1), 1.f);
-	//meshList[GEO_LS]->textureID = LoadTGA("Image//explosion.tga");
-	//meshList[GEO_LS2] = MeshBuilder::GenerateQuad("GEO_PARTICLE_EXPLOSION", Color(1, 1, 1), 1.f);
-	//meshList[GEO_LS2]->textureID = LoadTGA("Image//explosion.tga");
-	//meshList[GEO_LS3] = MeshBuilder::GenerateQuad("GEO_PARTICLE_EXPLOSION", Color(1, 1, 1), 1.f);
-	//meshList[GEO_LS3]->textureID = LoadTGA("Image//explosion.tga");
-	//
-	//meshList[GEO_OPTIONS] = MeshBuilder::GenerateQuad("GEO_PARTICLE_EXPLOSION", Color(1, 1, 1), 1.f);
-	//meshList[GEO_OPTIONS]->textureID = LoadTGA("Image//explosion.tga");
-	//meshList[GEO_OPTIONS2] = MeshBuilder::GenerateQuad("GEO_PARTICLE_EXPLOSION", Color(1, 1, 1), 1.f);
-	//meshList[GEO_OPTIONS2]->textureID = LoadTGA("Image//explosion.tga");
-	//
-	//meshList[GEO_INSTRUCTIONS] = MeshBuilder::GenerateQuad("GEO_PARTICLE_EXPLOSION", Color(1, 1, 1), 1.f);
-	//meshList[GEO_INSTRUCTIONS]->textureID = LoadTGA("Image//explosion.tga");
-	//
-	//meshList[GEO_EXIT] = MeshBuilder::GenerateQuad("GEO_PARTICLE_EXPLOSION", Color(1, 1, 1), 1.f);
-	//meshList[GEO_EXIT]->textureID = LoadTGA("Image//explosion.tga");
 
 	//CSoundEngine::GetInstance()->Init(); 
 	//
