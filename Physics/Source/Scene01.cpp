@@ -498,9 +498,8 @@ void Scene01::Update(double dt)
 	m_control->Update(dt);
 
 	sledYetiOnScreen = false;
-	vector<Enemy*>::iterator it, end;
-	end = enemyList.end();
-	for (it = enemyList.begin(); it != end; ++it)
+	vector<Enemy*>::iterator it;
+	for (it = enemyList.begin(); it != enemyList.end(); )
 	{
 		(*it)->Update(dt);
 
@@ -530,15 +529,17 @@ void Scene01::Update(double dt)
 		if (!(*it)->GetActive())
 		{
 			delete *it;
-			enemyList.erase(it);
+			it = enemyList.erase(it);
 		}
+		else
+			++it;
 	}
 
-	if (!sledYetiOnScreen)
+	if (!sledYetiOnScreen && camera.position.x + m_worldWidth < 0)
 	{
 		Enemy* enemy;
 		enemy = new Enemy();
-		enemy->Init(FetchGO(), GameObject::GO_SLEDYETI, Vector3(camera.position.x + m_worldWidth, 0.5f, 0), Vector3(10.f, 10.f, 1.f), 5.f);
+		enemy->Init(FetchGO(), GameObject::GO_SLEDYETI, Vector3(camera.position.x + m_worldWidth*1.2f, 0.5f, 0), Vector3(10.f, 10.f, 1.f), 5.f);
 		enemy->SetSpriteAnim(meshList[GEO_SLEDYETI], 0, 13, -1, 1, true);
 		enemyList.push_back(enemy);
 	}
@@ -899,7 +900,8 @@ void Scene01::Render()
 		SpriteAnimation* anim = enemy->GetSprite();
 		modelStack.PushMatrix();
 		modelStack.Translate(enemy->GetPos());
-		modelStack.Rotate(enemy->GetRot(), 0, 0, 1);
+		if (enemy->GetType() == GameObject::GO_SLEDYETI)
+			modelStack.Rotate(enemy->GetRot(), 0, 0, 1);
 		modelStack.Scale(enemy->GetScale());
 		RenderSpriteMesh(anim->GetMesh(), false, anim->GetCurFrame());
 		modelStack.PopMatrix();
