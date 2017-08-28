@@ -461,17 +461,18 @@ void Scene01::Update(double dt)
 		Shop_Update(dt);
 		return;
 	}
-
+	Score = file.get_score();
 	Camera_Control(dt);
 	UpdateParticles(dt);
 
 	if (KeyboardController::GetInstance()->IsKeyPressed('L'))
 	{
-		//file.Save_Data(Level_data, Score, Gold, item_node->root);
+		file.Save_Data(Level_data, Score, Gold, item_node->root);
 	}
 	if (KeyboardController::GetInstance()->IsKeyPressed('K'))
 	{
 		//file.Load_Data(item_node->root);
+	
 	}
 	if (KeyboardController::GetInstance()->IsKeyPressed('8'))
 	{
