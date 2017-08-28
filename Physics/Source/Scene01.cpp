@@ -259,7 +259,7 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 					pos.y = Math::Clamp(pos.y, 0.f, go3->scale.y);
 					Score += 5;
 					pos += go3->pos;
-					if ((pos - go1->pos).Length() > 2.5 && (pos - go1->pos).Length() < 10)
+					if ((pos - go1->pos).Length() > 2.5 && (pos - go1->pos).Length() < 10 * m_player->GetPowRangeCount())
 					{
 						float energy = (30 - (pos - go1->pos).Length()) / 30 * 10;
 
@@ -451,7 +451,7 @@ void Scene01::Update(double dt)
 		Shop_Update(dt);
 		return;
 	}
-	Score = file.get_score();
+
 	Camera_Control(dt);
 	UpdateParticles(dt);
 
@@ -475,24 +475,6 @@ void Scene01::Update(double dt)
 	if (KeyboardController::GetInstance()->IsKeyPressed('0'))
 	{
 		m_speed += 0.1f;
-	}
-	if (KeyboardController::GetInstance()->IsKeyPressed('P'))
-	{
-		for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
-		{
-			GameObject *go = (GameObject *)*it;
-			if (go->GetActive())
-			{
-				if (go->type == GameObject::GO_BOSS)
-				{
-					go->SetActive(false);
-					deathrotation = 0;
-					bossDie = false;
-					menustate = WIN1;
-					display = true;
-				}
-			}
-		}
 	}
 
 	if (m_tries == 0 && m_player->GetPlayerPos().y < 0)
