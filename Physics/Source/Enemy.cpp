@@ -44,7 +44,7 @@ void Enemy::Init(GameObject* _enemyObj, GameObject::GAMEOBJECT_TYPE _type, Vecto
 
 void Enemy::Update(double dt)
 {
-	if (!enemyObj || !playerObj)
+	if (!enemyObj || !playerObj || enemyObj->type == GameObject::GO_NONE)
 		return;
 
 	if (spriteAnim)
@@ -185,6 +185,11 @@ void Enemy::ClearProjectile()
 	{
 		snowBall->SetActive(false);
 		snowBall->type = GameObject::GO_NONE;
+	}
+	else if (enemyObj->type == GameObject::GO_SLEDYETI)
+	{
+		enemyObj->SetActive(false);
+		enemyObj->type = GameObject::GO_NONE;
 	}
 }
 
