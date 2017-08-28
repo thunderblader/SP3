@@ -126,6 +126,9 @@ void Scene01::Menu(double dt) {
 		if (KeyboardController::GetInstance()->IsKeyPressed(VK_RETURN) || KeyboardController::GetInstance()->IsKeyPressed(VK_SPACE))
 		{
 			file.Load_Data(item_node->root);
+			Gold = file.get_gold();
+			Score = file.get_score();
+			shop.set_gold(Gold);
 		}
 		break;
 	case LS2:
