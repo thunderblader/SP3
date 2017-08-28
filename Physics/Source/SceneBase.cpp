@@ -182,8 +182,6 @@ void SceneBase::Init()
 	meshList[GEO_PU_SPEED]->textureID = LoadTGA("Image//pu_speed.tga");
 	meshList[GEO_PU_RANGE] = MeshBuilder::GenerateQuad("pu_range", Color(0.f, 0.f, 0.f), 1.f);
 	meshList[GEO_PU_RANGE]->textureID = LoadTGA("Image//pu_range.tga");
-	meshList[GEO_PU_POWER] = MeshBuilder::GenerateQuad("pu_power", Color(0.f, 0.f, 0.f), 1.f);
-	meshList[GEO_PU_POWER]->textureID = LoadTGA("Image//pu_power.tga");
 
 	meshList[GEO_PARTICLE_SPARK] = MeshBuilder::GenerateQuad("GEO_PARTICLE_SPARK", Color(1, 1, 1), 1.f);
 	meshList[GEO_PARTICLE_SPARK]->textureID = LoadTGA("Image//spark.tga");
@@ -241,8 +239,13 @@ void SceneBase::Init()
 	meshList[GEO_WIN3] = MeshBuilder::GenerateQuad("win3", Color(1, 1, 1), 1.f);
 	meshList[GEO_WIN3]->textureID = LoadTGA("Image//win3.tga");
 
-	//meshList[GEO_INSTRUCTIONS] = MeshBuilder::GenerateQuad("GEO_PARTICLE_EXPLOSION", Color(1, 1, 1), 1.f);
-	//meshList[GEO_INSTRUCTIONS]->textureID = LoadTGA("Image//explosion.tga");
+	meshList[GEO_LOSE1] = MeshBuilder::GenerateQuad("lose1", Color(1, 1, 1), 1.f);
+	meshList[GEO_LOSE1]->textureID = LoadTGA("Image//lose1.tga");
+	meshList[GEO_LOSE2] = MeshBuilder::GenerateQuad("lose2", Color(1, 1, 1), 1.f);
+	meshList[GEO_LOSE2]->textureID = LoadTGA("Image//lose2.tga");
+
+	meshList[GEO_INSTRUCTIONS] = MeshBuilder::GenerateQuad("instructions", Color(1, 1, 1), 1.f);
+	meshList[GEO_INSTRUCTIONS]->textureID = LoadTGA("Image//instructions.tga");
 
 	meshList[GEO_SHOP] = MeshBuilder::GenerateQuad("Shop", Color(1, 1, 1), 1.f);
 	meshList[GEO_SHOP]->textureID = LoadTGA("Image//Shop.tga");

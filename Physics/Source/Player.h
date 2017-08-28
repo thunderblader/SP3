@@ -31,12 +31,21 @@ public:
 	GameObject GetPlayerBomb() const;
 	Vector3 GetPlayerPos();
 	Vector3 GetVel();
-	void SetExploded(bool In);
 	bool GetExploded();
 	bool GetLaunched();
 	void SetLaunched(bool In);
 	float GetBombspin();
+	PowerUpStats GetPowStats() const;
+	unsigned int GetPowSpdCount() const;
+	unsigned int GetPowRangeCount() const;
+
 	void SetHeightmap(vector<unsigned char>* _heightmap, float _worldWidth, float _worldHeight);
+	void SetExploded(bool In);
+	void SetPowRange(float _in);
+	void SetPowSpd(float _in);
+
+	void AddPowSpdCount(unsigned int _in = 1);
+	void AddPowRangeCount(unsigned int _in = 1);
 
 	virtual void CollisionResponse();
 
@@ -57,6 +66,7 @@ private:
 //	int id;
 
 	PowerUpStats pu_stats;
+	unsigned int pu_counts[2];
 	float m_speed;
 	float jump_boost;
 	float blast_strength;

@@ -47,7 +47,6 @@ void Scene01::Init()
 
 	m_ballCount = 0;
 
-
 	m_tries = 3;
 	Score = 0;
 	time_limit = 0;
@@ -186,16 +185,6 @@ bool Scene01::CheckCollision(GameObject * go1, GameObject * go2, float dt)
 			dis.LengthSquared() <= combinedRadiusSq);
 	}
 
-	case GameObject::GO_PU_POWER:
-	{
-		Vector3 dis = go1->pos - go2->pos;
-		Vector3 rel = go1->vel - go2->vel;
-		float combinedRadiusSq = (go1->scale.x * 0.2f + go2->scale.x) * (go1->scale.x * 0.2f + go2->scale.x);
-
-		return (rel.Dot(dis) < 0 &&
-			dis.LengthSquared() <= combinedRadiusSq);
-	}
-
 	case GameObject::GO_BOSS:
 	{
 		if(go1->type == GameObject::GO_BOMB)
@@ -270,7 +259,7 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 					pos.y = Math::Clamp(pos.y, 0.f, go3->scale.y);
 					Score += 5;
 					pos += go3->pos;
-					if ((pos - go1->pos).Length() > 2.5 && (pos - go1->pos).Length() < 10)
+					if ((pos - go1->pos).Length() > 2.5 && (pos - go1->pos).Length() < 10 * m_player->GetPowRangeCount())
 					{
 						float energy = (30 - (pos - go1->pos).Length()) / 30 * 10;
 
@@ -286,18 +275,14 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 		go2->SetActive(false);
 		sound_engine->play2D("Sound//getitem.wav");
 		Score += 5;
+		m_player->AddPowSpdCount();
 		break;
 
 	case GameObject::GO_PU_RANGE:
 		go2->SetActive(false);
 		sound_engine->play2D("Sound//getitem.wav");
 		Score += 5;
-		break;
-
-	case GameObject::GO_PU_POWER:
-		go2->SetActive(false);
-		sound_engine->play2D("Sound//getitem.wav");
-		Score += 5;
+		m_player->AddPowRangeCount();
 		break;
 
 	case GameObject::GO_BOSS:
@@ -437,6 +422,8 @@ void Scene01::Update(double dt)
 	if (m_player->GetLaunched() && !CurrentTry)
 	{
 		ClearEnemyProj();
+		ClearPowerUps();
+		SpawnPowerups();
 		CurrentTry = true;
 
 		if (m_tries > 0)
@@ -488,6 +475,12 @@ void Scene01::Update(double dt)
 		m_speed += 0.1f;
 	}
 
+	if (m_tries == 0 && m_player->GetPlayerPos().y < 0)
+	{
+		menustate = LOSE1;
+		display = true;
+	}
+
 	m_player->Update(dt);
 	m_control->Update(dt);
 
@@ -522,6 +515,7 @@ void Scene01::Update(double dt)
 		
 		if (!(*it)->GetActive())
 		{
+			(*it)->Exit();
 			delete *it;
 			it = enemyList.erase(it);
 		}
@@ -618,7 +612,7 @@ void Scene01::Update(double dt)
 				{
 					if (go->scale.x > 0.001)
 					{
-						go->scale *= 0.95;
+						go->scale *= 0.95f;
 						deathrotation += 10;
 					}
 					else if (go->scale.x < 0.001)
@@ -836,12 +830,6 @@ void Scene01::RenderGO(GameObject *go)
 		RenderMesh(meshList[GEO_PU_RANGE], false);
 		break;
 
-	case GameObject::GO_PU_POWER:
-		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
-		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
-		RenderMesh(meshList[GEO_PU_POWER], false);
-		break;
-
 	case GameObject::GO_BOSS:
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
 		modelStack.Rotate(deathrotation, 0, 0, 1);
@@ -980,6 +968,7 @@ void Scene01::RenderHUD()
 	posX = scaleX * 0.5f + 0.5f;
 	posY = m_worldHeight - scaleY * 0.5f;
 
+	// Render Lives/Chances/Tries
 	RenderMeshIn2D(meshList[GEO_HUD_CHANCE], false, m_worldWidth, m_worldHeight, scaleX, scaleY, posX, posY);
 	for (unsigned int i = 0; i < m_tries; ++i)
 	{
@@ -987,7 +976,9 @@ void Scene01::RenderHUD()
 		posY = m_worldHeight - 5.5f;
 		RenderMeshIn2D(meshList[GEO_CART], false, m_worldWidth, m_worldHeight, 5.f, 4.f, posX, posY);
 	}
+	/*****************/
 
+	// Render Level
 	posX = m_worldWidth * 0.5f;
 	posY = m_worldHeight - scaleY - scaleY * 0.5f;
 
@@ -1010,7 +1001,9 @@ void Scene01::RenderHUD()
 		break;
 	default: break;
 	}
+	/*****************/
 
+	// Render Score
 	string ss = to_string(Score);
 	RenderMeshIn2D(meshList[GEO_HUD_SCORE], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.5f, m_worldHeight - 5.f);
 
@@ -1054,27 +1047,49 @@ void Scene01::RenderHUD()
 		default: break;
 		}
 	}
+	/*****************/
+
+	// Render Powerup
+	unsigned int SpdCount = m_player->GetPowSpdCount();
+	unsigned int RangeCount = m_player->GetPowRangeCount();
+	posX = m_worldWidth - 5.f;
+	posY = (m_worldHeight - 6.f * SpdCount - 6.f * RangeCount) * 0.5f ;
+
+	for (unsigned int i = 0; i < SpdCount; ++i)
+	{
+		posY += 6.f;
+		RenderMeshIn2D(meshList[GEO_PU_SPEED], false, m_worldWidth, m_worldHeight, 5.f, 5.f, posX, posY);
+	}
+
+	for (unsigned int i = 0; i < RangeCount; ++i)
+	{
+		posY += 6.f;
+		RenderMeshIn2D(meshList[GEO_PU_RANGE], false, m_worldWidth, m_worldHeight, 5.f, 5.f, posX, posY);
+	}
+	/*****************/
 }
 
 void Scene01::SpawnPowerups()
 {
 	GameObject* obj;
 	float rX = -m_TerrainWidth + 50.f;
-	float rY;
-	for (unsigned i = 0; rX < -100.f; ++i)
+	float rY = 0.f;
+	while (rX < -100.f)
 	{
+		rY = 0.f;
 		obj = FetchGO();
+
 		if (Math::RandIntMinMax(0, 5))
 		{
 			rX += Math::RandFloatMinMax(20.f, 50.f);
-			rY = Math::RandFloatMinMax(15.f, 20.f);
+			rY += Math::RandFloatMinMax(15.f, 20.f);
 			obj->type = GameObject::GO_COIN;
 		}
 		else
 		{
 			rX += Math::RandFloatMinMax(30.f, 100.f);
-			rY = Math::RandFloatMinMax(15.f, 20.f);
-			obj->type = (GameObject::GAMEOBJECT_TYPE)Math::RandIntMinMax(GameObject::GO_PU_SPEED, GameObject::GO_PU_POWER);
+			rY += Math::RandFloatMinMax(15.f, 20.f);
+			obj->type = (GameObject::GAMEOBJECT_TYPE)Math::RandIntMinMax(GameObject::GO_PU_SPEED, GameObject::GO_PU_RANGE);
 		}
 
 		obj->SetActive(true);
@@ -1108,6 +1123,19 @@ void Scene01::SpawnEnemies()
 	enemy->SetHeightMap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
 }
 
+void Scene01::ClearPowerUps()
+{
+	vector<GameObject*>::iterator it;
+	for (it = m_goList.begin(); it != m_goList.end(); ++it)
+	{
+		if ((*it)->type == GameObject::GO_PU_RANGE || (*it)->type == GameObject::GO_PU_SPEED || (*it)->type == GameObject::GO_COIN)
+		{
+			(*it)->SetActive(false);
+			(*it)->type = GameObject::GO_NONE;
+		}
+	}
+}
+
 void Scene01::ClearEnemy()
 {
 	if (!enemyList.empty())
@@ -1126,10 +1154,21 @@ void Scene01::ClearEnemy()
 
 void Scene01::ClearEnemyProj()
 {
-	vector<Enemy*>::iterator it, end;
-	end = enemyList.end();
-	for (it = enemyList.begin(); it != end; ++it)
-		(*it)->ClearProjectile();
+	vector<Enemy*>::iterator it;
+	for (it = enemyList.begin(); it != enemyList.end(); )
+	{
+		if ((*it)->GetType() == GameObject::GO_SLEDYETI)
+		{
+			(*it)->Exit();
+			delete *it;
+			it = enemyList.erase(it);
+		}
+		else
+		{
+			(*it)->ClearProjectile();
+			++it;
+		}
+	}
 }
 
 void Scene01::Reset(int _level)
@@ -1164,6 +1203,7 @@ void Scene01::Reset(int _level)
 	SpawnEnemies();
 
 	wind = Math::RandFloatMinMax(-10, 10);
+	display = false;
 }
 
 void Scene01::Exit()

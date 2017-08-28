@@ -23,7 +23,6 @@ public:
 		GO_BOSS,
 		GO_PU_SPEED,
 		GO_PU_RANGE,
-		GO_PU_POWER,
 		GO_SCREEN,
 		GO_COIN,
 		GO_SLEDYETI,
