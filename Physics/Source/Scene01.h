@@ -45,6 +45,7 @@ protected:
 	void SpawnPowerups();
 	void SpawnEnemies();
 	void ClearEnemyProj();
+	void Shop_Render();
 
 private:
 	vector<GameObject *> m_goList;
