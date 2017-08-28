@@ -265,7 +265,7 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 					Vector3 pos = go1->pos - go3->pos;
 					pos.x = Math::Clamp(pos.x, 0.f, go3->scale.x);
 					pos.y = Math::Clamp(pos.y, 0.f, go3->scale.y);
-
+					Score += 5;
 					pos += go3->pos;
 					if ((pos - go1->pos).Length() > 2.5 && (pos - go1->pos).Length() < 10)
 					{
@@ -282,16 +282,19 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 	case GameObject::GO_PU_SPEED:
 		go2->SetActive(false);
 		sound_engine->play2D("Sound//getitem.wav");
+		Score += 5;
 		break;
 
 	case GameObject::GO_PU_RANGE:
 		go2->SetActive(false);
 		sound_engine->play2D("Sound//getitem.wav");
+		Score += 5;
 		break;
 
 	case GameObject::GO_PU_POWER:
 		go2->SetActive(false);
 		sound_engine->play2D("Sound//getitem.wav");
+		Score += 5;
 		break;
 
 	case GameObject::GO_BOSS:
@@ -300,6 +303,7 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 			go1->vel.SetZero();
 			m_player->SetExploded(true);
 			go2->SetActive(false);
+			Score += 50;
 			++newlevel;
 		}
 		break;
@@ -307,6 +311,7 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 		go2->SetActive(false);
 		sound_engine->play2D("Sound//getitem.wav");
 		shop.Add_gold(10);
+		Score += 10;
 		break;
 	case GameObject::GO_SLEDYETI:
 		m_player->Jump(0);
