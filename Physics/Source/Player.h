@@ -41,9 +41,9 @@ public:
 
 	void SetHeightmap(vector<unsigned char>* _heightmap, float _worldWidth, float _worldHeight);
 	void SetExploded(bool In);
-	void SetPowRange(float _in);
-	void SetPowSpd(float _in);
 
+	void AddPowRange(float _in = 1.f);
+	void AddPowSpd(float _in = 1.f);
 	void AddPowSpdCount(unsigned int _in = 1);
 	void AddPowRangeCount(unsigned int _in = 1);
 

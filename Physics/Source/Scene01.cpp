@@ -277,6 +277,7 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 		sound_engine->play2D("Sound//getitem.wav");
 		Score += 5;
 		m_player->AddPowSpdCount();
+		m_player->AddPowSpd(0.5f);
 		break;
 
 	case GameObject::GO_PU_RANGE:
@@ -284,6 +285,7 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 		sound_engine->play2D("Sound//getitem.wav");
 		Score += 5;
 		m_player->AddPowRangeCount();
+		m_player->AddPowRange(0.5f);
 		break;
 
 	case GameObject::GO_BOSS:
@@ -1059,6 +1061,8 @@ void Scene01::RenderHUD()
 	posX = m_worldWidth - 5.f;
 	posY = (m_worldHeight - 6.f * SpdCount - 6.f * RangeCount) * 0.5f ;
 
+	RenderMeshIn2D(meshList[GEO_HUD_PBORDER], false, m_worldWidth, m_worldHeight, 8.f, 7.f * SpdCount + 7.f * RangeCount, posX, m_worldHeight * 0.5f + 3.f);
+
 	for (unsigned int i = 0; i < SpdCount; ++i)
 	{
 		posY += 6.f;
@@ -1086,7 +1090,7 @@ void Scene01::SpawnPowerups()
 		if (Math::RandIntMinMax(0, 5))
 		{
 			rX += Math::RandFloatMinMax(20.f, 50.f);
-			rY += Math::RandFloatMinMax(15.f, 20.f);
+			rY += Math::RandFloatMinMax(15.f, 30.f);
 			obj->type = GameObject::GO_COIN;
 		}
 		else

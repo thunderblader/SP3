@@ -174,14 +174,14 @@ void Player::SetExploded(bool In)
 	exploded = In;
 }
 
-void Player::SetPowRange(float _in)
+void Player::AddPowRange(float _in)
 {
-	pu_stats.range = _in;
+	pu_stats.range += _in;
 }
 
-void Player::SetPowSpd(float _in)
+void Player::AddPowSpd(float _in)
 {
-	pu_stats.speed = _in;
+	pu_stats.speed += _in;
 }
 
 void Player::AddPowSpdCount(unsigned int _in)
@@ -247,7 +247,7 @@ void Player::Move_LeftRight(const double dt, const bool dLeft)
 		(playerObj->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + playerObj->scale.y * 0.5f))
 		return;
 
-	playerObj->vel += Vector3(dLeft ? -m_speed : m_speed, 0.f, 0.f) * (float)dt * (1 / playerObj->mass);
+	playerObj->vel += Vector3(dLeft ? -m_speed * pu_stats.speed : m_speed * pu_stats.speed, 0.f, 0.f) * (float)dt * (1 / playerObj->mass);
 }
 
 void Player::Jump(const double dt)

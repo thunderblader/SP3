@@ -143,6 +143,8 @@ void SceneBase::Init()
 	meshList[GEO_BOSS] = MeshBuilder::GenerateQuad("boss", Color(0.f, 0.f, 0.f), 1.f);
 	meshList[GEO_BOSS]->textureID = LoadTGA("Image//boss.tga");
 
+	meshList[GEO_HUD_PBORDER] = MeshBuilder::GenerateQuad("hud_pborder", Color(0.f, 0.f, 0.f), 1.f);
+	meshList[GEO_HUD_PBORDER]->textureID = LoadTGA("Image//hud_pborder.tga");
 	meshList[GEO_HUD_SCORE] = MeshBuilder::GenerateQuad("hud_score", Color(0.f, 0.f, 0.f), 1.f);
 	meshList[GEO_HUD_SCORE]->textureID = LoadTGA("Image//hud_score.tga");
 	meshList[GEO_HUD_CHANCE] = MeshBuilder::GenerateQuad("hud_chance", Color(0.f, 0.f, 0.f), 1.f);
