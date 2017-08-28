@@ -11,6 +11,7 @@
 
 #include <sstream>
 #include <fstream>
+#include <vld.h>
 
 using std::ifstream;
 using std::istringstream;
@@ -187,7 +188,7 @@ bool Scene01::CheckCollision(GameObject * go1, GameObject * go2, float dt)
 
 	case GameObject::GO_BOSS:
 	{
-		if(go1->type == GameObject::GO_BOMB)
+		if (go1->type == GameObject::GO_BOMB)
 		{
 			Vector3 dis = go1->pos - go2->pos;
 			Vector3 rel = go1->vel - go2->vel;
@@ -259,7 +260,7 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 					pos.y = Math::Clamp(pos.y, 0.f, go3->scale.y);
 					Score += 5;
 					pos += go3->pos;
-					if ((pos - go1->pos).Length() > 2.5 && (pos - go1->pos).Length() < 10 * m_player->GetPowRangeCount())
+					if ((pos - go1->pos).Length() > 2.5 && (pos - go1->pos).Length() < 10 * m_player->GetPowStats().range)
 					{
 						float energy = (30 - (pos - go1->pos).Length()) / 30 * 10;
 
@@ -286,14 +287,17 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 		break;
 
 	case GameObject::GO_BOSS:
-		if (!m_player->GetExploded())
+		if (go1->type != GameObject::GO_PLAYER)
 		{
-			go1->vel.SetZero();
-			m_player->SetExploded(true);
-			go2->vel.Set(Math::RandFloatMinMax(10, 20), Math::RandFloatMinMax(10, 20), 0);
-			go2->pos.z = -0.5;
-			bossDie = true;
-			Score += 50;
+			if (!m_player->GetExploded())
+			{
+				go1->vel.SetZero();
+				m_player->SetExploded(true);
+				go2->vel.Set(Math::RandFloatMinMax(10, 20), Math::RandFloatMinMax(10, 20), 0);
+				go2->pos.z = -0.5;
+				bossDie = true;
+				Score += 50;
+			}
 		}
 		break;
 	case GameObject::GO_COIN:
@@ -475,7 +479,7 @@ void Scene01::Update(double dt)
 		m_speed += 0.1f;
 	}
 
-	if (m_tries == 0 && m_player->GetPlayerPos().y < 0)
+	if (m_tries <= 0 && m_player->GetPlayerPos().y < 0)
 	{
 		menustate = LOSE1;
 		display = true;
