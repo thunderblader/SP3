@@ -21,6 +21,7 @@ public:
 
 	Vector3 GetPos() const;
 	Vector3 GetScale() const;
+	float GetRot() const;
 	SpriteAnimation * GetSprite();
 	int GetCurAnimFrame() const;
 	bool GetActive() const;

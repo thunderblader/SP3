@@ -97,6 +97,11 @@ Vector3 Enemy::GetScale() const
 	return enemyObj->scale;
 }
 
+float Enemy::GetRot() const
+{
+	return Math::RadianToDegree(atan2(enemyObj->dir.y, enemyObj->dir.x))+90;
+}
+
 SpriteAnimation * Enemy::GetSprite()
 {
 	return spriteAnim;
@@ -228,7 +233,7 @@ void Enemy::RunYeti(double dt)
 void Enemy::RunSledYeti(double dt)
 {
 	// Physics can be done here
-
-
+	if (spriteAnim->GetCurFrame() == 7)
+		enemyObj->vel.x += -350*(float)dt ;
 }
 

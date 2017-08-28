@@ -882,6 +882,7 @@ void Scene01::Render()
 		SpriteAnimation* anim = enemy->GetSprite();
 		modelStack.PushMatrix();
 		modelStack.Translate(enemy->GetPos());
+		modelStack.Rotate(enemy->GetRot(), 0, 0, 1);
 		modelStack.Scale(enemy->GetScale());
 		RenderSpriteMesh(anim->GetMesh(), false, anim->GetCurFrame());
 		modelStack.PopMatrix();
