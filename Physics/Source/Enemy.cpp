@@ -124,6 +124,11 @@ bool Enemy::GetProjActive() const
 	return snowBall->GetActive();
 }
 
+GameObject::GAMEOBJECT_TYPE Enemy::Gettype() const
+{
+	return enemyObj->type;
+}
+
 void Enemy::SetPlayerObj(GameObject * _playerObj, GameObject* _bombObj)
 {
 	if (_playerObj->type == GameObject::GO_PLAYER)
@@ -223,5 +228,7 @@ void Enemy::RunYeti(double dt)
 void Enemy::RunSledYeti(double dt)
 {
 	// Physics can be done here
+
+
 }
 

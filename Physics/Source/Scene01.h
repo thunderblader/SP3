@@ -117,7 +117,7 @@ protected:
 	bool debug;
 
 	SpriteAnimation *coinanim;
-	//SpriteAnimation *sledyetianim;
+	bool sledYetiOnScreen;
 };
 
 #endif

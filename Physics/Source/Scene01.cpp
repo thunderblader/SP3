@@ -70,6 +70,7 @@ void Scene01::Init()
 	m_player = Player::GetInstance();
 	m_player->Init(playerObj, bombObj, GameObject::GO_PLAYER, Vector3(-m_TerrainWidth + 10, 1, 0), Vector3(5, 4, 1), param_physics.massCart, param_physics.acceleration, param_physics.speedLimit);
 	m_player->SetHeightmap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
+	Camera_Control(0);
 
 	m_control->SetPlayer(m_player);
 
@@ -99,6 +100,7 @@ void Scene01::Init()
 	
 	coinanim = new SpriteAnimation();
 	coinanim->Set(dynamic_cast<SpriteMesh*>(meshList[GEO_COIN]), 0, 5, -1, 1, true);
+	sledYetiOnScreen = false;
 }
 
 GameObject* Scene01::FetchGO()
@@ -209,6 +211,15 @@ bool Scene01::CheckCollision(GameObject * go1, GameObject * go2, float dt)
 		return (rel.Dot(dis) < 0 &&
 			dis.LengthSquared() <= combinedRadiusSq);
 	}
+	case GameObject::GO_SLEDYETI:
+	{
+		Vector3 dis = go1->pos - go2->pos;
+		Vector3 rel = go1->vel - go2->vel;
+		float combinedRadiusSq = (go1->scale.x + go2->scale.x / 3) * (go1->scale.x + go2->scale.x / 3);
+
+		return (rel.Dot(dis) < 0 &&
+			dis.LengthSquared() <= combinedRadiusSq);
+	}
 	}
 
 	return 0;
@@ -295,6 +306,9 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 		go2->SetActive(false);
 		sound_engine->play2D("Sound//getitem.wav");
 		shop.Add_gold(10);
+		break;
+	case GameObject::GO_SLEDYETI:
+		m_player->Jump(0);
 		break;
 	}
 }
@@ -478,9 +492,15 @@ void Scene01::Update(double dt)
 
 	vector<Enemy*>::iterator it, end;
 	end = enemyList.end();
+	sledYetiOnScreen = false;
 	for (it = enemyList.begin(); it != end; ++it)
 	{
 		(*it)->Update(dt);
+
+		if ((*it)->Gettype() == GameObject::GO_SLEDYETI && !sledYetiOnScreen && (*it)->GetPos().x > camera.position.x - m_worldWidth *0.5f)
+		{
+			sledYetiOnScreen = true;
+		}
 
 		if (!(*it)->GetProjFired() && !(*it)->GetProjActive() && (*it)->GetCurAnimFrame() == 11)
 		{
@@ -496,6 +516,16 @@ void Scene01::Update(double dt)
 			enemyList.erase(it);
 		}
 	}
+	if (!sledYetiOnScreen)
+	{
+		Enemy* enemy;
+		enemy = new Enemy();
+		enemy->Init(FetchGO(), GameObject::GO_SLEDYETI, Vector3(camera.position.x + m_worldWidth, 0.5f, 0), Vector3(10.f, 10.f, 1.f), 5.f);
+		enemy->SetSpriteAnim(meshList[GEO_SLEDYETI], 0, 13, -1, 1, true);
+		enemyList.push_back(enemy);
+		//sledYetiOnScreen = true;
+	}
+
 
 	//Mouse Section
 	//if (MouseController::GetInstance()->IsButtonPressed(MouseController::LMB))
@@ -570,7 +600,7 @@ void Scene01::Update(double dt)
 					go->vel += Vector3(0, param_physics.gravity, 0) * (float)dt;
 				}
 			}
-			if ((go->type == GameObject::GO_BOMB && !m_player->GetExploded()) || go->type == GameObject::GO_PLAYER)
+			if ((go->type == GameObject::GO_BOMB && !m_player->GetExploded()) || go->type == GameObject::GO_PLAYER || go->type == GameObject::GO_SLEDYETI)
 			{
 				//go->vel.x = go->vel.x - go->vel.x * 1.f * (float)dt;
 				if (go->vel.Length() < 3)
@@ -1086,9 +1116,10 @@ void Scene01::SpawnEnemies()
 	}
 
 	enemy = new Enemy();
-	enemy->Init(FetchGO(), GameObject::GO_SLEDYETI, Vector3(-m_TerrainWidth + 10, 20, 0), Vector3(10.f, 10.f, 1.f), 5.f);
+	enemy->Init(FetchGO(), GameObject::GO_SLEDYETI, Vector3(camera.position.x + m_worldWidth, 0.5f, 0), Vector3(10.f, 10.f, 1.f), 5.f);
 	enemy->SetSpriteAnim(meshList[GEO_SLEDYETI], 0, 13, -1, 1, true);
 	enemyList.push_back(enemy);
+	sledYetiOnScreen = true;
 
 	enemy->SetHeightMap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
 }
