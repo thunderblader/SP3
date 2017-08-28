@@ -33,6 +33,7 @@ void Scene01::Init()
 	SceneBase::Init();
 	m_control = new Controller();
 	m_control->LoadConfig("Data//Config.ini", param_physics);
+	sound_engine = createIrrKlangDevice();
 
 	m_worldHeight = 100.f;
 	m_worldWidth = m_worldHeight * (float)Application::GetWindowWidth() / Application::GetWindowHeight();
@@ -699,17 +700,10 @@ void Scene01::Update(double dt)
 						u1 = goA->vel;
 						u2 = goB->vel;
 
-						//initialMomentum = m1 * u1 + m2 * u2;
-
 						CollisionResponse(goA, goB);
 
 						v1 = goA->vel;
 						v2 = goB->vel;
-
-						//finalMomentum = m1 * v1 + m2 * v2;
-
-						//initialKE = 0.5f * m1 * u1.Dot(u1) + 0.5f * m2 * u2.Dot(u2);
-						//finalKE = 0.5f * m1 * v1.Dot(v1) + 0.5f * m2 * v2.Dot(v2);
 
 						break;
 					}
@@ -953,32 +947,39 @@ void Scene01::Render()
 
 void Scene01::RenderHUD()
 {
-	float scaleX, scaleY;
+	float scaleX, scaleY, posX, posY;
 	scaleX = 20.f;
 	scaleY = 10.f;
+	posX = scaleX * 0.5f + 0.5f;
+	posY = m_worldHeight - scaleY * 0.5f;
 
-	RenderMeshIn2D(meshList[GEO_HUD_CHANCE], false, m_worldWidth, m_worldHeight, scaleX, scaleY, scaleX * 0.5f + 0.5f, m_worldHeight - scaleY * 0.5f);
+	RenderMeshIn2D(meshList[GEO_HUD_CHANCE], false, m_worldWidth, m_worldHeight, scaleX, scaleY, posX, posY);
 	for (unsigned int i = 0; i < m_tries; ++i)
 	{
-		RenderMeshIn2D(meshList[GEO_CART], false, m_worldWidth, m_worldHeight, 5.f, 4.f, 25.5f + (i * 8.f), m_worldHeight - 5.5f);
+		posX = 25.5f + (i * 8.f);
+		posY = m_worldHeight - 5.5f;
+		RenderMeshIn2D(meshList[GEO_CART], false, m_worldWidth, m_worldHeight, 5.f, 4.f, posX, posY);
 	}
+
+	posX = m_worldWidth * 0.5f;
+	posY = m_worldHeight - scaleY - scaleY * 0.5f;
 
 	switch (currlevel)
 	{
 	case 1:
-		RenderMeshIn2D(meshList[GEO_HUD_LEVEL1], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.5f, m_worldHeight - scaleY - scaleY * 0.5f);
+		RenderMeshIn2D(meshList[GEO_HUD_LEVEL1], false, m_worldWidth, m_worldHeight, scaleX, scaleY, posX, posY);
 		break;
 	case 2:
-		RenderMeshIn2D(meshList[GEO_HUD_LEVEL2], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.5f, m_worldHeight - scaleY - scaleY * 0.5f);
+		RenderMeshIn2D(meshList[GEO_HUD_LEVEL2], false, m_worldWidth, m_worldHeight, scaleX, scaleY, posX, posY);
 		break;
 	case 3:
-		RenderMeshIn2D(meshList[GEO_HUD_LEVEL3], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.5f, m_worldHeight - scaleY - scaleY * 0.5f);
+		RenderMeshIn2D(meshList[GEO_HUD_LEVEL3], false, m_worldWidth, m_worldHeight, scaleX, scaleY, posX, posY);
 		break;
 	case 4:
-		RenderMeshIn2D(meshList[GEO_HUD_LEVEL4], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.5f, m_worldHeight - scaleY - scaleY * 0.5f);
+		RenderMeshIn2D(meshList[GEO_HUD_LEVEL4], false, m_worldWidth, m_worldHeight, scaleX, scaleY, posX, posY);
 		break;
 	case 5:
-		RenderMeshIn2D(meshList[GEO_HUD_LEVEL5], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.5f, m_worldHeight - scaleY - scaleY * 0.5f);
+		RenderMeshIn2D(meshList[GEO_HUD_LEVEL5], false, m_worldWidth, m_worldHeight, scaleX, scaleY, posX, posY);
 		break;
 	default: break;
 	}
@@ -988,37 +989,40 @@ void Scene01::RenderHUD()
 
 	for (unsigned i = 0; i < ss.size(); ++i)
 	{
+		posX = m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f);
+		posY = m_worldHeight - 5.f;
+
 		switch (ss[i])
 		{
 		case '1':
-			RenderMeshIn2D(meshList[GEO_NO_1], false, m_worldWidth, m_worldHeight, scaleY, scaleY, m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f), m_worldHeight - 5.f);
+			RenderMeshIn2D(meshList[GEO_NO_1], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
 			break;
 		case '2': 
-			RenderMeshIn2D(meshList[GEO_NO_2], false, m_worldWidth, m_worldHeight, scaleY, scaleY, m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f), m_worldHeight - 5.f);
+			RenderMeshIn2D(meshList[GEO_NO_2], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
 			break;
 		case '3': 
-			RenderMeshIn2D(meshList[GEO_NO_3], false, m_worldWidth, m_worldHeight, scaleY, scaleY, m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f), m_worldHeight - 5.f);
+			RenderMeshIn2D(meshList[GEO_NO_3], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
 			break;
 		case '4': 
-			RenderMeshIn2D(meshList[GEO_NO_4], false, m_worldWidth, m_worldHeight, scaleY, scaleY, m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f), m_worldHeight - 5.f);
+			RenderMeshIn2D(meshList[GEO_NO_4], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
 			break;
 		case '5': 
-			RenderMeshIn2D(meshList[GEO_NO_5], false, m_worldWidth, m_worldHeight, scaleY, scaleY, m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f), m_worldHeight - 5.f);
+			RenderMeshIn2D(meshList[GEO_NO_5], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
 			break;
 		case '6': 
-			RenderMeshIn2D(meshList[GEO_NO_6], false, m_worldWidth, m_worldHeight, scaleY, scaleY, m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f), m_worldHeight - 5.f);
+			RenderMeshIn2D(meshList[GEO_NO_6], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
 			break;
 		case '7': 
-			RenderMeshIn2D(meshList[GEO_NO_7], false, m_worldWidth, m_worldHeight, scaleY, scaleY, m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f), m_worldHeight - 5.f);
+			RenderMeshIn2D(meshList[GEO_NO_7], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
 			break;
 		case '8': 
-			RenderMeshIn2D(meshList[GEO_NO_8], false, m_worldWidth, m_worldHeight, scaleY, scaleY, m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f), m_worldHeight - 5.f);
+			RenderMeshIn2D(meshList[GEO_NO_8], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
 			break;
 		case '9': 
-			RenderMeshIn2D(meshList[GEO_NO_9], false, m_worldWidth, m_worldHeight, scaleY, scaleY, m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f), m_worldHeight - 5.f);
+			RenderMeshIn2D(meshList[GEO_NO_9], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
 			break;
 		case '0': 
-			RenderMeshIn2D(meshList[GEO_NO_0], false, m_worldWidth, m_worldHeight, scaleY, scaleY, m_worldWidth * 0.5f + scaleX * 0.5f + (i * 5.f), m_worldHeight - 5.f);
+			RenderMeshIn2D(meshList[GEO_NO_0], false, m_worldWidth, m_worldHeight, scaleY, scaleY, posX, posY);
 			break;
 		default: break;
 		}

@@ -201,6 +201,10 @@ void Enemy::RunYeti(double dt)
 		//Physics::K1(snowBall->vel, Vector3(0.f, -9.8f * snowBall->mass, 0.f), (float)dt, snowBall->vel);
 		snowBall->pos += snowBall->vel * projSpd * (float)dt;
 	}
+	else
+	{
+		snowBall->pos.y = tHeight + snowBall->scale.y * 0.5f;
+	}
 
 	if ((playerObj->pos - snowBall->pos).LengthSquared()
 		<= (playerObj->scale.x * 0.5f + snowBall->scale.x) * (playerObj->scale.x * 0.5f + snowBall->scale.x))

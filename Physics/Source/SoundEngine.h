@@ -2,8 +2,10 @@
 
 #include "SingletonTemplate.h"
 #include <irrKlang.h>
-using namespace irrklang;
+#pragma comment(lib, "irrKlang.lib")
 #include <map>
+
+using namespace irrklang;
 
 class CSoundEngine : public Singleton<CSoundEngine>
 {
