@@ -97,6 +97,11 @@ Vector3 Enemy::GetScale() const
 	return enemyObj->scale;
 }
 
+float Enemy::GetRot() const
+{
+	return Math::RadianToDegree(atan2(enemyObj->dir.y, enemyObj->dir.x))+90;
+}
+
 SpriteAnimation * Enemy::GetSprite()
 {
 	return spriteAnim;
@@ -124,7 +129,7 @@ bool Enemy::GetProjActive() const
 	return snowBall->GetActive();
 }
 
-GameObject::GAMEOBJECT_TYPE Enemy::Gettype() const
+GameObject::GAMEOBJECT_TYPE Enemy::GetType() const
 {
 	return enemyObj->type;
 }
@@ -172,6 +177,15 @@ void Enemy::PushProjectile(GameObject * _projObj, Vector3 _scale, float _spd)
 	projSpd = _spd;
 
 	snowBall = _projObj;
+}
+
+void Enemy::ClearProjectile()
+{
+	if (snowBall && snowBall->GetActive())
+	{
+		snowBall->SetActive(false);
+		snowBall->type = GameObject::GO_NONE;
+	}
 }
 
 void Enemy::RunYeti(double dt)
@@ -228,7 +242,7 @@ void Enemy::RunYeti(double dt)
 void Enemy::RunSledYeti(double dt)
 {
 	// Physics can be done here
-
-
+	if (spriteAnim->GetCurFrame() == 7)
+		enemyObj->vel.x += -350*(float)dt ;
 }
 

@@ -21,12 +21,13 @@ public:
 
 	Vector3 GetPos() const;
 	Vector3 GetScale() const;
+	float GetRot() const;
 	SpriteAnimation * GetSprite();
 	int GetCurAnimFrame() const;
 	bool GetActive() const;
 	bool GetProjFired() const;
 	bool GetProjActive() const;
-	GameObject::GAMEOBJECT_TYPE Gettype() const;
+	GameObject::GAMEOBJECT_TYPE GetType() const;
 
 	void SetPlayerObj(GameObject* _playerObj, GameObject* _bombObj);
 	void SetHeightMap(vector<unsigned char>* _heightMap, float _terrainWidth, float _terrainHeight);
@@ -34,6 +35,7 @@ public:
 	void SetProjFired(bool _projFired);
 
 	void PushProjectile(GameObject* _projObj, Vector3 _scale, float _spd);
+	void ClearProjectile();
 
 protected:
 	enum ENEMY_STATE
