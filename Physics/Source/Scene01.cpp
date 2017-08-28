@@ -476,21 +476,24 @@ void Scene01::Update(double dt)
 	}
 	if (KeyboardController::GetInstance()->IsKeyPressed('P'))
 	{
-		for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
-		{
-			GameObject *go = (GameObject *)*it;
-			if (go->GetActive())
-			{
-				if (go->type == GameObject::GO_BOSS)
-				{
-					go->SetActive(false);
-					deathrotation = 0;
-					bossDie = false;
-					menustate = WIN1;
-					display = true;
-				}
-			}
-		}
+		//for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
+		//{
+		//	GameObject *go = (GameObject *)*it;
+		//	if (go->GetActive())
+		//	{
+		//		if (go->type == GameObject::GO_BOSS)
+		//		{
+		//			go->SetActive(false);
+		//			deathrotation = 0;
+		//			bossDie = false;
+		//			menustate = WIN1;
+		//			display = true;
+		//		}
+		//	}
+		//}
+
+		display = true;
+		menustate = LOSE1;
 	}
 
 	if (m_tries == 0 && m_player->GetPlayerPos().y < 0)
