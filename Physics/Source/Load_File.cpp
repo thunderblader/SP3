@@ -120,7 +120,7 @@ void Load_File::Process(bool checker, string content)
 	Unit_Width_Space = 0;
 }
 
-bool Load_File::Load_Data(const string saveFileName)
+bool Load_File::Load_Data(Tree::avl_node & node, const string saveFileName)
 {
 	ifstream myfile(saveFileName.c_str(), ios::in);
 	if (myfile.is_open())
@@ -146,11 +146,64 @@ bool Load_File::Load_Data(const string saveFileName)
 				{
 					Gold = atoi(data.c_str());
 				}
+				else if (theTag == "item1")
+				{
+					if (node.id == 1)
+					{
+						node.has_item = atoi(data.c_str());
+					}
+				}
+				else if (theTag == "item1_level")
+				{
+					if (node.id == 1)
+					{
+						node.item_count = atoi(data.c_str());
+					}
+				}
+				else if (theTag == "item2")
+				{
+					if (node.id == 2)
+					{
+						node.has_item = atoi(data.c_str());
+					}
+				}
+				else if (theTag == "item2_level")
+				{
+					if (node.id == 2)
+					{
+						node.item_count = atoi(data.c_str());
+					}
+				}
+				else if (theTag == "item3")
+				{
+					if (node.id == 3)
+					{
+						node.has_item = atoi(data.c_str());
+					}
+				}
+				else if (theTag == "item3_level")
+				{
+					if (node.id == 3)
+					{
+						node.item_count = atoi(data.c_str());
+					}
+				}
+				else if (theTag == "item4")
+				{
+					if (node.id == 4)
+					{
+						node.has_item = atoi(data.c_str());
+					}
+				}
+				else if (theTag == "item4_level")
+				{
+					if (node.id == 4)
+					{
+						node.item_count = atoi(data.c_str());
+					}
+				}
 			}
 		}
-		cout << Level << endl;
-		cout << Score << endl;
-		cout << Gold << endl;
 		cout << "Loaded" << endl;
 		myfile.close();
 	}
