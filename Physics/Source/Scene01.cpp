@@ -623,6 +623,7 @@ void Scene01::Update(double dt)
 					else if (go->scale.x < 0.001)
 					{
 						go->SetActive(false);
+						deathrotation = 0;
 						bossDie = false;
 						menustate = WIN1;
 						display = true;
