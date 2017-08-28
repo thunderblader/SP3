@@ -16,8 +16,6 @@ bool Shop::Purchase_Item(int id)
 	item_price = 0;
 	stuff = Tree::getInstance();
 	stuff = stuff->retreve_item(stuff, id);
-	cout << "count: " << stuff->root.item_count << endl;
-	
 	if (gold < stuff->root.price)
 	{			
 		return false;
@@ -33,6 +31,12 @@ void Shop::get_item(int id)
 {
 	stuff = stuff->retreve_item(stuff, id);
 }
+
+void Shop::set_gold(int new_gold)
+{
+	gold = new_gold;
+}
+
 int Shop::get_gold()
 {
 	return gold;

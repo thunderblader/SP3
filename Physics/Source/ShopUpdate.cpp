@@ -30,7 +30,6 @@ void Scene01::Shop_Update(double dt)
 			item_node = Tree::getInstance();
 			item_id--;
 			item_node = item_node->retreve_item(item_node, item_id);
-			cout << item_id << endl;
 		}
 	}
 	if (KeyboardController::GetInstance()->IsKeyPressed(VK_SPACE))

@@ -304,7 +304,8 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 		break;
 
 	case GameObject::GO_SLEDYETI:
-		m_player->Jump(0);
+		if (!m_player->GetTumble())
+ 			m_player->SetTumble(true);
 		break;
 	}
 }
@@ -448,7 +449,7 @@ void Scene01::Update(double dt)
 		Shop_Update(dt);
 		return;
 	}
-
+	Score = file.get_score();
 	Camera_Control(dt);
 	UpdateParticles(dt);
 
@@ -458,7 +459,8 @@ void Scene01::Update(double dt)
 	}
 	if (KeyboardController::GetInstance()->IsKeyPressed('K'))
 	{
-		file.Load_Data(item_node->root);
+		//file.Load_Data(item_node->root);
+	
 	}
 	if (KeyboardController::GetInstance()->IsKeyPressed('8'))
 	{
@@ -471,6 +473,30 @@ void Scene01::Update(double dt)
 	if (KeyboardController::GetInstance()->IsKeyPressed('0'))
 	{
 		m_speed += 0.1f;
+	}
+	if (KeyboardController::GetInstance()->IsKeyPressed('P'))
+	{
+		for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
+		{
+			GameObject *go = (GameObject *)*it;
+			if (go->GetActive())
+			{
+				if (go->type == GameObject::GO_BOSS)
+				{
+					go->SetActive(false);
+					deathrotation = 0;
+					bossDie = false;
+					menustate = WIN1;
+					display = true;
+				}
+			}
+		}
+	}
+
+	if (m_tries == 0 && m_player->GetPlayerPos().y < 0)
+	{
+		menustate = LOSE1;
+		display = true;
 	}
 
 	m_player->Update(dt);
@@ -610,7 +636,10 @@ void Scene01::Update(double dt)
 					else if (go->scale.x < 0.001)
 					{
 						go->SetActive(false);
+						deathrotation = 0;
 						bossDie = false;
+						menustate = WIN1;
+						display = true;
 					}
 
 					go->pos += go->vel * static_cast<float>(dt);
@@ -1192,6 +1221,7 @@ void Scene01::Reset(int _level)
 	SpawnEnemies();
 
 	wind = Math::RandFloatMinMax(-10, 10);
+	display = false;
 }
 
 void Scene01::Exit()

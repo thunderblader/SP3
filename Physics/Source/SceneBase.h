@@ -110,7 +110,6 @@ public:
 		GEO_WIN3,
 		GEO_LOSE1,
 		GEO_LOSE2,
-		GEO_EXIT,
 
 		GEO_CLIFF,
 		GEO_SHOP,

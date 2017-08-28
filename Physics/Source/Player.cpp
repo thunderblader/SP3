@@ -34,12 +34,15 @@ void Player::Init(GameObject * _playerObj, GameObject * _playerBomb
 	bombspin = 0;
 	wait = 0;
 	speedlimit = _speedlimit;
+	tumbletime = 0;
+	tumble = false;
 }
 
 void Player::Update(double dt)
 {
 	if (!playerObj)
 		return;
+
 
 	if (playerObj->pos.x - playerObj->scale.x *0.6f< -m_TerrainWidth)
 	{
@@ -104,7 +107,24 @@ void Player::Update(double dt)
 	//		Reset();
 	//	}
 	//}
-		
+
+	if (tumble && tumbletime == 0)
+	{
+		//tumble = false;
+		playerObj->vel.x = -20.f;
+		playerObj->vel.y = 20;
+		tumbletime = 3;
+	}
+	if (tumble && tumbletime > 0)
+	{
+
+		tumbletime -= 1 * dt;
+	}
+	else if (tumbletime <= 0)
+	{
+		tumble = false;
+		tumbletime = 0;
+	}
 }
 
 void Player::Reset()
@@ -184,6 +204,11 @@ bool Player::GetLaunched()
 	return launched;
 }
 
+void Player::SetLaunched(bool In)
+{
+	launched = In;
+}
+
 float Player::GetBombspin()
 {
 	return bombspin;
@@ -254,6 +279,16 @@ void Player::Upgrade(Tree::avl_node &node)
 		playerObj->vel.x += 100;
 	}
 
+}
+
+bool Player::GetTumble()
+{
+	return tumble;
+}
+
+void Player::SetTumble(bool In)
+{
+	tumble = In;
 }
 
 Player::Player()

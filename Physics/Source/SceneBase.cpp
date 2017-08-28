@@ -239,6 +239,11 @@ void SceneBase::Init()
 	meshList[GEO_WIN3] = MeshBuilder::GenerateQuad("win3", Color(1, 1, 1), 1.f);
 	meshList[GEO_WIN3]->textureID = LoadTGA("Image//win3.tga");
 
+	meshList[GEO_LOSE1] = MeshBuilder::GenerateQuad("lose1", Color(1, 1, 1), 1.f);
+	meshList[GEO_LOSE1]->textureID = LoadTGA("Image//lose1.tga");
+	meshList[GEO_LOSE2] = MeshBuilder::GenerateQuad("lose2", Color(1, 1, 1), 1.f);
+	meshList[GEO_LOSE2]->textureID = LoadTGA("Image//lose2.tga");
+
 	//meshList[GEO_INSTRUCTIONS] = MeshBuilder::GenerateQuad("GEO_PARTICLE_EXPLOSION", Color(1, 1, 1), 1.f);
 	//meshList[GEO_INSTRUCTIONS]->textureID = LoadTGA("Image//explosion.tga");
 
