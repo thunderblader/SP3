@@ -47,6 +47,7 @@ protected:
 	void ClearEnemy();
 	void ClearEnemyProj();
 	void Shop_Render();
+	void Reset(bool isHardReset);
 
 private:
 	vector<GameObject *> m_goList;
@@ -104,6 +105,7 @@ private:
 
 		OPTIONS,
 		OPTIONS2,
+		OPTIONS3,
 
 		INSTRUCTIONS,
 
@@ -117,6 +119,7 @@ private:
 		WIN1,
 		WIN2,
 		WIN3,
+
 		LOSE1,
 		LOSE2,
 	} menustate;

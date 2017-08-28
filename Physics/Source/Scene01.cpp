@@ -198,12 +198,15 @@ bool Scene01::CheckCollision(GameObject * go1, GameObject * go2, float dt)
 
 	case GameObject::GO_BOSS:
 	{
-		Vector3 dis = go1->pos - go2->pos;
-		Vector3 rel = go1->vel - go2->vel;
-		float combinedRadiusSq = (go1->scale.x + go2->scale.x / 2) * (go1->scale.x + go2->scale.x / 2);
+		if(go1->type == GameObject::GO_BOMB)
+		{
+			Vector3 dis = go1->pos - go2->pos;
+			Vector3 rel = go1->vel - go2->vel;
+			float combinedRadiusSq = (go1->scale.x + go2->scale.x / 2) * (go1->scale.x + go2->scale.x / 2);
 
-		return (rel.Dot(dis) < 0 &&
-			dis.LengthSquared() <= combinedRadiusSq);
+			return (rel.Dot(dis) < 0 &&
+				dis.LengthSquared() <= combinedRadiusSq);
+		}
 	}
 
 	case GameObject::GO_COIN:
@@ -413,55 +416,30 @@ void Scene01::Update(double dt)
 		}
 		return;
 	}
+
 	if (sound_engine->isCurrentlyPlaying("Sound//mainmenu.mp3"))
 	{
 		sound_engine->stopAllSounds();
 	}
+
 	if (!sound_engine->isCurrentlyPlaying("Sound//gameplay.mp3"))
 	{
 		sound_engine->play2D("Sound//gameplay.mp3", true);
 	}
+
 	if (newlevel != currlevel && !m_player->GetExploded())
 	{
-		currlevel = newlevel;
-		m_tries = 3;
-
-		for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
-		{
-			GameObject *go = (GameObject *)*it;
-			if (go->GetActive() && go->type != GameObject::GO_BOMB
-				&& go->type != GameObject::GO_PLAYER)
-			{
-				go->SetActive(false);
-				go->type = GameObject::GO_NONE;
-			}
-		}
-
-		ClearEnemy();
-
-		std::string leveltext = "Image//Level0";
-		leveltext += to_string(currlevel);
-		leveltext += ".csv";
-		file.Load(false, leveltext);
-		leveltext = "Image//heightmap";
-		leveltext += to_string(currlevel);
-		leveltext += ".raw";
-		meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", leveltext, m_heightMap);
-		meshList[GEO_TERRAIN]->textureID = LoadTGA("Image//terrain.tga");
-
-		SpawnPowerups();
-		SpawnEnemies();
-
-		wind = Math::RandFloatMinMax(-10, 10);
+		Reset(true);
 	}
 
 	static bool CurrentTry = false;
 	if (m_player->GetLaunched() && !CurrentTry)
 	{
 		ClearEnemyProj();
+		CurrentTry = true;
+
 		if (m_tries > 0)
 			--m_tries;
-		CurrentTry = true;
 	}
 	else if (!m_player->GetLaunched())
 		CurrentTry = false;
@@ -645,7 +623,6 @@ void Scene01::Update(double dt)
 					{
 						go->SetActive(false);
 						bossDie = false;
-						++newlevel;
 					}
 
 					go->pos += go->vel * static_cast<float>(dt);
@@ -1148,6 +1125,43 @@ void Scene01::ClearEnemyProj()
 	end = enemyList.end();
 	for (it = enemyList.begin(); it != end; ++it)
 		(*it)->ClearProjectile();
+}
+
+void Scene01::Reset(bool isHardReset)
+{
+	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
+	{
+		GameObject *go = (GameObject *)*it;
+		if (go->GetActive() && go->type != GameObject::GO_BOMB
+			&& go->type != GameObject::GO_PLAYER)
+		{
+			go->SetActive(false);
+			go->type = GameObject::GO_NONE;
+		}
+	}
+
+	ClearEnemy();
+
+	if (isHardReset)
+	{
+		currlevel = newlevel;
+		m_tries = 3;
+
+		std::string leveltext = "Image//Level0";
+		leveltext += to_string(currlevel);
+		leveltext += ".csv";
+		file.Load(false, leveltext);
+		leveltext = "Image//heightmap";
+		leveltext += to_string(currlevel);
+		leveltext += ".raw";
+		meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", leveltext, m_heightMap);
+		meshList[GEO_TERRAIN]->textureID = LoadTGA("Image//terrain.tga");
+	}
+	
+	SpawnPowerups();
+	SpawnEnemies();
+
+	wind = Math::RandFloatMinMax(-10, 10);
 }
 
 void Scene01::Exit()
