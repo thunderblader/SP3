@@ -44,6 +44,7 @@ protected:
 	void RenderHUD();
 	void SpawnPowerups();
 	void SpawnEnemies();
+	void ClearEnemy();
 	void ClearEnemyProj();
 
 private:

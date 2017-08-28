@@ -250,9 +250,6 @@ void Scene01::CollisionResponse(GameObject * go1, GameObject * go2)
 				go1->vel.SetZero();
 				m_player->SetExploded(true);
 				go2->SetActive(false);
-
-				if (m_tries > 0)
-					--m_tries;
 			}
 
 			for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
@@ -437,6 +434,8 @@ void Scene01::Update(double dt)
 			}
 		}
 
+		ClearEnemy();
+
 		std::string leveltext = "Image//Level0";
 		leveltext += to_string(currlevel);
 		leveltext += ".csv";
@@ -453,14 +452,16 @@ void Scene01::Update(double dt)
 		wind = Math::RandFloatMinMax(-10, 10);
 	}
 
-	static bool tempRun = false;
-	if (m_player->GetLaunched() && !tempRun)
+	static bool CurrentTry = false;
+	if (m_player->GetLaunched() && !CurrentTry)
 	{
 		ClearEnemyProj();
-		tempRun = true;
+		if (m_tries > 0)
+			--m_tries;
+		CurrentTry = true;
 	}
 	else if (!m_player->GetLaunched())
-		tempRun = false;
+		CurrentTry = false;
 
 	coinanim->Update(dt);
 	if (KeyboardController::GetInstance()->IsKeyPressed('I'))
@@ -1157,19 +1158,6 @@ void Scene01::SpawnPowerups()
 
 void Scene01::SpawnEnemies()
 {
-	if (!enemyList.empty())
-	{
-		vector<Enemy*>::iterator it, end;
-		end = enemyList.end();
-		for (it = enemyList.begin(); it != end; ++it)
-		{
-			(*it)->Exit();
-			delete *it;
-		}
-
-		while (!enemyList.empty()) enemyList.pop_back();
-	}
-
 	Enemy* enemy;
 	float rX = -m_TerrainWidth + 200.f;
 	float rY;
@@ -1177,7 +1165,7 @@ void Scene01::SpawnEnemies()
 	for (unsigned i = 0; rX < -200.f; ++i)
 	{
 		rX += Math::RandFloatMinMax(100.f, 200.f);
-		rY = Math::RandFloatMinMax(40.f, 80.f);
+		rY = Math::RandFloatMinMax(60.f, 80.f);
 		enemy = new Enemy();
 		enemy->Init(FetchGO(), GameObject::GO_ENEMY_SNOWYETI, Vector3(rX, rY, 0.f), Vector3(10.f, 10.f, 1.f));
 		enemy->SetSpriteAnim(meshList[GEO_SPRITE_YETI], 0, 15, 0, 1.f, true);
@@ -1191,6 +1179,22 @@ void Scene01::SpawnEnemies()
 	sledYetiOnScreen = true;
 
 	enemy->SetHeightMap(&m_heightMap, m_TerrainWidth, m_TerrainHeight);
+}
+
+void Scene01::ClearEnemy()
+{
+	if (!enemyList.empty())
+	{
+		vector<Enemy*>::iterator it, end;
+		end = enemyList.end();
+		for (it = enemyList.begin(); it != end; ++it)
+		{
+			(*it)->Exit();
+			delete *it;
+		}
+
+		while (!enemyList.empty()) enemyList.pop_back();
+	}
 }
 
 void Scene01::ClearEnemyProj()

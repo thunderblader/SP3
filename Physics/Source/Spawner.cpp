@@ -28,7 +28,7 @@ GameObject* Spawner::FetchGO(vector<GameObject *>* Gameobject_List)
 	}
 	for (unsigned i = 0; i < 10; ++i)
 	{
-		Gameobject_List->push_back(new GameObject(GameObject::GO_BALL));
+		Gameobject_List->push_back(new GameObject(GameObject::GO_NONE));
 	}
 	Gameobject_List->at(Gameobject_List->size() - 1)->SetActive(true);
 	return Gameobject_List->at(Gameobject_List->size() - 1);
