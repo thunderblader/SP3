@@ -11,7 +11,6 @@
 
 #include <sstream>
 #include <fstream>
-#include <vld.h>
 
 using std::ifstream;
 using std::istringstream;
@@ -419,11 +418,6 @@ void Scene01::Update(double dt)
 		sound_engine->play2D("Sound//gameplay.mp3", true);
 	}
 
-	if (newlevel != currlevel && !m_player->GetExploded())
-	{
-		Reset(newlevel);
-	}
-
 	static bool CurrentTry = false;
 	if (m_player->GetLaunched() && !CurrentTry)
 	{
@@ -438,9 +432,15 @@ void Scene01::Update(double dt)
 	else if (!m_player->GetLaunched())
 		CurrentTry = false;
 
+	if (newlevel != currlevel && !m_player->GetExploded())
+	{
+		Reset(newlevel);
+	}
+
 	coinanim->Update(dt);
 	if (KeyboardController::GetInstance()->IsKeyPressed('I'))
 	{
+		file.Save_Data(Level_data, Score, Gold, item_node->root);
 		if (in_shop == false)
 		{
 			in_shop = true;
@@ -506,7 +506,7 @@ void Scene01::Update(double dt)
 			break;
 
 		case GameObject::GO_ENEMY_SNOWYETI:
-			if (!(*it)->GetProjFired() && !(*it)->GetProjActive() && (*it)->GetCurAnimFrame() == 11)
+			if (!(*it)->GetProjFired() && !(*it)->GetProjActive() && (*it)->GetCurAnimFrame() == 11 && (*it)->GetState() == Enemy::ENEMY_STATE::ATTACK)
 			{
 				(*it)->PushProjectile(FetchGO(), Vector3(1.f, 1.f, 1.f), 10.f);
 				(*it)->SetProjFired(true);
@@ -538,66 +538,6 @@ void Scene01::Update(double dt)
 		enemyList.push_back(enemy);
 	}
 
-
-	//Mouse Section
-	//if (MouseController::GetInstance()->IsButtonPressed(MouseController::LMB))
-	//{
-	//	std::cout << "LBUTTON DOWN" << std::endl;
-
-	//	double x, y;
-	//	MouseController::GetInstance()->GetMousePosition(x, y);
-	//	int w = Application::GetWindowWidth();
-	//	int h = Application::GetWindowHeight();
-
-	//	m_ghost->pos.Set((float)(x / w * m_worldWidth) + camera.position.x, (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
-	//	//m_ghost->pos.Set((float)(x / w * m_worldWidth), m_worldHeight * 0.5f, 0.f);
-	//}
-	//else if (MouseController::GetInstance()->IsButtonReleased(MouseController::LMB))
-	//{
-	//	std::cout << "LBUTTON UP" << std::endl;
-
-	//	//Exercise 6: spawn small GO_BALL
-	//	GameObject *go = FetchGO();
-	//	go->pos = m_ghost->pos;
-	//	go->scale.Set(1.f, 1.f, 1.f);
-	//	go->mass = 1.f;
-
-	//	double x, y;
-	//	MouseController::GetInstance()->GetMousePosition(x, y);
-	//	int w = Application::GetWindowWidth();
-	//	int h = Application::GetWindowHeight();
-	//	go->vel.Set(m_ghost->pos.x - (float)(x / w * m_worldWidth) - camera.position.x, m_ghost->pos.y - (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
-	//	go->scale.Set(Math::Clamp(go->vel.Length(), 2.f, 10.f), Math::Clamp(go->vel.Length(), 2.f, 10.f), 0.f);
-	//}
-	//if (MouseController::GetInstance()->IsButtonPressed(MouseController::RMB))
-	//{
-	//	std::cout << "RBUTTON DOWN" << std::endl;
-
-	//	double x, y;
-	//	MouseController::GetInstance()->GetMousePosition(x, y);
-	//	int w = Application::GetWindowWidth();
-	//	int h = Application::GetWindowHeight();
-
-	//	m_ghost->pos.Set((float)(x / w * m_worldWidth) + camera.position.x, (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
-	//	//m_ghost->pos.Set((float)(x / w * _worldWidth), m_worldHeight * 0.5f, 0.f);
-	//}
-	//else if (MouseController::GetInstance()->IsButtonReleased(MouseController::RMB))
-	//{
-	//	std::cout << "RBUTTON UP" << std::endl;
-
-	//	GameObject *go = FetchGO();
-	//	go->pos = m_ghost->pos;
-	//	go->type = GameObject::GO_BOMB;
-	//	//go->boom = false;
-	//	go->scale.Set(2, 2, 2);
-	//	go->mass = 1.5f * 1.5f * 1.5f;
-
-	//	double x, y;
-	//	MouseController::GetInstance()->GetMousePosition(x, y);
-	//	int w = Application::GetWindowWidth();
-	//	int h = Application::GetWindowHeight();
-	//	go->vel.Set(m_ghost->pos.x - (float)(x / w * m_worldWidth) - camera.position.x, m_ghost->pos.y - (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
-	//}
 	//Physics Simulation Section
 	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
@@ -636,7 +576,6 @@ void Scene01::Update(double dt)
 			}
 			if ((go->type == GameObject::GO_BOMB && !m_player->GetExploded()) || go->type == GameObject::GO_PLAYER || go->type == GameObject::GO_SLEDYETI)
 			{
-				//go->vel.x = go->vel.x - go->vel.x * 1.f * (float)dt;
 				if (go->vel.Length() < 3)
 					go->vel.IsZero();
 				if (go->type == GameObject::GO_BOMB)
@@ -655,88 +594,13 @@ void Scene01::Update(double dt)
 					float frontCart = ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth * 0.5f) + go->scale.x * 0.5f) / m_TerrainWidth, 0.f);
 					float theta = atan2((m_TerrainHeight * backCart) - (m_TerrainHeight * frontCart), -go->scale.x);
 					Vector3 tempnormal;
-
-					//if (theta > 3.14159)
-					//tempnormal = Vector3(0, 1, 0).Normalize();
-					//else
 					tempnormal = Vector3(sin(-theta), cos(-theta), 0).Normalize();
 					go->dir = tempnormal;
 
 					go->vel = go->vel - (1.1f*go->vel.Dot(tempnormal) * tempnormal);
 					go->vel.x = go->vel.x - go->vel.x * param_physics.frictionTerrain * (float)dt; // friction
 				}
-				/*if ((go->pos.x < 0 + go->scale.x && go->vel.x < 0) || (go->pos.x > m_worldWidth - go->scale.x && go->vel.x > 0))
-				{
-				go->vel.x = -go->vel.x;
-				}
-
-				//Physics Simulation Section
-
-				for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
-				{
-				GameObject *go = (GameObject *)*it;
-				if (go->active)
-				{
-				//Exercise 7: handle out of bound game objects
-				if (go->type == GameObject::GO_BALL || go->type == GameObject::GO_BLOCK)
-				{
-				go->vel.x = go->vel.x - go->vel.x * 1.f * (float)dt;
-				if (go->vel.Length() < 3)
-				go->vel.IsZero();
-				Physics::K1(go->vel.y, (-9.8f * go->mass * 2.f), (float)dt, go->vel.y);
-				//go->vel.y = go->vel.y - 9.8f * go->mass  * (float)dt;
-				go->pos += go->vel * (float)dt * m_speed;
-				if (go->pos.y <= (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + go->scale.y * 0.5f)
-				{
-				go->pos.y = (m_TerrainHeight * ReadHeightMap(m_heightMap, (go->pos.x + m_TerrainWidth * 0.5f) / m_TerrainWidth, 0.f)) + go->scale.y * 0.5f;
-				float backCart = ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth * 0.5f) - go->scale.x * 0.5f) / m_TerrainWidth, 0.f);
-				float frontCart = ReadHeightMap(m_heightMap, ((go->pos.x + m_TerrainWidth * 0.5f) + go->scale.x * 0.5f) / m_TerrainWidth, 0.f);
-				float theta = atan2((m_TerrainHeight * backCart) - (m_TerrainHeight * frontCart), -go->scale.x);
-				Vector3 tempnormal;
-
-				//if (theta > 3.14159)
-				//tempnormal = Vector3(0, 1, 0).Normalize();
-				//else
-				tempnormal = Vector3(sin(-theta), cos(-theta), 0).Normalize();
-				go->dir = tempnormal;
-				go->vel = go->vel - (go->vel.Dot(tempnormal) * tempnormal);
-				go->vel.x = go->vel.x - go->vel.x * 5.f * (float)dt;
-				}
-				/*if ((go->pos.x < 0 + go->scale.x && go->vel.x < 0) || (go->pos.x > m_worldWidth - go->scale.x && go->vel.x > 0))
-				{
-				go->vel.x = -go->vel.x;
-				}
-
-				if ((go->pos.y > m_worldHeight - go->scale.y && go->vel.y > 0))
-				{
-				go->vel.y = -go->vel.y;
-				}
-
-				if (go->pos.x < 0 - go->scale.x || go->pos.x > m_worldWidth + go->scale.x ||
-				go->pos.y < 0 - go->scale.y || go->pos.y > m_worldHeight + go->scale.y ||
-				(go->pos.y < 0 - go->scale.y && go->vel.y < 0))
-				{
-				go->active = false;
-				--m_objectCount;
-				continue;
-				}*/
-				//if (go->pos.x + go->scale.x > m_worldWidth && go->vel.x > 0)
-				//{
-				//	go->vel.x = -go->vel.x;
-				//}
-				//else if (go->pos.x - go->scale.x < 0 && go->vel.x < 0)
-				//{
-				//	go->vel.x = -go->vel.x;
-				//}
-				//else if (go->pos.y + go->scale.y > m_worldHeight && go->vel.y > 0)
-				//{
-				//	//go->vel.y = -go->vel.y;
-				//}
-				//else if (go->pos.y - go->scale.y < 0 && go->vel.y < 0)
-				//{
-				//	go->vel.y = -go->vel.y;
-				//}
-
+				
 				for (std::vector<GameObject *>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
 				{
 					GameObject *go2 = (GameObject *)*it2;
@@ -1256,10 +1120,4 @@ void Scene01::Exit()
 		delete go;
 		m_goList.pop_back();
 	}
-
-	/*if (m_ghost)
-	{
-		delete m_ghost;
-		m_ghost = NULL;
-	}*/
 }

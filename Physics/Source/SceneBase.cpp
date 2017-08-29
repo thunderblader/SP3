@@ -271,6 +271,10 @@ void SceneBase::Init()
 	meshList[GEO_INSUFFICIENT]->textureID = LoadTGA("Image//insufficient.tga");
 	meshList[GEO_LIMIT] = MeshBuilder::GenerateQuad("limit", Color(1, 1, 1), 1.f);
 	meshList[GEO_LIMIT]->textureID = LoadTGA("Image//limit.tga");
+	meshList[GEO_SAVED] = MeshBuilder::GenerateQuad("saved", Color(1, 1, 1), 1.f);
+	meshList[GEO_SAVED]->textureID = LoadTGA("Image//saved.tga");
+	meshList[GEO_PROGRESS] = MeshBuilder::GenerateQuad("progress", Color(1, 1, 1), 1.f);
+	meshList[GEO_PROGRESS]->textureID = LoadTGA("Image//progress.tga");
 
 	//CSoundEngine::GetInstance()->Init(); 
 	//
