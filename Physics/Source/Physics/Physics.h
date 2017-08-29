@@ -29,27 +29,27 @@ public:
 	static T K2(T _initialVel, T _finalVel, float _time);
 	template<typename T>
 	static void K2(T _initialVel, T _finalVel, float _time, T& _distance);
-	template<typename T>
-	static T K2_CalcInitialVel();
-	static void K2_CalcInitialVel();
-	template<typename T>
-	static T K2_CalcFinalVel();
-	static void K2_CalcFinalVel();
-	template<typename T>
-	static T K2_CalcTime();
-	static void K2_CalcTime();
+	//template<typename T>
+	//static T K2_CalcInitialVel();
+	//static void K2_CalcInitialVel();
+	//template<typename T>
+	//static T K2_CalcFinalVel();
+	//static void K2_CalcFinalVel();
+	//template<typename T>
+	//static T K2_CalcTime();
+	//static void K2_CalcTime();
 
 	template<typename T>
 	static T K3(T _initialVel, T _acceleration, float _time);
 	template<typename T>
 	static void K3(T _initialVel, T _acceleration, float _time, T& _distance);
-	template<typename T>
-	static T K3_CalcInitialVel();
+	//template<typename T>
+	//static T K3_CalcInitialVel();
 	template<typename T>
 	static void K3_CalcInitialVel(T _distance, T _acceleration, float _time, T& _initialVel);
-	template<typename T>
-	static T K3_CalcAcceleration();
-	static void K3_CalcAcceleration();
+	//template<typename T>
+	//static T K3_CalcAcceleration();
+	//static void K3_CalcAcceleration();
 
 	template<typename T>
 	static T K4(T _initialVel, T _acceleration, T _distance);

@@ -573,6 +573,16 @@ void SceneBase::RenderParticles(ParticleObject * particle)
 
 void SceneBase::Exit()
 {
+	while (!particleList.empty())
+	{
+		ParticleObject* obj = particleList.back();
+		delete obj;
+		particleList.pop_back();
+	}
+
+	KeyboardController::GetInstance()->Destroy();
+	MouseController::GetInstance()->Destroy();
+
 	// Cleanup VBO
 	for(int i = 0; i < NUM_GEOMETRY; ++i)
 	{
