@@ -54,7 +54,10 @@ void Scene01::Menu(double dt) {
 		else if (KeyboardController::GetInstance()->IsKeyPressed(VK_DOWN))
 			menustate = LEVELBACK;
 		if (KeyboardController::GetInstance()->IsKeyPressed(VK_RETURN) || KeyboardController::GetInstance()->IsKeyPressed(VK_SPACE))
+		{
+			newlevel = 1;
 			Reset(1);
+		}
 		break;
 	case LEVEL2:
 		if (KeyboardController::GetInstance()->IsKeyPressed(VK_LEFT))

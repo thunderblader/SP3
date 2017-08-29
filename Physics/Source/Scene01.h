@@ -60,9 +60,6 @@ private:
 	float m_worldHeight;
 	float m_TerrainWidth;
 	float m_TerrainHeight;
-	//GameObject *m_ghost;
-	//GameObject *spawner;
-	//int m_ballCount;
 	int* m_objectCount;
 
 	float m1, m2;

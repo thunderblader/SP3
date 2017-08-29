@@ -65,9 +65,8 @@ void Enemy::Exit()
 {
 	if (snowBall)
 	{
-		snowBall->SetActive(false);
 		snowBall->type = GameObject::GO_NONE;
-		snowBall = nullptr;
+		snowBall->SetActive(false);
 	}
 
 	if (spriteAnim)
@@ -128,6 +127,11 @@ bool Enemy::GetProjActive() const
 	if (!snowBall) return false;
 
 	return snowBall->GetActive();
+}
+
+Enemy::ENEMY_STATE Enemy::GetState() const
+{
+	return curState;
 }
 
 GameObject::GAMEOBJECT_TYPE Enemy::GetType() const

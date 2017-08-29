@@ -11,6 +11,13 @@ using std::vector;
 class Enemy
 {
 public:
+	enum ENEMY_STATE
+	{
+		IDLE,
+		ATTACK,
+		NUM_ENEMY_STATE
+	};
+
 	Enemy();
 	~Enemy();
 
@@ -27,6 +34,7 @@ public:
 	bool GetActive() const;
 	bool GetProjFired() const;
 	bool GetProjActive() const;
+	ENEMY_STATE GetState() const;
 	GameObject::GAMEOBJECT_TYPE GetType() const;
 
 	void SetPlayerObj(GameObject* _playerObj, GameObject* _bombObj);
@@ -38,13 +46,6 @@ public:
 	void ClearProjectile();
 
 protected:
-	enum ENEMY_STATE
-	{
-		IDLE,
-		ATTACK,
-		NUM_ENEMY_STATE
-	};
-
 	void RunYeti(double dt);
 	void RunSledYeti(double dt);
 
