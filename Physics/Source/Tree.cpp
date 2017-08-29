@@ -10,6 +10,18 @@ Tree::Tree()
 Tree::~Tree()
 {
 }
+
+void Tree::CreateList(Tree *tree, vector<Tree*>& forDelete)
+{
+	if (tree == NULL)
+	{
+		return;
+	}
+	forDelete.push_back(tree);
+	CreateList(tree->left, forDelete);
+	CreateList(tree->right, forDelete);
+}
+
 Tree *Tree::node = NULL;
 
 Tree *Tree::getInstance()

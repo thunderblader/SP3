@@ -2,11 +2,12 @@
 #define TREE_H
 #define max(a,b)		(((a) > (b)) ? (a) : (b))
 
-#include "MemoryLeakCheck.h"
 #include <iostream>
 #include <string>
+#include <vector>
 
-using namespace std;
+using std::vector;
+using std::string;
 
 class Tree
 {
@@ -26,6 +27,7 @@ public:
 	};
 	
 	~Tree();
+	void CreateList(Tree *tree, vector<Tree*>& forDelete);
 
 	int height(Tree *);
 	int diff(Tree *);
@@ -51,8 +53,6 @@ public:
 	Tree *right;
 	Tree *curr;
 	avl_node root;
-
-
 };
 
 #endif
