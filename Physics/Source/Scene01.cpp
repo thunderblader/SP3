@@ -11,6 +11,7 @@
 
 #include <sstream>
 #include <fstream>
+#include <vld.h>
 
 using std::ifstream;
 using std::istringstream;
@@ -440,6 +441,7 @@ void Scene01::Update(double dt)
 	coinanim->Update(dt);
 	if (KeyboardController::GetInstance()->IsKeyPressed('I'))
 	{
+		file.Save_Data(Level_data, Score, Gold, item_node->root);
 		if (in_shop == false)
 		{
 			in_shop = true;
@@ -480,7 +482,7 @@ void Scene01::Update(double dt)
 		m_speed += 0.1f;
 	}
 
-	if (m_tries <= 0 && m_player->GetPlayerPos().y < 0)
+	if (m_tries <= 0 && !m_player->GetPlayerObj().GetActive() && !m_player->GetPlayerBomb().GetActive())
 	{
 		menustate = LOSE1;
 		display = true;
