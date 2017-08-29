@@ -7,6 +7,7 @@
 #include "Utility.h"
 #include "LoadTGA.h"
 #include "KeyboardController.h"
+#include "MouseController.h"
 #include "SoundEngine.h"
 #include "Particle\Particle.h"
 #include "SpriteAnimation.h"
