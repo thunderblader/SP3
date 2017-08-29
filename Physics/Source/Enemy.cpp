@@ -129,6 +129,11 @@ bool Enemy::GetProjActive() const
 	return snowBall->GetActive();
 }
 
+Enemy::ENEMY_STATE Enemy::GetState() const
+{
+	return curState;
+}
+
 GameObject::GAMEOBJECT_TYPE Enemy::GetType() const
 {
 	return enemyObj->type;

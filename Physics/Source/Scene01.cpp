@@ -11,7 +11,6 @@
 
 #include <sstream>
 #include <fstream>
-#include <vld.h>
 
 using std::ifstream;
 using std::istringstream;
@@ -419,11 +418,6 @@ void Scene01::Update(double dt)
 		sound_engine->play2D("Sound//gameplay.mp3", true);
 	}
 
-	if (newlevel != currlevel && !m_player->GetExploded())
-	{
-		Reset(newlevel);
-	}
-
 	static bool CurrentTry = false;
 	if (m_player->GetLaunched() && !CurrentTry)
 	{
@@ -437,6 +431,11 @@ void Scene01::Update(double dt)
 	}
 	else if (!m_player->GetLaunched())
 		CurrentTry = false;
+
+	if (newlevel != currlevel && !m_player->GetExploded())
+	{
+		Reset(newlevel);
+	}
 
 	coinanim->Update(dt);
 	if (KeyboardController::GetInstance()->IsKeyPressed('I'))
@@ -507,7 +506,7 @@ void Scene01::Update(double dt)
 			break;
 
 		case GameObject::GO_ENEMY_SNOWYETI:
-			if (!(*it)->GetProjFired() && !(*it)->GetProjActive() && (*it)->GetCurAnimFrame() == 11)
+			if (!(*it)->GetProjFired() && !(*it)->GetProjActive() && (*it)->GetCurAnimFrame() == 11 && (*it)->GetState() == Enemy::ENEMY_STATE::ATTACK)
 			{
 				(*it)->PushProjectile(FetchGO(), Vector3(1.f, 1.f, 1.f), 10.f);
 				(*it)->SetProjFired(true);
