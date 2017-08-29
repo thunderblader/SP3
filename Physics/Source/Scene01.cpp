@@ -1220,6 +1220,16 @@ void Scene01::Exit()
 	SceneBase::Exit();
 	ClearEnemies();
 
+	vector<Tree*> deleteTree;
+	item_node->CreateList(item_node, deleteTree);
+
+	while (!deleteTree.empty())
+	{
+		Tree* dnode = deleteTree.back();
+		delete dnode;
+		deleteTree.pop_back();
+	}
+
 	if (coinanim)
 	{
 		delete coinanim;
