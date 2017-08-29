@@ -54,6 +54,8 @@ public:
 	void Upgrade(Tree::avl_node &node);
 	bool GetTumble();
 	void SetTumble(bool In);
+	unsigned int GetTries();
+	void SetTries(unsigned int In);
 private:
 	Player();
 	virtual ~Player();
@@ -77,6 +79,7 @@ private:
 	float speedlimit;
 	bool tumble;
 	double tumbletime;
+	unsigned int tries;
 };
 
 #endif // !PLAYER_H

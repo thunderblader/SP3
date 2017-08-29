@@ -62,7 +62,6 @@ private:
 	float m_TerrainHeight;
 	//GameObject *m_ghost;
 	//GameObject *spawner;
-	unsigned int m_tries;
 	//int m_ballCount;
 	int* m_objectCount;
 

@@ -36,6 +36,7 @@ void Player::Init(GameObject * _playerObj, GameObject * _playerBomb
 	speedlimit = _speedlimit;
 	tumbletime = 0;
 	tumble = false;
+	tries = 3;
 }
 
 void Player::Update(double dt)
@@ -137,8 +138,8 @@ void Player::Reset()
 	launched = false;
 	bombspin = 0;
 	wait = 0;
+	--tries;
 	playerObj->vel.SetZero();
-
 	pu_stats.range = 1.f;
 	pu_stats.speed = 1.f;
 	pu_counts[0] = 0;
@@ -289,6 +290,16 @@ bool Player::GetTumble()
 void Player::SetTumble(bool In)
 {
 	tumble = In;
+}
+
+unsigned int Player::GetTries()
+{
+	return tries;
+}
+
+void Player::SetTries(unsigned int In)
+{
+	tries = In;
 }
 
 Player::Player()

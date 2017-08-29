@@ -47,7 +47,6 @@ void Scene01::Init()
 
 	//m_ballCount = 0;
 
-	m_tries = 3;
 	Score = 0;
 	time_limit = 0;
 	item_id = 0;
@@ -430,9 +429,6 @@ void Scene01::Update(double dt)
 		ClearPowerUps();
 		SpawnPowerups();
 		CurrentTry = true;
-
-		if (m_tries > 0)
-			--m_tries;
 	}
 	else if (!m_player->GetLaunched())
 		CurrentTry = false;
@@ -481,7 +477,7 @@ void Scene01::Update(double dt)
 		m_speed += 0.1f;
 	}
 
-	if (m_tries <= 0 && !m_player->GetPlayerObj().GetActive() && !m_player->GetPlayerBomb().GetActive())
+	if (m_player->GetTries() <= 0)
 	{
 		menustate = LOSE1;
 		display = true;
@@ -976,7 +972,7 @@ void Scene01::RenderHUD()
 
 	// Render Lives/Chances/Tries
 	RenderMeshIn2D(meshList[GEO_HUD_CHANCE], false, m_worldWidth, m_worldHeight, scaleX, scaleY, posX, posY);
-	for (unsigned int i = 0; i < m_tries; ++i)
+	for (unsigned int i = 0; i < m_player->GetTries(); ++i)
 	{
 		posX = 25.5f + (i * 8.f);
 		posY = m_worldHeight - 5.5f;
@@ -1190,7 +1186,6 @@ void Scene01::Reset(int _level)
 	}
 
 	currlevel = _level;
-	m_tries = 3;
 
 	std::string leveltext = "Image//Level0";
 	leveltext += to_string(currlevel);
@@ -1211,7 +1206,7 @@ void Scene01::Reset(int _level)
 
 	SpawnPowerups();
 	SpawnEnemies();
-
+	m_player->SetTries(3);
 	wind = Math::RandFloatMinMax(-10, 10);
 	display = false;
 }
