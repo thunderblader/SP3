@@ -498,7 +498,7 @@ void Scene01::Update(double dt)
 		switch ((*it)->GetType())
 		{
 		case GameObject::GO_SLEDYETI:
-			if (!sledYetiOnScreen && (*it)->GetPos().x > camera.position.x - m_worldWidth *0.5f)
+			if (!sledYetiOnScreen && (*it)->GetPos().x > camera.position.x - m_worldWidth)
 			{
 				sledYetiOnScreen = true;
 			}
@@ -528,11 +528,11 @@ void Scene01::Update(double dt)
 			++it;
 	}
 
-	if (!sledYetiOnScreen && camera.position.x + m_worldWidth < 0)
+	if (!sledYetiOnScreen && camera.position.x + m_worldWidth*1.5f < 0)
 	{
 		Enemy* enemy;
 		enemy = new Enemy();
-		enemy->Init(FetchGO(), GameObject::GO_SLEDYETI, Vector3(camera.position.x + m_worldWidth*1.2f, 0.5f, 0), Vector3(10.f, 10.f, 1.f), 5.f);
+		enemy->Init(FetchGO(), GameObject::GO_SLEDYETI, Vector3(camera.position.x + m_worldWidth*1.5f, 0.5f, 0), Vector3(10.f, 10.f, 1.f), 5.f);
 		enemy->SetSpriteAnim(meshList[GEO_SLEDYETI], 0, 13, -1, 1, true);
 		enemyList.push_back(enemy);
 	}
@@ -811,7 +811,7 @@ void Scene01::RenderGO(GameObject *go)
 		break;
 
 	case GameObject::GO_BOMB:
-		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
+		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z-0.1f);
 		if (!m_player->GetExploded())
 			modelStack.Rotate(m_player->GetBombspin() ,0, 0, 1);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
@@ -894,14 +894,12 @@ void Scene01::Render()
 		modelStack.PopMatrix();
 	}
 
-	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
-	{
-		GameObject *go = (GameObject *)*it;
-		if (go->GetActive())
-		{
-			RenderGO(go);
-		}
-	}
+	modelStack.PushMatrix();
+	modelStack.Translate(95, 0, -0.3f);
+	modelStack.Scale(50, 25, 1); // values varies.
+	RenderMesh(meshList[GEO_CLIFF], false);
+	modelStack.PopMatrix();
+
 	std::vector<Enemy*>::iterator it, end;
 	end = enemyList.end();
 	for (it = enemyList.begin(); it != end; ++it)
@@ -909,7 +907,7 @@ void Scene01::Render()
 		Enemy* enemy = (Enemy*)*it;
 		SpriteAnimation* anim = enemy->GetSprite();
 		modelStack.PushMatrix();
-		modelStack.Translate(enemy->GetPos());
+		modelStack.Translate(Vector3(enemy->GetPos().x, enemy->GetPos().y, enemy->GetPos().z -0.2f));
 		if (enemy->GetType() == GameObject::GO_SLEDYETI)
 			modelStack.Rotate(enemy->GetRot(), 0, 0, 1);
 		modelStack.Scale(enemy->GetScale());
@@ -919,17 +917,19 @@ void Scene01::Render()
 
 	{
 		modelStack.PushMatrix();
-		modelStack.Translate(-m_TerrainWidth * 0.5f, 0, 1);
+		modelStack.Translate(-m_TerrainWidth * 0.5f, 0, 0);
 		modelStack.Scale(m_TerrainWidth, m_TerrainHeight, 1); // values varies.
 		RenderMesh(meshList[GEO_TERRAIN], false);
 		modelStack.PopMatrix();
 	}
-
-	modelStack.PushMatrix();
-	modelStack.Translate(95, 0, -0.1f);
-	modelStack.Scale(50, 25, 1); // values varies.
-	RenderMesh(meshList[GEO_CLIFF], false);
-	modelStack.PopMatrix();
+	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
+	{
+		GameObject *go = (GameObject *)*it;
+		if (go->GetActive())
+		{
+			RenderGO(go);
+		}
+	}
 
 	RenderAllParticles();
 	RenderHUD();
