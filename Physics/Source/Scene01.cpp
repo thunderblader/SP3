@@ -440,6 +440,7 @@ void Scene01::Update(double dt)
 	coinanim->Update(dt);
 	if (KeyboardController::GetInstance()->IsKeyPressed('I'))
 	{
+		file.Save_Data(Level_data, Score, Gold, item_node->root);
 		if (in_shop == false)
 		{
 			in_shop = true;

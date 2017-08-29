@@ -33,6 +33,8 @@ void Scene01::Shop_Render()
 	RenderMeshIn2D(meshList[GEO_PRICE], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.2f, m_worldHeight - (scaleY * 3.f));
 	RenderMeshIn2D(meshList[GEO_GOLD], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.2f, m_worldHeight - (scaleY * 6.f));
 	RenderMeshIn2D(meshList[GEO_LIMIT], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.225f, m_worldHeight - (scaleY * 4.f));
+	RenderMeshIn2D(meshList[GEO_SAVED], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.375f, m_worldHeight - (scaleY * 8.f));
+	RenderMeshIn2D(meshList[GEO_PROGRESS], false, m_worldWidth, m_worldHeight, scaleX, scaleY, m_worldWidth * 0.5f, m_worldHeight - (scaleY * 8.f));
 	for (unsigned i = 0; i < Gold_string.size(); ++i)
 	{
 		posX = m_worldWidth * 0.3f + (i * 5.f);
