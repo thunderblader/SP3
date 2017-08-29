@@ -11,7 +11,6 @@
 
 #include <sstream>
 #include <fstream>
-#include <vld.h>
 
 using std::ifstream;
 using std::istringstream;
