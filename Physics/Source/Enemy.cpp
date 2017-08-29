@@ -65,9 +65,8 @@ void Enemy::Exit()
 {
 	if (snowBall)
 	{
-		snowBall->SetActive(false);
 		snowBall->type = GameObject::GO_NONE;
-		snowBall = nullptr;
+		snowBall->SetActive(false);
 	}
 
 	if (spriteAnim)
