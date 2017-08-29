@@ -45,7 +45,7 @@ protected:
 	void SpawnPowerups();
 	void SpawnEnemies();
 	void ClearPowerUps();
-	void ClearEnemy();
+	void ClearEnemies();
 	void ClearEnemyProj();
 	void Shop_Render();
 	void Reset(int _level);
@@ -60,10 +60,10 @@ private:
 	float m_worldHeight;
 	float m_TerrainWidth;
 	float m_TerrainHeight;
-	GameObject *m_ghost;
-	GameObject *spawner;
+	//GameObject *m_ghost;
+	//GameObject *spawner;
 	unsigned int m_tries;
-	int m_ballCount;
+	//int m_ballCount;
 	int* m_objectCount;
 
 	float m1, m2;

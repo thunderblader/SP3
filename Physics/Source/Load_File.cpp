@@ -151,7 +151,7 @@ bool Load_File::Load_Data(Tree::avl_node & node, const string saveFileName)
 				{
 					if (node.id == 1)
 					{
-						node.has_item = atoi(data.c_str());
+						node.has_item = (atoi(data.c_str())) ? true : false;
 					}
 				}
 				else if (theTag == "item1_level")
@@ -165,7 +165,7 @@ bool Load_File::Load_Data(Tree::avl_node & node, const string saveFileName)
 				{
 					if (node.id == 2)
 					{
-						node.has_item = atoi(data.c_str());
+						node.has_item = atoi(data.c_str()) ? true : false;
 					}
 				}
 				else if (theTag == "item2_level")
@@ -179,7 +179,7 @@ bool Load_File::Load_Data(Tree::avl_node & node, const string saveFileName)
 				{
 					if (node.id == 3)
 					{
-						node.has_item = atoi(data.c_str());
+						node.has_item = atoi(data.c_str()) ? true : false;
 					}
 				}
 				else if (theTag == "item3_level")
@@ -193,7 +193,7 @@ bool Load_File::Load_Data(Tree::avl_node & node, const string saveFileName)
 				{
 					if (node.id == 4)
 					{
-						node.has_item = atoi(data.c_str());
+						node.has_item = atoi(data.c_str()) ? true : false;
 					}
 				}
 				else if (theTag == "item4_level")

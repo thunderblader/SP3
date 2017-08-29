@@ -45,7 +45,7 @@ void Scene01::Init()
 
 	Math::InitRNG();
 
-	m_ballCount = 0;
+	//m_ballCount = 0;
 
 	m_tries = 3;
 	Score = 0;
@@ -81,7 +81,7 @@ void Scene01::Init()
 
 	item_node = Tree::getInstance();
 
-	m_ghost = new GameObject(GameObject::GO_BALL);
+	//m_ghost = new GameObject(GameObject::GO_BALL);
 
 	SpawnPowerups();
 
@@ -568,35 +568,35 @@ void Scene01::Update(double dt)
 	//	go->vel.Set(m_ghost->pos.x - (float)(x / w * m_worldWidth) - camera.position.x, m_ghost->pos.y - (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
 	//	go->scale.Set(Math::Clamp(go->vel.Length(), 2.f, 10.f), Math::Clamp(go->vel.Length(), 2.f, 10.f), 0.f);
 	//}
-	if (MouseController::GetInstance()->IsButtonPressed(MouseController::RMB))
-	{
-		std::cout << "RBUTTON DOWN" << std::endl;
+	//if (MouseController::GetInstance()->IsButtonPressed(MouseController::RMB))
+	//{
+	//	std::cout << "RBUTTON DOWN" << std::endl;
 
-		double x, y;
-		MouseController::GetInstance()->GetMousePosition(x, y);
-		int w = Application::GetWindowWidth();
-		int h = Application::GetWindowHeight();
+	//	double x, y;
+	//	MouseController::GetInstance()->GetMousePosition(x, y);
+	//	int w = Application::GetWindowWidth();
+	//	int h = Application::GetWindowHeight();
 
-		m_ghost->pos.Set((float)(x / w * m_worldWidth) + camera.position.x, (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
-		//m_ghost->pos.Set((float)(x / w * _worldWidth), m_worldHeight * 0.5f, 0.f);
-	}
-	else if (MouseController::GetInstance()->IsButtonReleased(MouseController::RMB))
-	{
-		std::cout << "RBUTTON UP" << std::endl;
+	//	m_ghost->pos.Set((float)(x / w * m_worldWidth) + camera.position.x, (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
+	//	//m_ghost->pos.Set((float)(x / w * _worldWidth), m_worldHeight * 0.5f, 0.f);
+	//}
+	//else if (MouseController::GetInstance()->IsButtonReleased(MouseController::RMB))
+	//{
+	//	std::cout << "RBUTTON UP" << std::endl;
 
-		GameObject *go = FetchGO();
-		go->pos = m_ghost->pos;
-		go->type = GameObject::GO_BOMB;
-		//go->boom = false;
-		go->scale.Set(2, 2, 2);
-		go->mass = 1.5f * 1.5f * 1.5f;
+	//	GameObject *go = FetchGO();
+	//	go->pos = m_ghost->pos;
+	//	go->type = GameObject::GO_BOMB;
+	//	//go->boom = false;
+	//	go->scale.Set(2, 2, 2);
+	//	go->mass = 1.5f * 1.5f * 1.5f;
 
-		double x, y;
-		MouseController::GetInstance()->GetMousePosition(x, y);
-		int w = Application::GetWindowWidth();
-		int h = Application::GetWindowHeight();
-		go->vel.Set(m_ghost->pos.x - (float)(x / w * m_worldWidth) - camera.position.x, m_ghost->pos.y - (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
-	}
+	//	double x, y;
+	//	MouseController::GetInstance()->GetMousePosition(x, y);
+	//	int w = Application::GetWindowWidth();
+	//	int h = Application::GetWindowHeight();
+	//	go->vel.Set(m_ghost->pos.x - (float)(x / w * m_worldWidth) - camera.position.x, m_ghost->pos.y - (float)(m_worldHeight - (y / h * m_worldHeight) + camera.position.y), 0.f);
+	//}
 	//Physics Simulation Section
 	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
@@ -1122,7 +1122,7 @@ void Scene01::SpawnEnemies()
 	}
 
 	enemy = new Enemy();
-	enemy->Init(FetchGO(), GameObject::GO_SLEDYETI, Vector3(-m_TerrainWidth + m_worldWidth, 0.5f, 0), Vector3(10.f, 10.f, 1.f), 5.f);
+	enemy->Init(FetchGO(), GameObject::GO_SLEDYETI, Vector3(-m_TerrainWidth + m_worldWidth + 20.f, 0.5f, 0), Vector3(10.f, 10.f, 1.f), 5.f);
 	enemy->SetSpriteAnim(meshList[GEO_SLEDYETI], 0, 13, -1, 1, true);
 	enemyList.push_back(enemy);
 	sledYetiOnScreen = true;
@@ -1143,19 +1143,14 @@ void Scene01::ClearPowerUps()
 	}
 }
 
-void Scene01::ClearEnemy()
+void Scene01::ClearEnemies()
 {
-	if (!enemyList.empty())
+	while (!enemyList.empty())
 	{
-		vector<Enemy*>::iterator it, end;
-		end = enemyList.end();
-		for (it = enemyList.begin(); it != end; ++it)
-		{
-			(*it)->Exit();
-			delete *it;
-		}
-
-		while (!enemyList.empty()) enemyList.pop_back();
+		Enemy* obj = enemyList.back();
+		obj->Exit();
+		delete obj;
+		enemyList.pop_back();
 	}
 }
 
@@ -1180,6 +1175,8 @@ void Scene01::ClearEnemyProj()
 
 void Scene01::Reset(int _level)
 {
+	ClearEnemies();
+
 	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;
@@ -1191,8 +1188,6 @@ void Scene01::Reset(int _level)
 		}
 	}
 
-	ClearEnemy();
-
 	currlevel = _level;
 	m_tries = 3;
 
@@ -1203,6 +1198,13 @@ void Scene01::Reset(int _level)
 	leveltext = "Image//heightmap";
 	leveltext += to_string(currlevel);
 	leveltext += ".raw";
+
+	if (meshList[GEO_TERRAIN])
+	{
+		delete meshList[GEO_TERRAIN];
+		meshList[GEO_TERRAIN] = nullptr;
+	}
+
 	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", leveltext, m_heightMap);
 	meshList[GEO_TERRAIN]->textureID = LoadTGA("Image//terrain.tga");
 
@@ -1216,6 +1218,26 @@ void Scene01::Reset(int _level)
 void Scene01::Exit()
 {
 	SceneBase::Exit();
+	ClearEnemies();
+
+	if (coinanim)
+	{
+		delete coinanim;
+		coinanim = nullptr;
+	}
+
+	if (m_player)
+	{
+		m_player->Destroy();
+		m_player = nullptr;
+	}
+
+	if (m_control)
+	{
+		delete m_control;
+		m_control = nullptr;
+	}
+
 	//Cleanup GameObjects
 	while (m_goList.size() > 0)
 	{
@@ -1223,9 +1245,10 @@ void Scene01::Exit()
 		delete go;
 		m_goList.pop_back();
 	}
-	if (m_ghost)
+
+	/*if (m_ghost)
 	{
 		delete m_ghost;
 		m_ghost = NULL;
-	}
+	}*/
 }

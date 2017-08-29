@@ -7,6 +7,7 @@
 #include "Utility.h"
 #include "LoadTGA.h"
 #include "KeyboardController.h"
+#include "MouseController.h"
 #include "SoundEngine.h"
 #include "Particle\Particle.h"
 #include "SpriteAnimation.h"
@@ -573,6 +574,16 @@ void SceneBase::RenderParticles(ParticleObject * particle)
 
 void SceneBase::Exit()
 {
+	while (!particleList.empty())
+	{
+		ParticleObject* obj = particleList.back();
+		delete obj;
+		particleList.pop_back();
+	}
+
+	KeyboardController::GetInstance()->Destroy();
+	MouseController::GetInstance()->Destroy();
+
 	// Cleanup VBO
 	for(int i = 0; i < NUM_GEOMETRY; ++i)
 	{

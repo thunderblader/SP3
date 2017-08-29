@@ -187,12 +187,7 @@ void Enemy::ClearProjectile()
 		snowBall->SetActive(false);
 		snowBall->type = GameObject::GO_NONE;
 		snowBall = nullptr;
-	}/*
-	else if (enemyObj->type == GameObject::GO_SLEDYETI)
-	{
-		enemyObj->SetActive(false);
-		enemyObj->type = GameObject::GO_NONE;
-	}*/
+	}
 }
 
 void Enemy::RunYeti(double dt)

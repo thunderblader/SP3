@@ -2,6 +2,7 @@
 #define TREE_H
 #define max(a,b)		(((a) > (b)) ? (a) : (b))
 
+#include "MemoryLeakCheck.h"
 #include <iostream>
 #include <string>
 

@@ -46,8 +46,8 @@ void Spawner::Spawn(int value, int Width_Space, int Height_Space, vector<GameObj
 		spawner->vel.Set(0, 0, 0);
 		spawner->scale.Set(5, 5, 1);
 		spawner->mass = 1;
-		std::cout << "spawned" << std::endl;
-		std::cout << spawner->pos.x << ", " << spawner->pos.y << std::endl;
+		//std::cout << "spawned" << std::endl;
+		//std::cout << spawner->pos.x << ", " << spawner->pos.y << std::endl;
 	}
 	else if (value == 2)
 	{
@@ -59,8 +59,8 @@ void Spawner::Spawn(int value, int Width_Space, int Height_Space, vector<GameObj
 		spawner->vel.Set(0, 0, 0);
 		spawner->scale.Set(9, 15, 1);
 		spawner->mass = 1;
-		std::cout << "spawned" << std::endl;
-		std::cout << spawner->pos.x << ", " << spawner->pos.y << std::endl;
+		//std::cout << "spawned" << std::endl;
+		//std::cout << spawner->pos.x << ", " << spawner->pos.y << std::endl;
 	}
 	else
 	{
