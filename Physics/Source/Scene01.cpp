@@ -926,7 +926,7 @@ void Scene01::Render()
 	}
 
 	modelStack.PushMatrix();
-	modelStack.Translate(60, 0, -0.1f);
+	modelStack.Translate(95, 0, -0.1f);
 	modelStack.Scale(50, 25, 1); // values varies.
 	RenderMesh(meshList[GEO_CLIFF], false);
 	modelStack.PopMatrix();
